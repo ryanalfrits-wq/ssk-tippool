@@ -9,11 +9,9 @@
 <title>SSK Tip Pool</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--bg:#f5f4f0;--surface:#fff;--border:#e0ded8;--text:#1a1a1a;--muted:#888;--hint:#bbb;--green:#1a6e45;--green-bg:#e1f5ee;--green-text:#0f6e56;--red:#a32d2d;--red-bg:#fcebeb;--amber-bg:#faeeda;--amber-text:#854f0b;--radius:12px;--radius-sm:8px}
+:root{--bg:#f5f4f0;--surface:#fff;--border:#e0ded8;--text:#1a1a1a;--muted:#888;--hint:#bbb;--green:#1a6e45;--green-bg:#e1f5ee;--green-text:#0f6e56;--red:#a32d2d;--red-bg:#fcebeb;--amber:#854f0b;--amber-bg:#faeeda;--amber-border:#ef9f27;--radius:12px;--radius-sm:8px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px}
 .app{max-width:640px;margin:0 auto;padding:12px 14px}
-
-/* PIN SCREEN */
 .pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--bg)}
 .pin-logo{font-size:28px;font-weight:600;margin-bottom:4px;letter-spacing:-.5px}
 .pin-sub{font-size:14px;color:var(--muted);margin-bottom:40px}
@@ -24,28 +22,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-siz
 .pin-btn:active{background:#e8e6e0;transform:scale(.95)}
 .pin-btn.del{font-size:18px;color:var(--muted)}
 .pin-btn.empty{pointer-events:none;background:transparent;border-color:transparent}
-
-/* HEADER */
 .header{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.header-left h1{font-size:16px;font-weight:600;letter-spacing:-.2px}
-.header-left .date{font-size:12px;color:var(--muted);margin-top:1px}
+.header h1{font-size:16px;font-weight:600;letter-spacing:-.2px}
+.header .date{font-size:12px;color:var(--muted);margin-top:1px}
 .sync-pill{font-size:11px;padding:4px 10px;border-radius:20px;background:#f0eeea;color:var(--muted);white-space:nowrap}
 .sync-pill.ok{background:var(--green-bg);color:var(--green-text)}
 .sync-pill.err{background:var(--red-bg);color:var(--red)}
-.sync-pill.syncing{background:var(--amber-bg);color:var(--amber-text)}
+.sync-pill.syncing{background:var(--amber-bg);color:var(--amber)}
 .logout-btn{font-size:12px;color:var(--muted);background:none;border:0.5px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer}
-
-/* TABS */
 .tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex-shrink:0;padding:8px 14px;border:0.5px solid var(--border);border-radius:20px;background:var(--surface);cursor:pointer;font-size:13px;color:#555;white-space:nowrap}
 .tab.active{background:var(--text);color:#fff;border-color:var(--text)}
-
-/* CARDS */
 .card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
 .card-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
-
-/* FORM */
 .field{margin-bottom:12px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
 input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--surface);color:var(--text);font-family:inherit;appearance:none;-webkit-appearance:none}
@@ -54,30 +44,25 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 textarea{resize:vertical;min-height:60px;font-size:14px;line-height:1.5}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .stat{background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px}
 .stat .slabel{font-size:11px;color:var(--muted);margin-bottom:3px}
 .stat .sval{font-size:18px;font-weight:500}
-
-/* STAFF LIST */
-.staff-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:0.5px solid #f0eeea}
+.staff-row{display:flex;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:0.5px solid #f0eeea}
 .staff-row:last-child{border-bottom:none}
 .staff-info{flex:1;min-width:0}
-.staff-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.staff-name{font-size:14px;font-weight:500}
 .staff-role{font-size:11px;color:var(--muted);margin-top:1px}
-.pts-pill{background:#f0eeea;color:#555;font-size:11px;padding:3px 8px;border-radius:6px;flex-shrink:0;white-space:nowrap}
+.pts-pill{font-size:11px;padding:3px 8px;border-radius:6px;flex-shrink:0;white-space:nowrap;background:#f0eeea;color:#555}
+.pts-pill.adjusted{background:var(--amber-bg);color:var(--amber);border:0.5px solid var(--amber-border)}
 .tip-amt{font-size:15px;font-weight:500;color:var(--green);min-width:64px;text-align:right;flex-shrink:0}
+.tip-amt.adjusted{color:var(--amber)}
+.flag-note{font-size:11px;color:var(--amber);margin-top:3px}
 .rm-btn{background:none;border:none;color:var(--hint);font-size:18px;padding:0 2px;cursor:pointer;flex-shrink:0;line-height:1}
 .rm-btn:active{color:#e24b4a}
-
-/* ADD STAFF */
+.edit-btn{background:none;border:0.5px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;padding:3px 8px;cursor:pointer;flex-shrink:0;white-space:nowrap}
 .add-box{background:#fafaf8;border:0.5px dashed #ccc;border-radius:10px;padding:12px;margin-top:10px}
 .add-box-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
-
-/* BUTTONS */
 .btn{padding:10px 16px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}
 .btn:active{background:#f0eeea}
 .btn-primary{background:var(--text);color:#fff;border-color:var(--text)}
@@ -85,57 +70,53 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn-green{background:var(--green);color:#fff;border:none;font-size:14px;font-weight:500;padding:12px 20px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;width:100%}
 .btn-green:active{background:var(--green-text)}
 .btn-export{background:var(--surface);border:0.5px solid var(--green);color:var(--green);font-size:13px;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
-.btn-export:active{background:var(--green-bg)}
 .btn-danger{background:var(--surface);border:0.5px solid #e24b4a;color:var(--red);font-size:13px;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
-.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}
-
-/* HISTORY */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;z-index:200}
+.modal{background:var(--surface);border-radius:16px 16px 0 0;padding:20px 16px 32px;width:100%;max-width:640px}
+.modal-title{font-size:16px;font-weight:500;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.modal-field{margin-bottom:12px}
+.modal-field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.pct-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+.pct-btn{padding:10px 0;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.pct-btn.selected{background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber);font-weight:500}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-actions button{flex:1;padding:12px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.modal-cancel{background:var(--bg);border:0.5px solid var(--border);color:var(--text)}
+.modal-save{background:var(--green);color:#fff;border:none}
 .hist-block{border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
 .hist-head{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;background:#f8f7f4;border-bottom:0.5px solid var(--border);gap:8px}
 .hist-head-left{flex:1;min-width:0}
 .hist-title{font-size:14px;font-weight:500}
 .hist-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .hist-pool{font-size:13px;color:var(--green);font-weight:500;flex-shrink:0}
-.hist-staff{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:0.5px solid #f5f4f0;font-size:13px}
+.hist-staff{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 14px;border-bottom:0.5px solid #f5f4f0;font-size:13px;gap:8px}
 .hist-staff:last-of-type{border-bottom:none}
 .hist-notes{padding:8px 14px;font-size:12px;color:var(--muted);font-style:italic;border-top:0.5px solid #f0eeea;background:#fafaf8}
-
-/* PAYROLL */
 .pay-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid #f5f4f0;gap:8px}
 .pay-row:last-child{border-bottom:none}
 .pay-name{font-size:14px;font-weight:500}
 .pay-detail{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
 .pay-total{font-size:15px;font-weight:500;color:var(--green);flex-shrink:0}
-
-/* SETTINGS */
+.roster-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid #f5f4f0;font-size:13px}
+.roster-row:last-child{border-bottom:none}
 .settings-section{margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid #f0eeea}
 .settings-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .settings-title{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .instructions{font-size:13px;color:#444;line-height:1.9;padding-left:18px}
-.instructions li{margin-bottom:2px}
-
-/* ROSTER */
-.roster-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid #f5f4f0;font-size:13px}
-.roster-row:last-child{border-bottom:none}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:999}
-.toast.show{opacity:1}
-
-/* PAGE */
 .page{display:none}
 .page.active{display:block}
-
 .empty{color:var(--hint);font-size:13px;padding:16px 0;text-align:center}
 .supervisor-bar{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .supervisor-bar label{font-size:13px;color:var(--muted);white-space:nowrap;flex-shrink:0}
 .supervisor-bar input{flex:1;border:none;padding:0;font-size:14px;background:transparent;color:var(--text)}
 .supervisor-bar input:focus{outline:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- PIN SCREEN -->
 <div id="pin-screen" class="pin-screen">
   <div class="pin-logo">Sama Sama Kitchen</div>
   <div class="pin-sub">Tip Pool Manager</div>
@@ -157,12 +138,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="main-app" style="display:none">
 <div class="app">
-
   <div class="header">
-    <div class="header-left">
+    <div>
       <h1>SSK Tip Pool</h1>
       <div class="date" id="today-label"></div>
     </div>
@@ -179,6 +158,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="tab" onclick="showTab('roster',this)">Roster</button>
     <button class="tab" onclick="showTab('payroll',this)">Payroll</button>
     <button class="tab" onclick="showTab('settings',this)">Settings</button>
+    <button class="tab" onclick="showTab('admin',this)">Admin</button>
   </div>
 
   <!-- SHIFT -->
@@ -199,7 +179,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
       <div class="field"><label>Shift notes (optional)</label><textarea id="shift-notes" placeholder="Any notes for this shift..."></textarea></div>
     </div>
-
     <div class="card">
       <div class="card-title">Staff on shift</div>
       <div id="shift-staff-list"></div>
@@ -229,6 +208,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="field"><label>Tip pool ($)</label><input type="number" id="evt-pool" placeholder="0.00" min="0" step="0.01" oninput="recalcEvt()"></div>
       </div>
       <div class="field"><label>Event name</label><input type="text" id="evt-name" placeholder="e.g. Smith wedding"></div>
+      <div class="field"><label>Event subtotal ($)</label><input type="number" id="evt-subtotal" placeholder="0.00" min="0" step="0.01"></div>
       <div class="stats">
         <div class="stat"><div class="slabel">Pool</div><div class="sval" id="estat-pool">$0.00</div></div>
         <div class="stat"><div class="slabel">Points</div><div class="sval" id="estat-pts">0.00</div></div>
@@ -282,7 +262,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="field"><label>From</label><input type="date" id="pay-from"></div>
         <div class="field"><label>To</label><input type="date" id="pay-to"></div>
       </div>
-      <div class="btn-row" style="justify-content:flex-start;margin-bottom:14px">
+      <div style="display:flex;gap:8px;margin-bottom:14px">
         <button class="btn" onclick="renderPayroll()">View</button>
         <button class="btn-export" onclick="exportCSV()">Export CSV</button>
       </div>
@@ -296,7 +276,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="settings-section">
         <div class="settings-title">Google Sheets sync</div>
         <div class="field"><label>Web App URL</label><input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..."></div>
-        <div class="btn-row" style="justify-content:flex-start;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="saveSheetUrl()">Save URL</button>
           <button class="btn-export" onclick="syncToSheets()">Sync all data</button>
           <button class="btn" onclick="testConnection()">Test</button>
@@ -305,12 +285,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="settings-section">
         <div class="settings-title">Setup instructions</div>
         <ol class="instructions">
-          <li>Go to <strong>script.google.com</strong> → New project</li>
-          <li>Delete the default code, paste in the Apps Script code below</li>
-          <li>Click <strong>Deploy → New deployment</strong></li>
-          <li>Type: Web app · Execute as: Me · Access: Anyone</li>
-          <li>Authorize, copy the Web App URL</li>
-          <li>Paste it above and tap <strong>Save URL</strong></li>
+          <li>Go to <strong>sheets.google.com</strong> → create a new sheet named <strong>SSK Tip Pool</strong></li>
+          <li>Click <strong>Extensions → Apps Script</strong></li>
+          <li>Delete the default code and paste in the Apps Script code below</li>
+          <li>Hit ⌘S to save, then click <strong>Deploy → New deployment</strong></li>
+          <li>Type: Web app · Execute as: Me · Who has access: Anyone</li>
+          <li>Authorize, copy the Web App URL and paste it above</li>
         </ol>
         <button class="btn-export" style="margin-top:12px;width:100%" onclick="copyAppsScript()">Copy Apps Script code</button>
         <div id="copy-confirm" style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;min-height:16px"></div>
@@ -320,7 +300,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="settings-title">Change PIN</div>
         <div class="field-row">
           <div class="field"><label>New PIN</label><input type="password" id="new-pin" placeholder="4+ digits" inputmode="numeric"></div>
-          <div class="field"><label>Confirm PIN</label><input type="password" id="confirm-pin" placeholder="Repeat" inputmode="numeric"></div>
+          <div class="field"><label>Confirm</label><input type="password" id="confirm-pin" placeholder="Repeat" inputmode="numeric"></div>
         </div>
         <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
       </div>
@@ -332,14 +312,86 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <div id="admin-lock">
+      <div class="card" style="text-align:center;padding:32px 16px">
+        <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to view commission reports</div>
+        <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="admin-pin-display">&#8203;</div>
+        <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="admin-pin-error"></div>
+        <div class="pin-pad" style="margin:0 auto">
+          <button class="pin-btn" onclick="adminPinPress('1')">1</button>
+          <button class="pin-btn" onclick="adminPinPress('2')">2</button>
+          <button class="pin-btn" onclick="adminPinPress('3')">3</button>
+          <button class="pin-btn" onclick="adminPinPress('4')">4</button>
+          <button class="pin-btn" onclick="adminPinPress('5')">5</button>
+          <button class="pin-btn" onclick="adminPinPress('6')">6</button>
+          <button class="pin-btn" onclick="adminPinPress('7')">7</button>
+          <button class="pin-btn" onclick="adminPinPress('8')">8</button>
+          <button class="pin-btn" onclick="adminPinPress('9')">9</button>
+          <button class="pin-btn empty"></button>
+          <button class="pin-btn" onclick="adminPinPress('0')">0</button>
+          <button class="pin-btn del" onclick="adminPinDel()">⌫</button>
+        </div>
+      </div>
+    </div>
+    <div id="admin-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Alexx Hamilton — event commissions (4%)</div>
+        <div class="field-row" style="margin-bottom:10px">
+          <div class="field"><label>From</label><input type="date" id="admin-pay-from"></div>
+          <div class="field"><label>To</label><input type="date" id="admin-pay-to"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="btn" onclick="renderAdminReport()">View</button>
+          <button class="btn-export" onclick="exportAdminCSV()">Export CSV</button>
+          <button class="btn-danger" style="margin-left:auto" onclick="lockAdmin()">Lock</button>
+        </div>
+        <div id="admin-report-out"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
+</div>
+
+<!-- ADJUST MODAL -->
+<div id="adjust-modal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="adjust-modal-title">Adjust points</div>
+    <div class="modal-sub" id="adjust-modal-sub"></div>
+    <div class="modal-field">
+      <label>Quick select — portion of shift worked</label>
+      <div class="pct-grid">
+        <button class="pct-btn" onclick="selectPct(25)">25%</button>
+        <button class="pct-btn" onclick="selectPct(50)">50%</button>
+        <button class="pct-btn" onclick="selectPct(75)">75%</button>
+        <button class="pct-btn" onclick="selectPct(100)">100%</button>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Adjusted points (manual override)</label>
+      <input type="number" id="adjust-pts-input" placeholder="e.g. 0.50" min="0" step="0.01">
+    </div>
+    <div class="modal-field">
+      <label>Reason <span style="color:var(--red)">*</span></label>
+      <textarea id="adjust-reason" placeholder="Required — e.g. Left early at 8pm, family emergency" style="min-height:72px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeAdjustModal()">Cancel</button>
+      <button class="modal-save" onclick="saveAdjustment()">Save adjustment</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const DEFAULT_PIN='8021';
-const SHIFT_ROLES=[
+const DEFAULT_PIN = '8021';
+const ADMIN_PIN = '7817';
+
+const SHIFT_ROLES = [
   {key:'lunch_server',label:'Lunch server',pts:0.5},
   {key:'lunch_bartender',label:'Lunch bartender',pts:0.5},
   {key:'lunch_lead_server',label:'Lunch lead server',pts:0.75},
@@ -351,7 +403,7 @@ const SHIFT_ROLES=[
   {key:'host',label:'Host',pts:0.3},
   {key:'busser',label:'Busser / food runner',pts:0.2},
 ];
-const EVT_ROLES=[
+const EVT_ROLES = [
   {key:'foh_onsite',label:'FOH onsite crew',pts:1},
   {key:'evt_sales_dir',label:'Event sales director',pts:0.5},
   {key:'setup_crew',label:'Setup crew',pts:0.2},
@@ -361,29 +413,39 @@ const EVT_ROLES=[
   {key:'bev_director',label:'Beverage director',pts:0.2},
   {key:'dishwasher',label:'Dishwashers',pts:0.3},
 ];
-const ALL_ROLES=SHIFT_ROLES.concat(EVT_ROLES);
+const ALL_ROLES = SHIFT_ROLES.concat(EVT_ROLES);
 
-let pin=localStorage.getItem('sskPin')||DEFAULT_PIN;
-let roster=JSON.parse(localStorage.getItem('sskRoster')||'[]');
-let savedShifts=JSON.parse(localStorage.getItem('sskShifts')||'[]');
-let sheetsUrl=localStorage.getItem('sskSheetsUrl')||'';
-let shiftStaff=[];
-let evtStaff=[];
-let pinEntry='';
+let pin = localStorage.getItem('sskPin') || DEFAULT_PIN;
+let roster = JSON.parse(localStorage.getItem('sskRoster') || '[]');
+let savedShifts = JSON.parse(localStorage.getItem('sskShifts') || '[]');
+let sheetsUrl = localStorage.getItem('sskSheetsUrl') || '';
+let shiftStaff = [];
+let evtStaff = [];
+let pinEntry = '';
+let adminPinEntry = '';
+let adminUnlocked = false;
+let adjustTarget = null;
 
 function persist(){localStorage.setItem('sskRoster',JSON.stringify(roster));localStorage.setItem('sskShifts',JSON.stringify(savedShifts));}
 function fmt(n){return '$'+parseFloat(n||0).toFixed(2);}
 function fmtPts(n){return parseFloat(n||0).toFixed(2);}
 function getRoleLabel(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.label:k;}
 function getRolePts(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.pts:0;}
+function getEffectivePts(e){return e.isAdjusted&&e.adjustedPts!==undefined?e.adjustedPts:getRolePts(e.role);}
 
-// PIN
+function toast(msg,dur=2400){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// MAIN PIN
 function pinPress(d){
-  if(pinEntry.length>=6) return;
+  if(pinEntry.length>=6)return;
   pinEntry+=d;
   document.getElementById('pin-display').textContent='●'.repeat(pinEntry.length);
   document.getElementById('pin-error').textContent='';
-  if(pinEntry.length>=4) setTimeout(checkPin,120);
+  if(pinEntry.length>=4)setTimeout(checkPin,120);
 }
 function pinDel(){
   pinEntry=pinEntry.slice(0,-1);
@@ -413,8 +475,42 @@ function changePin(){
   if(np.length<4){toast('PIN must be at least 4 digits');return;}
   if(np!==cp){toast('PINs do not match');return;}
   pin=np;localStorage.setItem('sskPin',pin);
-  document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value='';
+  document.getElementById('new-pin').value='';
+  document.getElementById('confirm-pin').value='';
   toast('PIN updated!');
+}
+
+// ADMIN PIN
+function adminPinPress(d){
+  if(adminPinEntry.length>=6)return;
+  adminPinEntry+=d;
+  document.getElementById('admin-pin-display').textContent='●'.repeat(adminPinEntry.length);
+  document.getElementById('admin-pin-error').textContent='';
+  if(adminPinEntry.length>=4)setTimeout(checkAdminPin,120);
+}
+function adminPinDel(){
+  adminPinEntry=adminPinEntry.slice(0,-1);
+  document.getElementById('admin-pin-display').textContent=adminPinEntry.length?'●'.repeat(adminPinEntry.length):'​';
+}
+function checkAdminPin(){
+  if(adminPinEntry===ADMIN_PIN){
+    adminUnlocked=true;
+    document.getElementById('admin-lock').style.display='none';
+    document.getElementById('admin-content').style.display='block';
+    renderAdminReport();
+  } else {
+    document.getElementById('admin-pin-error').textContent='Incorrect PIN.';
+    adminPinEntry='';
+    document.getElementById('admin-pin-display').textContent='​';
+  }
+}
+function lockAdmin(){
+  adminUnlocked=false;
+  adminPinEntry='';
+  document.getElementById('admin-pin-display').textContent='​';
+  document.getElementById('admin-pin-error').textContent='';
+  document.getElementById('admin-lock').style.display='block';
+  document.getElementById('admin-content').style.display='none';
 }
 
 // TABS
@@ -427,13 +523,9 @@ function showTab(t,el){
   if(t==='roster'){renderRoster();populateSelects();}
   if(t==='payroll')renderPayroll();
   if(t==='settings'){document.getElementById('sheets-url').value=sheetsUrl;updateSyncStatus();}
+  if(t==='admin'&&!adminUnlocked){lockAdmin();}
 }
 
-function toast(msg,dur=2400){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
-}
 function updateSyncStatus(){
   const el=document.getElementById('sync-status');
   if(sheetsUrl){el.textContent='Sheets connected';el.className='sync-pill ok';}
@@ -444,20 +536,58 @@ function populateSelects(){
   const sr=document.getElementById('add-role');
   sr.innerHTML='<option value="">— select role —</option>';
   SHIFT_ROLES.forEach(r=>{sr.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
-
   const er=document.getElementById('evtadd-role');
   er.innerHTML='<option value="">— select role —</option>';
   EVT_ROLES.forEach(r=>{er.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
-
   const rr=document.getElementById('r-role');
   rr.innerHTML='<option value="">— assign role —</option>';
   ALL_ROLES.forEach(r=>{rr.innerHTML+=`<option value="${r.key}">${r.label}</option>`;});
-
   ['add-from-roster','evtadd-from-roster'].forEach(id=>{
     const s=document.getElementById(id);
     s.innerHTML='<option value="">— choose from roster —</option>';
     roster.forEach((e,i)=>{s.innerHTML+=`<option value="${i}">${e.name} — ${getRoleLabel(e.role)}</option>`;});
   });
+}
+
+// ADJUST MODAL
+function openAdjustModal(list,idx){
+  adjustTarget={list,idx};
+  const staff=list==='shift'?shiftStaff:evtStaff;
+  const emp=staff[idx];
+  const basePts=getRolePts(emp.role);
+  document.getElementById('adjust-modal-title').textContent=`Adjust points — ${emp.name}`;
+  document.getElementById('adjust-modal-sub').textContent=`Role: ${getRoleLabel(emp.role)} · Base points: ${fmtPts(basePts)}pt`;
+  document.getElementById('adjust-pts-input').value=emp.adjustedPts!==undefined?fmtPts(emp.adjustedPts):fmtPts(basePts);
+  document.getElementById('adjust-reason').value=emp.adjustReason||'';
+  document.querySelectorAll('.pct-btn').forEach(b=>b.classList.remove('selected'));
+  if(emp.adjustPct!==undefined){document.querySelectorAll('.pct-btn').forEach(b=>{if(parseInt(b.textContent)===emp.adjustPct)b.classList.add('selected');});}
+  document.getElementById('adjust-modal').style.display='flex';
+}
+function closeAdjustModal(){document.getElementById('adjust-modal').style.display='none';adjustTarget=null;}
+function selectPct(pct){
+  document.querySelectorAll('.pct-btn').forEach(b=>b.classList.remove('selected'));
+  event.target.classList.add('selected');
+  const staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
+  const basePts=getRolePts(staff[adjustTarget.idx].role);
+  document.getElementById('adjust-pts-input').value=(basePts*(pct/100)).toFixed(2);
+}
+function saveAdjustment(){
+  const reason=document.getElementById('adjust-reason').value.trim();
+  if(!reason){toast('Reason is required');return;}
+  const pts=parseFloat(document.getElementById('adjust-pts-input').value);
+  if(isNaN(pts)||pts<0){toast('Enter a valid point value');return;}
+  const staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
+  const emp=staff[adjustTarget.idx];
+  const selectedBtn=document.querySelector('.pct-btn.selected');
+  emp.adjustedPts=pts;
+  emp.adjustReason=reason;
+  emp.adjustPct=selectedBtn?parseInt(selectedBtn.textContent):null;
+  emp.isAdjusted=true;
+  const list=adjustTarget.list;
+  closeAdjustModal();
+  if(list==='shift'){renderShiftList();recalc();}
+  else{renderEvtList();recalcEvt();}
+  toast('Adjustment saved');
 }
 
 // SHIFT
@@ -476,23 +606,29 @@ function addToShift(){
 function removeShiftStaff(i){shiftStaff.splice(i,1);renderShiftList();recalc();}
 function renderShiftList(){
   const pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
   const el=document.getElementById('shift-staff-list');
   if(!shiftStaff.length){el.innerHTML='<div class="empty">No staff added yet.</div>';return;}
   el.innerHTML=shiftStaff.map((e,i)=>{
-    const pts=getRolePts(e.role);
+    const pts=getEffectivePts(e);
+    const adj=e.isAdjusted;
     return `<div class="staff-row">
-      <div class="staff-info"><div class="staff-name">${e.name}</div><div class="staff-role">${getRoleLabel(e.role)}</div></div>
-      <span class="pts-pill">${fmtPts(pts)}pt</span>
-      <span class="tip-amt">${fmt(dpp*pts)}</span>
+      <div class="staff-info">
+        <div class="staff-name">${e.name}</div>
+        <div class="staff-role">${getRoleLabel(e.role)}</div>
+        ${adj?`<div class="flag-note">⚑ ${e.adjustReason}</div>`:''}
+      </div>
+      <span class="pts-pill${adj?' adjusted':''}">${fmtPts(pts)}pt</span>
+      <span class="tip-amt${adj?' adjusted':''}">${fmt(dpp*pts)}</span>
+      <button class="edit-btn" onclick="openAdjustModal('shift',${i})">Edit pts</button>
       <button class="rm-btn" onclick="removeShiftStaff(${i})">×</button>
     </div>`;
   }).join('');
 }
 function recalc(){
   const pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
   document.getElementById('stat-pool').textContent=fmt(pool);
   document.getElementById('stat-pts').textContent=fmtPts(totalPts);
@@ -508,10 +644,11 @@ function saveShift(){
   if(!date){toast('Select a date');return;}
   if(!pool){toast('Enter tip pool amount');return;}
   if(!shiftStaff.length){toast('Add at least one staff member');return;}
-  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
   const entry={id:Date.now(),type:'shift',date,pool,totalPts,dpp,supervisor,notes,
-    staff:shiftStaff.map(e=>({...e,pts:getRolePts(e.role),tipOut:parseFloat((dpp*getRolePts(e.role)).toFixed(2))}))};
+    staff:shiftStaff.map(e=>({name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
+      tipOut:parseFloat((dpp*getEffectivePts(e)).toFixed(2)),isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null}))};
   savedShifts.push(entry);persist();
   shiftStaff=[];
   document.getElementById('tip-pool').value='';
@@ -537,23 +674,29 @@ function addToEvt(){
 function removeEvtStaff(i){evtStaff.splice(i,1);renderEvtList();recalcEvt();}
 function renderEvtList(){
   const pool=parseFloat(document.getElementById('evt-pool').value)||0;
-  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
   const el=document.getElementById('evt-staff-list');
   if(!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
   el.innerHTML=evtStaff.map((e,i)=>{
-    const pts=getRolePts(e.role);
+    const pts=getEffectivePts(e);
+    const adj=e.isAdjusted;
     return `<div class="staff-row">
-      <div class="staff-info"><div class="staff-name">${e.name}</div><div class="staff-role">${getRoleLabel(e.role)}</div></div>
-      <span class="pts-pill">${fmtPts(pts)}pt</span>
-      <span class="tip-amt">${fmt(dpp*pts)}</span>
+      <div class="staff-info">
+        <div class="staff-name">${e.name}</div>
+        <div class="staff-role">${getRoleLabel(e.role)}</div>
+        ${adj?`<div class="flag-note">⚑ ${e.adjustReason}</div>`:''}
+      </div>
+      <span class="pts-pill${adj?' adjusted':''}">${fmtPts(pts)}pt</span>
+      <span class="tip-amt${adj?' adjusted':''}">${fmt(dpp*pts)}</span>
+      <button class="edit-btn" onclick="openAdjustModal('evt',${i})">Edit pts</button>
       <button class="rm-btn" onclick="removeEvtStaff(${i})">×</button>
     </div>`;
   }).join('');
 }
 function recalcEvt(){
   const pool=parseFloat(document.getElementById('evt-pool').value)||0;
-  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
   document.getElementById('estat-pool').textContent=fmt(pool);
   document.getElementById('estat-pts').textContent=fmtPts(totalPts);
@@ -564,19 +707,22 @@ function saveEvt(){
   const date=document.getElementById('evt-date').value;
   const evtName=document.getElementById('evt-name').value.trim()||'Event';
   const pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  const eventSubtotal=parseFloat(document.getElementById('evt-subtotal').value)||0;
   const supervisor=document.getElementById('evt-supervisor').value.trim();
   const notes=document.getElementById('evt-notes').value.trim();
   if(!supervisor){toast('Enter supervisor name');return;}
   if(!date){toast('Select a date');return;}
   if(!pool){toast('Enter tip pool amount');return;}
   if(!evtStaff.length){toast('Add at least one crew member');return;}
-  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
   const dpp=totalPts>0?pool/totalPts:0;
-  const entry={id:Date.now(),type:'event',date,evtName,pool,totalPts,dpp,supervisor,notes,
-    staff:evtStaff.map(e=>({...e,pts:getRolePts(e.role),tipOut:parseFloat((dpp*getRolePts(e.role)).toFixed(2))}))};
+  const entry={id:Date.now(),type:'event',date,evtName,pool,eventSubtotal,totalPts,dpp,supervisor,notes,
+    staff:evtStaff.map(e=>({name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
+      tipOut:parseFloat((dpp*getEffectivePts(e)).toFixed(2)),isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null}))};
   savedShifts.push(entry);persist();
   evtStaff=[];
   document.getElementById('evt-pool').value='';
+  document.getElementById('evt-subtotal').value='';
   document.getElementById('evt-name').value='';
   document.getElementById('evt-notes').value='';
   renderEvtList();recalcEvt();
@@ -593,10 +739,14 @@ function renderHistory(){
     const label=s.type==='event'?`Event: ${s.evtName}`:'Shift';
     const staffRows=s.staff.map(e=>`
       <div class="hist-staff">
-        <div>${e.name} <span style="color:var(--hint);font-size:11px;margin-left:4px">${getRoleLabel(e.role)}</span></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="pts-pill" style="font-size:11px">${fmtPts(e.pts)}pt</span>
-          <span style="color:var(--green);font-weight:500;font-size:13px;min-width:52px;text-align:right">${fmt(e.tipOut)}</span>
+        <div>
+          <span>${e.name}</span>
+          <span style="color:var(--hint);font-size:11px;margin-left:4px">${getRoleLabel(e.role)}</span>
+          ${e.isAdjusted?`<div style="font-size:11px;color:var(--amber);margin-top:2px">⚑ ${e.adjustReason}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span class="pts-pill${e.isAdjusted?' adjusted':''}" style="font-size:11px">${fmtPts(e.pts)}pt${e.isAdjusted?` (base ${fmtPts(e.basePts)})`:''}</span>
+          <span style="color:${e.isAdjusted?'var(--amber)':'var(--green)'};font-weight:500;font-size:13px;min-width:52px;text-align:right">${fmt(e.tipOut)}</span>
         </div>
       </div>`).join('');
     return `<div class="hist-block">
@@ -652,25 +802,25 @@ function renderPayroll(){
   const el=document.getElementById('payroll-out');
   if(!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
   const empMap={};
-  filtered.forEach(s=>{
-    s.staff.forEach(e=>{
-      if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
-      empMap[e.name].total+=e.tipOut;
-      empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift'});
-    });
-  });
+  filtered.forEach(s=>{s.staff.forEach(e=>{
+    if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
+    empMap[e.name].total+=e.tipOut;
+    empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift',isAdjusted:e.isAdjusted});
+  });});
   const totalPool=filtered.reduce((s,e)=>s+e.pool,0);
+  const hasAdj=filtered.some(s=>s.staff.some(e=>e.isAdjusted));
   el.innerHTML=`
     <div class="stats" style="margin-bottom:14px">
       <div class="stat"><div class="slabel">Shifts</div><div class="sval">${filtered.length}</div></div>
       <div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">${fmt(totalPool)}</div></div>
       <div class="stat"><div class="slabel">Employees</div><div class="sval">${Object.keys(empMap).length}</div></div>
     </div>
+    ${hasAdj?`<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">⚑ This period includes point adjustments. See CSV for full details.</div>`:''}
     ${Object.entries(empMap).sort((a,b)=>b[1].total-a[1].total).map(([name,data])=>`
       <div class="pay-row">
         <div>
-          <div class="pay-name">${name}</div>
-          <div class="pay-detail">${data.shifts.map(s=>`${s.date} · ${s.label} · ${fmt(s.tipOut)}`).join('<br>')}</div>
+          <div class="pay-name">${name}${data.shifts.some(s=>s.isAdjusted)?' <span style="font-size:11px;color:var(--amber)">⚑</span>':''}</div>
+          <div class="pay-detail">${data.shifts.map(s=>`${s.date} · ${s.label} · ${fmt(s.tipOut)}${s.isAdjusted?' ⚑':''}`).join('<br>')}</div>
         </div>
         <div class="pay-total">${fmt(data.total)}</div>
       </div>`).join('')}`;
@@ -682,25 +832,75 @@ function exportCSV(){
   if(from)filtered=filtered.filter(s=>s.date>=from);
   if(to)filtered=filtered.filter(s=>s.date<=to);
   if(!filtered.length){toast('No data to export');return;}
-  const empMap={};
+  let csv='Employee,Date,Shift/Event,Role,Supervisor,Pts Used,Base Pts,Adjusted,Adjust Reason,Tip Out,Pool Total,Notes\n';
   filtered.forEach(s=>{
-    s.staff.forEach(e=>{
-      if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
-      empMap[e.name].total+=e.tipOut;
-      empMap[e.name].shifts.push({date:s.date,role:getRoleLabel(e.role),tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift',supervisor:s.supervisor||'',notes:s.notes||''});
-    });
+    const label=s.type==='event'?s.evtName:'Shift';
+    s.staff.forEach(e=>{csv+=`"${e.name}","${s.date}","${label}","${getRoleLabel(e.role)}","${s.supervisor||''}","${e.pts}","${e.basePts||e.pts}","${e.isAdjusted?'YES':''}","${e.adjustReason||''}","${e.tipOut.toFixed(2)}","${s.pool}","${s.notes||''}"\n`;});
   });
-  let csv='Employee,Date,Shift/Event,Role,Supervisor,Notes,Tip Out\n';
-  Object.entries(empMap).forEach(([name,data])=>{
-    data.shifts.forEach(s=>{csv+=`"${name}","${s.date}","${s.label}","${s.role}","${s.supervisor}","${s.notes}","${s.tipOut.toFixed(2)}"\n`;});
-  });
+  const empMap={};
+  filtered.forEach(s=>{s.staff.forEach(e=>{if(!empMap[e.name])empMap[e.name]=0;empMap[e.name]+=e.tipOut;});});
   csv+='\nSummary\nEmployee,Total Tips\n';
-  Object.entries(empMap).sort((a,b)=>b[1].total-a[1].total).forEach(([name,data])=>{csv+=`"${name}","${data.total.toFixed(2)}"\n`;});
+  Object.entries(empMap).sort((a,b)=>b[1]-a[1]).forEach(([name,total])=>{csv+=`"${name}","${total.toFixed(2)}"\n`;});
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;
   const range=from&&to?`${from}_to_${to}`:from||to||'all';
   a.download=`SSK_tipout_${range}.csv`;a.click();URL.revokeObjectURL(url);
+  toast('CSV exported!');
+}
+
+// ADMIN REPORT
+function renderAdminReport(){
+  const from=document.getElementById('admin-pay-from').value;
+  const to=document.getElementById('admin-pay-to').value;
+  let filtered=savedShifts.filter(s=>s.type==='event'&&s.eventSubtotal);
+  if(from)filtered=filtered.filter(s=>s.date>=from);
+  if(to)filtered=filtered.filter(s=>s.date<=to);
+  const el=document.getElementById('admin-report-out');
+  if(!filtered.length){el.innerHTML='<div class="empty">No events with subtotals in this range.</div>';return;}
+  const totalSubtotal=filtered.reduce((s,e)=>s+e.eventSubtotal,0);
+  const totalCommission=totalSubtotal*0.04;
+  el.innerHTML=`
+    <div class="stats" style="margin-bottom:14px">
+      <div class="stat"><div class="slabel">Events</div><div class="sval">${filtered.length}</div></div>
+      <div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">${fmt(totalSubtotal)}</div></div>
+      <div class="stat"><div class="slabel">Total commission</div><div class="sval" style="font-size:14px;color:var(--green)">${fmt(totalCommission)}</div></div>
+    </div>
+    <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Event breakdown</div>
+    ${filtered.sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`
+      <div class="pay-row">
+        <div>
+          <div class="pay-name">${s.evtName}</div>
+          <div class="pay-detail">${s.date}${s.supervisor?' · Sup: '+s.supervisor:''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;color:var(--muted)">${fmt(s.eventSubtotal)} subtotal</div>
+          <div class="pay-total">${fmt(s.eventSubtotal*0.04)} comm.</div>
+        </div>
+      </div>`).join('')}
+    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>
+      <div style="font-size:18px;font-weight:500;color:var(--green)">${fmt(totalCommission)}</div>
+    </div>`;
+}
+function exportAdminCSV(){
+  const from=document.getElementById('admin-pay-from').value;
+  const to=document.getElementById('admin-pay-to').value;
+  let filtered=savedShifts.filter(s=>s.type==='event'&&s.eventSubtotal);
+  if(from)filtered=filtered.filter(s=>s.date>=from);
+  if(to)filtered=filtered.filter(s=>s.date<=to);
+  if(!filtered.length){toast('No data to export');return;}
+  let csv='Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
+  filtered.sort((a,b)=>b.date.localeCompare(a.date)).forEach(s=>{
+    csv+=`"${s.date}","${s.evtName}","${s.supervisor||''}","${s.eventSubtotal.toFixed(2)}","${(s.eventSubtotal*0.04).toFixed(2)}"\n`;
+  });
+  const total=filtered.reduce((s,e)=>s+e.eventSubtotal,0);
+  csv+=`\n"TOTAL","","","${total.toFixed(2)}","${(total*0.04).toFixed(2)}"\n`;
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  const range=from&&to?`${from}_to_${to}`:from||to||'all';
+  a.download=`SSK_Alexx_commission_${range}.csv`;a.click();URL.revokeObjectURL(url);
   toast('CSV exported!');
 }
 
@@ -744,7 +944,6 @@ const APPS_SCRIPT=`function doGet(e) {
   }
   return ContentService.createTextOutput('SSK Tip Pool API');
 }
-
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
@@ -763,7 +962,7 @@ function doPost(e) {
   }
 }
 function writeHeaders(sheet) {
-  sheet.appendRow(['Date','Type','Shift/Event','Supervisor','Employee','Role','Points','Tip Out','Pool Total','Notes']);
+  sheet.appendRow(['Date','Type','Shift/Event','Supervisor','Employee','Role','Pts Used','Base Pts','Adjusted?','Adjust Reason','Tip Out','Pool Total','Event Subtotal','Notes']);
 }
 function writeEntry(ss, entry) {
   let sheet = ss.getSheetByName('Tip Log');
@@ -773,7 +972,12 @@ function writeEntry(ss, entry) {
 function writeEntryRows(sheet, entry) {
   const label = entry.type === 'event' ? entry.evtName : 'Shift';
   entry.staff.forEach(emp => {
-    sheet.appendRow([entry.date,entry.type,label,entry.supervisor||'',emp.name,emp.role,emp.pts,emp.tipOut,entry.pool,entry.notes||'']);
+    sheet.appendRow([
+      entry.date, entry.type, label, entry.supervisor||'',
+      emp.name, emp.role, emp.pts, emp.basePts||emp.pts,
+      emp.isAdjusted?'YES':'', emp.adjustReason||'',
+      emp.tipOut, entry.pool, entry.eventSubtotal||'', entry.notes||''
+    ]);
   });
 }`;
 
@@ -782,8 +986,7 @@ function copyAppsScript(){
     const ta=document.createElement('textarea');
     ta.value=APPS_SCRIPT;
     ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta);
-    ta.focus();ta.select();
+    document.body.appendChild(ta);ta.focus();ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
     const el=document.getElementById('copy-confirm');
@@ -793,9 +996,7 @@ function copyAppsScript(){
     const el=document.getElementById('copy-confirm');
     el.textContent='Select all text below and copy manually.';
     const fb=document.getElementById('script-fallback');
-    fb.value=APPS_SCRIPT;
-    fb.style.display='block';
-    fb.select();
+    fb.value=APPS_SCRIPT;fb.style.display='block';fb.select();
   }
 }
 function clearAllData(){
@@ -813,6 +1014,8 @@ function initApp(){
   const twoWeeksAgo=new Date();twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
   document.getElementById('pay-from').value=twoWeeksAgo.toISOString().split('T')[0];
   document.getElementById('pay-to').value=today;
+  document.getElementById('admin-pay-from').value=twoWeeksAgo.toISOString().split('T')[0];
+  document.getElementById('admin-pay-to').value=today;
   document.getElementById('sheets-url').value=sheetsUrl;
   populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
 }
