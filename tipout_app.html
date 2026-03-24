@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SSK Tips">
+<title>SSK Tip Pool</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f5f4f0;--surface:#fff;--border:#e0ded8;--text:#1a1a1a;--muted:#888;--hint:#bbb;--green:#1a6e45;--green-bg:#e1f5ee;--green-text:#0f6e56;--red:#a32d2d;--red-bg:#fcebeb;--amber-bg:#faeeda;--amber-text:#854f0b;--radius:12px;--radius-sm:8px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px}
+.app{max-width:640px;margin:0 auto;padding:12px 14px}
+
+/* PIN SCREEN */
+.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--bg)}
+.pin-logo{font-size:28px;font-weight:600;margin-bottom:4px;letter-spacing:-.5px}
+.pin-sub{font-size:14px;color:var(--muted);margin-bottom:40px}
+.pin-display{font-size:36px;letter-spacing:12px;font-weight:300;height:52px;margin-bottom:8px;color:var(--text)}
+.pin-error{font-size:13px;color:var(--red);height:20px;margin-bottom:16px;text-align:center}
+.pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center}
+.pin-btn{width:72px;height:72px;border-radius:50%;border:0.5px solid var(--border);background:var(--surface);font-size:22px;font-weight:400;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pin-btn:active{background:#e8e6e0;transform:scale(.95)}
+.pin-btn.del{font-size:18px;color:var(--muted)}
+.pin-btn.empty{pointer-events:none;background:transparent;border-color:transparent}
+
+/* HEADER */
+.header{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.header-left h1{font-size:16px;font-weight:600;letter-spacing:-.2px}
+.header-left .date{font-size:12px;color:var(--muted);margin-top:1px}
+.sync-pill{font-size:11px;padding:4px 10px;border-radius:20px;background:#f0eeea;color:var(--muted);white-space:nowrap}
+.sync-pill.ok{background:var(--green-bg);color:var(--green-text)}
+.sync-pill.err{background:var(--red-bg);color:var(--red)}
+.sync-pill.syncing{background:var(--amber-bg);color:var(--amber-text)}
+.logout-btn{font-size:12px;color:var(--muted);background:none;border:0.5px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 14px;border:0.5px solid var(--border);border-radius:20px;background:var(--surface);cursor:pointer;font-size:13px;color:#555;white-space:nowrap}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* CARDS */
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.card-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+
+/* FORM */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--surface);color:var(--text);font-family:inherit;appearance:none;-webkit-appearance:none}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+textarea{resize:vertical;min-height:60px;font-size:14px;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px}
+.stat .slabel{font-size:11px;color:var(--muted);margin-bottom:3px}
+.stat .sval{font-size:18px;font-weight:500}
+
+/* STAFF LIST */
+.staff-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:0.5px solid #f0eeea}
+.staff-row:last-child{border-bottom:none}
+.staff-info{flex:1;min-width:0}
+.staff-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.staff-role{font-size:11px;color:var(--muted);margin-top:1px}
+.pts-pill{background:#f0eeea;color:#555;font-size:11px;padding:3px 8px;border-radius:6px;flex-shrink:0;white-space:nowrap}
+.tip-amt{font-size:15px;font-weight:500;color:var(--green);min-width:64px;text-align:right;flex-shrink:0}
+.rm-btn{background:none;border:none;color:var(--hint);font-size:18px;padding:0 2px;cursor:pointer;flex-shrink:0;line-height:1}
+.rm-btn:active{color:#e24b4a}
+
+/* ADD STAFF */
+.add-box{background:#fafaf8;border:0.5px dashed #ccc;border-radius:10px;padding:12px;margin-top:10px}
+.add-box-title{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+
+/* BUTTONS */
+.btn{padding:10px 16px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}
+.btn:active{background:#f0eeea}
+.btn-primary{background:var(--text);color:#fff;border-color:var(--text)}
+.btn-primary:active{background:#333}
+.btn-green{background:var(--green);color:#fff;border:none;font-size:14px;font-weight:500;padding:12px 20px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;width:100%}
+.btn-green:active{background:var(--green-text)}
+.btn-export{background:var(--surface);border:0.5px solid var(--green);color:var(--green);font-size:13px;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
+.btn-export:active{background:var(--green-bg)}
+.btn-danger{background:var(--surface);border:0.5px solid #e24b4a;color:var(--red);font-size:13px;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;flex-wrap:wrap}
+
+/* HISTORY */
+.hist-block{border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.hist-head{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;background:#f8f7f4;border-bottom:0.5px solid var(--border);gap:8px}
+.hist-head-left{flex:1;min-width:0}
+.hist-title{font-size:14px;font-weight:500}
+.hist-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.hist-pool{font-size:13px;color:var(--green);font-weight:500;flex-shrink:0}
+.hist-staff{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:0.5px solid #f5f4f0;font-size:13px}
+.hist-staff:last-of-type{border-bottom:none}
+.hist-notes{padding:8px 14px;font-size:12px;color:var(--muted);font-style:italic;border-top:0.5px solid #f0eeea;background:#fafaf8}
+
+/* PAYROLL */
+.pay-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid #f5f4f0;gap:8px}
+.pay-row:last-child{border-bottom:none}
+.pay-name{font-size:14px;font-weight:500}
+.pay-detail{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+.pay-total{font-size:15px;font-weight:500;color:var(--green);flex-shrink:0}
+
+/* SETTINGS */
+.settings-section{margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid #f0eeea}
+.settings-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.settings-title{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.instructions{font-size:13px;color:#444;line-height:1.9;padding-left:18px}
+.instructions li{margin-bottom:2px}
+
+/* ROSTER */
+.roster-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:0.5px solid #f5f4f0;font-size:13px}
+.roster-row:last-child{border-bottom:none}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1}
+
+/* PAGE */
+.page{display:none}
+.page.active{display:block}
+
+.empty{color:var(--hint);font-size:13px;padding:16px 0;text-align:center}
+.supervisor-bar{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.supervisor-bar label{font-size:13px;color:var(--muted);white-space:nowrap;flex-shrink:0}
+.supervisor-bar input{flex:1;border:none;padding:0;font-size:14px;background:transparent;color:var(--text)}
+.supervisor-bar input:focus{outline:none}
+</style>
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen" class="pin-screen">
+  <div class="pin-logo">Sama Sama Kitchen</div>
+  <div class="pin-sub">Tip Pool Manager</div>
+  <div class="pin-display" id="pin-display">&#8203;</div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-pad">
+    <button class="pin-btn" onclick="pinPress('1')">1</button>
+    <button class="pin-btn" onclick="pinPress('2')">2</button>
+    <button class="pin-btn" onclick="pinPress('3')">3</button>
+    <button class="pin-btn" onclick="pinPress('4')">4</button>
+    <button class="pin-btn" onclick="pinPress('5')">5</button>
+    <button class="pin-btn" onclick="pinPress('6')">6</button>
+    <button class="pin-btn" onclick="pinPress('7')">7</button>
+    <button class="pin-btn" onclick="pinPress('8')">8</button>
+    <button class="pin-btn" onclick="pinPress('9')">9</button>
+    <button class="pin-btn empty"></button>
+    <button class="pin-btn" onclick="pinPress('0')">0</button>
+    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app" style="display:none">
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>SSK Tip Pool</h1>
+      <div class="date" id="today-label"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="sync-pill" id="sync-status">No Sheets URL</span>
+      <button class="logout-btn" onclick="logout()">Lock</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('shift',this)">Shift</button>
+    <button class="tab" onclick="showTab('events',this)">Events</button>
+    <button class="tab" onclick="showTab('history',this)">History</button>
+    <button class="tab" onclick="showTab('roster',this)">Roster</button>
+    <button class="tab" onclick="showTab('payroll',this)">Payroll</button>
+    <button class="tab" onclick="showTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- SHIFT -->
+  <div id="page-shift" class="page active">
+    <div class="supervisor-bar">
+      <label>Supervisor</label>
+      <input type="text" id="shift-supervisor" placeholder="Your name" autocomplete="name">
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="shift-date"></div>
+        <div class="field"><label>Tip pool ($)</label><input type="number" id="tip-pool" placeholder="0.00" min="0" step="0.01" oninput="recalc()"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="slabel">Pool</div><div class="sval" id="stat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Points</div><div class="sval" id="stat-pts">0.00</div></div>
+        <div class="stat"><div class="slabel">$/pt</div><div class="sval" id="stat-dpp">$0.00</div></div>
+      </div>
+      <div class="field"><label>Shift notes (optional)</label><textarea id="shift-notes" placeholder="Any notes for this shift..."></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Staff on shift</div>
+      <div id="shift-staff-list"></div>
+      <div class="add-box">
+        <div class="add-box-title">Add staff</div>
+        <div class="field"><label>From roster</label><select id="add-from-roster"></select></div>
+        <div style="text-align:center;font-size:12px;color:var(--hint);margin:8px 0">— or add manually —</div>
+        <div class="field-row">
+          <div class="field"><label>Name</label><input type="text" id="add-name" placeholder="Full name" autocomplete="off"></div>
+          <div class="field"><label>Role</label><select id="add-role"></select></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="addToShift()">Add to shift</button>
+      </div>
+    </div>
+    <button class="btn-green" onclick="saveShift()">Save shift</button>
+  </div>
+
+  <!-- EVENTS -->
+  <div id="page-events" class="page">
+    <div class="supervisor-bar">
+      <label>Supervisor</label>
+      <input type="text" id="evt-supervisor" placeholder="Your name" autocomplete="name">
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="evt-date"></div>
+        <div class="field"><label>Tip pool ($)</label><input type="number" id="evt-pool" placeholder="0.00" min="0" step="0.01" oninput="recalcEvt()"></div>
+      </div>
+      <div class="field"><label>Event name</label><input type="text" id="evt-name" placeholder="e.g. Smith wedding"></div>
+      <div class="stats">
+        <div class="stat"><div class="slabel">Pool</div><div class="sval" id="estat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Points</div><div class="sval" id="estat-pts">0.00</div></div>
+        <div class="stat"><div class="slabel">$/pt</div><div class="sval" id="estat-dpp">$0.00</div></div>
+      </div>
+      <div class="field"><label>Event notes (optional)</label><textarea id="evt-notes" placeholder="Any notes for this event..."></textarea></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Event crew</div>
+      <div id="evt-staff-list"></div>
+      <div class="add-box">
+        <div class="add-box-title">Add crew member</div>
+        <div class="field"><label>From roster</label><select id="evtadd-from-roster"></select></div>
+        <div style="text-align:center;font-size:12px;color:var(--hint);margin:8px 0">— or add manually —</div>
+        <div class="field-row">
+          <div class="field"><label>Name</label><input type="text" id="evtadd-name" placeholder="Full name" autocomplete="off"></div>
+          <div class="field"><label>Role</label><select id="evtadd-role"></select></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="addToEvt()">Add to crew</button>
+      </div>
+    </div>
+    <button class="btn-green" onclick="saveEvt()">Save event</button>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="page-history" class="page">
+    <div id="history-list"></div>
+  </div>
+
+  <!-- ROSTER -->
+  <div id="page-roster" class="page">
+    <div class="card">
+      <div class="card-title">Employee roster</div>
+      <div id="roster-list"></div>
+      <div class="add-box" style="margin-top:12px">
+        <div class="add-box-title">Add employee</div>
+        <div class="field-row">
+          <div class="field"><label>Name</label><input type="text" id="r-name" placeholder="Full name"></div>
+          <div class="field"><label>Default role</label><select id="r-role"></select></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="addRoster()">Add to roster</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYROLL -->
+  <div id="page-payroll" class="page">
+    <div class="card">
+      <div class="card-title">Payroll summary</div>
+      <div class="field-row" style="margin-bottom:10px">
+        <div class="field"><label>From</label><input type="date" id="pay-from"></div>
+        <div class="field"><label>To</label><input type="date" id="pay-to"></div>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start;margin-bottom:14px">
+        <button class="btn" onclick="renderPayroll()">View</button>
+        <button class="btn-export" onclick="exportCSV()">Export CSV</button>
+      </div>
+      <div id="payroll-out"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="page-settings" class="page">
+    <div class="card">
+      <div class="settings-section">
+        <div class="settings-title">Google Sheets sync</div>
+        <div class="field"><label>Web App URL</label><input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..."></div>
+        <div class="btn-row" style="justify-content:flex-start;flex-wrap:wrap;gap:8px">
+          <button class="btn btn-primary" onclick="saveSheetUrl()">Save URL</button>
+          <button class="btn-export" onclick="syncToSheets()">Sync all data</button>
+          <button class="btn" onclick="testConnection()">Test</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Setup instructions</div>
+        <ol class="instructions">
+          <li>Go to <strong>script.google.com</strong> → New project</li>
+          <li>Delete the default code, paste in the Apps Script code below</li>
+          <li>Click <strong>Deploy → New deployment</strong></li>
+          <li>Type: Web app · Execute as: Me · Access: Anyone</li>
+          <li>Authorize, copy the Web App URL</li>
+          <li>Paste it above and tap <strong>Save URL</strong></li>
+        </ol>
+        <button class="btn-export" style="margin-top:12px;width:100%" onclick="copyAppsScript()">Copy Apps Script code</button>
+        <div id="copy-confirm" style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;min-height:16px"></div>
+        <textarea id="script-fallback" style="display:none;margin-top:10px;width:100%;height:120px;font-size:11px;font-family:monospace;background:#f5f4f0;border:0.5px solid var(--border);border-radius:8px;padding:8px;color:var(--text);resize:vertical" readonly></textarea>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Change PIN</div>
+        <div class="field-row">
+          <div class="field"><label>New PIN</label><input type="password" id="new-pin" placeholder="4+ digits" inputmode="numeric"></div>
+          <div class="field"><label>Confirm PIN</label><input type="password" id="confirm-pin" placeholder="Repeat" inputmode="numeric"></div>
+        </div>
+        <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-title">Danger zone</div>
+        <button class="btn-danger" onclick="clearAllData()">Clear all local data</button>
+        <div style="font-size:12px;color:var(--hint);margin-top:6px">Does not affect your Google Sheet.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_PIN='8021';
+const SHIFT_ROLES=[
+  {key:'lunch_server',label:'Lunch server',pts:0.5},
+  {key:'lunch_bartender',label:'Lunch bartender',pts:0.5},
+  {key:'lunch_lead_server',label:'Lunch lead server',pts:0.75},
+  {key:'lunch_lead_bartender',label:'Lunch lead bartender',pts:0.75},
+  {key:'dinner_server',label:'Dinner server',pts:0.75},
+  {key:'dinner_bartender',label:'Dinner bartender',pts:0.75},
+  {key:'dinner_lead_server',label:'Dinner lead server',pts:1},
+  {key:'dinner_lead_bartender',label:'Dinner lead bartender',pts:1},
+  {key:'host',label:'Host',pts:0.3},
+  {key:'busser',label:'Busser / food runner',pts:0.2},
+];
+const EVT_ROLES=[
+  {key:'foh_onsite',label:'FOH onsite crew',pts:1},
+  {key:'evt_sales_dir',label:'Event sales director',pts:0.5},
+  {key:'setup_crew',label:'Setup crew',pts:0.2},
+  {key:'bar_prep',label:'Bartender prep',pts:0.3},
+  {key:'banquet_chef',label:'Banquet chef',pts:0.75},
+  {key:'catering_chef',label:'Catering chefs',pts:0.5},
+  {key:'bev_director',label:'Beverage director',pts:0.2},
+  {key:'dishwasher',label:'Dishwashers',pts:0.3},
+];
+const ALL_ROLES=SHIFT_ROLES.concat(EVT_ROLES);
+
+let pin=localStorage.getItem('sskPin')||DEFAULT_PIN;
+let roster=JSON.parse(localStorage.getItem('sskRoster')||'[]');
+let savedShifts=JSON.parse(localStorage.getItem('sskShifts')||'[]');
+let sheetsUrl=localStorage.getItem('sskSheetsUrl')||'';
+let shiftStaff=[];
+let evtStaff=[];
+let pinEntry='';
+
+function persist(){localStorage.setItem('sskRoster',JSON.stringify(roster));localStorage.setItem('sskShifts',JSON.stringify(savedShifts));}
+function fmt(n){return '$'+parseFloat(n||0).toFixed(2);}
+function fmtPts(n){return parseFloat(n||0).toFixed(2);}
+function getRoleLabel(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.label:k;}
+function getRolePts(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.pts:0;}
+
+// PIN
+function pinPress(d){
+  if(pinEntry.length>=6) return;
+  pinEntry+=d;
+  document.getElementById('pin-display').textContent='●'.repeat(pinEntry.length);
+  document.getElementById('pin-error').textContent='';
+  if(pinEntry.length>=4) setTimeout(checkPin,120);
+}
+function pinDel(){
+  pinEntry=pinEntry.slice(0,-1);
+  document.getElementById('pin-display').textContent=pinEntry.length?'●'.repeat(pinEntry.length):'​';
+}
+function checkPin(){
+  if(pinEntry===pin){
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
+    initApp();
+  } else {
+    document.getElementById('pin-error').textContent='Incorrect PIN. Try again.';
+    pinEntry='';
+    document.getElementById('pin-display').textContent='​';
+  }
+}
+function logout(){
+  pinEntry='';
+  document.getElementById('pin-display').textContent='​';
+  document.getElementById('pin-error').textContent='';
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('pin-screen').style.display='flex';
+}
+function changePin(){
+  const np=document.getElementById('new-pin').value.trim();
+  const cp=document.getElementById('confirm-pin').value.trim();
+  if(np.length<4){toast('PIN must be at least 4 digits');return;}
+  if(np!==cp){toast('PINs do not match');return;}
+  pin=np;localStorage.setItem('sskPin',pin);
+  document.getElementById('new-pin').value='';document.getElementById('confirm-pin').value='';
+  toast('PIN updated!');
+}
+
+// TABS
+function showTab(t,el){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('page-'+t).classList.add('active');
+  if(t==='history')renderHistory();
+  if(t==='roster'){renderRoster();populateSelects();}
+  if(t==='payroll')renderPayroll();
+  if(t==='settings'){document.getElementById('sheets-url').value=sheetsUrl;updateSyncStatus();}
+}
+
+function toast(msg,dur=2400){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+function updateSyncStatus(){
+  const el=document.getElementById('sync-status');
+  if(sheetsUrl){el.textContent='Sheets connected';el.className='sync-pill ok';}
+  else{el.textContent='No Sheets URL';el.className='sync-pill';}
+}
+
+function populateSelects(){
+  const sr=document.getElementById('add-role');
+  sr.innerHTML='<option value="">— select role —</option>';
+  SHIFT_ROLES.forEach(r=>{sr.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
+
+  const er=document.getElementById('evtadd-role');
+  er.innerHTML='<option value="">— select role —</option>';
+  EVT_ROLES.forEach(r=>{er.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
+
+  const rr=document.getElementById('r-role');
+  rr.innerHTML='<option value="">— assign role —</option>';
+  ALL_ROLES.forEach(r=>{rr.innerHTML+=`<option value="${r.key}">${r.label}</option>`;});
+
+  ['add-from-roster','evtadd-from-roster'].forEach(id=>{
+    const s=document.getElementById(id);
+    s.innerHTML='<option value="">— choose from roster —</option>';
+    roster.forEach((e,i)=>{s.innerHTML+=`<option value="${i}">${e.name} — ${getRoleLabel(e.role)}</option>`;});
+  });
+}
+
+// SHIFT
+function addToShift(){
+  const ri=document.getElementById('add-from-roster').value;
+  let name,role;
+  if(ri!==''){const e=roster[parseInt(ri)];name=e.name;role=e.role;}
+  else{name=document.getElementById('add-name').value.trim();role=document.getElementById('add-role').value;}
+  if(!name||!role){toast('Enter name and role');return;}
+  if(shiftStaff.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast(`${name} already on shift`);return;}
+  shiftStaff.push({name,role});
+  document.getElementById('add-name').value='';
+  document.getElementById('add-from-roster').value='';
+  renderShiftList();recalc();
+}
+function removeShiftStaff(i){shiftStaff.splice(i,1);renderShiftList();recalc();}
+function renderShiftList(){
+  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  const el=document.getElementById('shift-staff-list');
+  if(!shiftStaff.length){el.innerHTML='<div class="empty">No staff added yet.</div>';return;}
+  el.innerHTML=shiftStaff.map((e,i)=>{
+    const pts=getRolePts(e.role);
+    return `<div class="staff-row">
+      <div class="staff-info"><div class="staff-name">${e.name}</div><div class="staff-role">${getRoleLabel(e.role)}</div></div>
+      <span class="pts-pill">${fmtPts(pts)}pt</span>
+      <span class="tip-amt">${fmt(dpp*pts)}</span>
+      <button class="rm-btn" onclick="removeShiftStaff(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+function recalc(){
+  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  document.getElementById('stat-pool').textContent=fmt(pool);
+  document.getElementById('stat-pts').textContent=fmtPts(totalPts);
+  document.getElementById('stat-dpp').textContent=fmt(dpp);
+  renderShiftList();
+}
+function saveShift(){
+  const date=document.getElementById('shift-date').value;
+  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  const supervisor=document.getElementById('shift-supervisor').value.trim();
+  const notes=document.getElementById('shift-notes').value.trim();
+  if(!supervisor){toast('Enter supervisor name');return;}
+  if(!date){toast('Select a date');return;}
+  if(!pool){toast('Enter tip pool amount');return;}
+  if(!shiftStaff.length){toast('Add at least one staff member');return;}
+  const totalPts=shiftStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  const entry={id:Date.now(),type:'shift',date,pool,totalPts,dpp,supervisor,notes,
+    staff:shiftStaff.map(e=>({...e,pts:getRolePts(e.role),tipOut:parseFloat((dpp*getRolePts(e.role)).toFixed(2))}))};
+  savedShifts.push(entry);persist();
+  shiftStaff=[];
+  document.getElementById('tip-pool').value='';
+  document.getElementById('shift-notes').value='';
+  renderShiftList();recalc();
+  toast('Shift saved!');
+  if(sheetsUrl)syncEntry(entry);
+}
+
+// EVENTS
+function addToEvt(){
+  const ri=document.getElementById('evtadd-from-roster').value;
+  let name,role;
+  if(ri!==''){const e=roster[parseInt(ri)];name=e.name;role=e.role;}
+  else{name=document.getElementById('evtadd-name').value.trim();role=document.getElementById('evtadd-role').value;}
+  if(!name||!role){toast('Enter name and role');return;}
+  if(evtStaff.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast(`${name} already on crew`);return;}
+  evtStaff.push({name,role});
+  document.getElementById('evtadd-name').value='';
+  document.getElementById('evtadd-from-roster').value='';
+  renderEvtList();recalcEvt();
+}
+function removeEvtStaff(i){evtStaff.splice(i,1);renderEvtList();recalcEvt();}
+function renderEvtList(){
+  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  const el=document.getElementById('evt-staff-list');
+  if(!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
+  el.innerHTML=evtStaff.map((e,i)=>{
+    const pts=getRolePts(e.role);
+    return `<div class="staff-row">
+      <div class="staff-info"><div class="staff-name">${e.name}</div><div class="staff-role">${getRoleLabel(e.role)}</div></div>
+      <span class="pts-pill">${fmtPts(pts)}pt</span>
+      <span class="tip-amt">${fmt(dpp*pts)}</span>
+      <button class="rm-btn" onclick="removeEvtStaff(${i})">×</button>
+    </div>`;
+  }).join('');
+}
+function recalcEvt(){
+  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  document.getElementById('estat-pool').textContent=fmt(pool);
+  document.getElementById('estat-pts').textContent=fmtPts(totalPts);
+  document.getElementById('estat-dpp').textContent=fmt(dpp);
+  renderEvtList();
+}
+function saveEvt(){
+  const date=document.getElementById('evt-date').value;
+  const evtName=document.getElementById('evt-name').value.trim()||'Event';
+  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  const supervisor=document.getElementById('evt-supervisor').value.trim();
+  const notes=document.getElementById('evt-notes').value.trim();
+  if(!supervisor){toast('Enter supervisor name');return;}
+  if(!date){toast('Select a date');return;}
+  if(!pool){toast('Enter tip pool amount');return;}
+  if(!evtStaff.length){toast('Add at least one crew member');return;}
+  const totalPts=evtStaff.reduce((s,e)=>s+getRolePts(e.role),0);
+  const dpp=totalPts>0?pool/totalPts:0;
+  const entry={id:Date.now(),type:'event',date,evtName,pool,totalPts,dpp,supervisor,notes,
+    staff:evtStaff.map(e=>({...e,pts:getRolePts(e.role),tipOut:parseFloat((dpp*getRolePts(e.role)).toFixed(2))}))};
+  savedShifts.push(entry);persist();
+  evtStaff=[];
+  document.getElementById('evt-pool').value='';
+  document.getElementById('evt-name').value='';
+  document.getElementById('evt-notes').value='';
+  renderEvtList();recalcEvt();
+  toast('Event saved!');
+  if(sheetsUrl)syncEntry(entry);
+}
+
+// HISTORY
+function renderHistory(){
+  const el=document.getElementById('history-list');
+  if(!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
+  const sorted=[...savedShifts].sort((a,b)=>b.date.localeCompare(a.date));
+  el.innerHTML=sorted.map(s=>{
+    const label=s.type==='event'?`Event: ${s.evtName}`:'Shift';
+    const staffRows=s.staff.map(e=>`
+      <div class="hist-staff">
+        <div>${e.name} <span style="color:var(--hint);font-size:11px;margin-left:4px">${getRoleLabel(e.role)}</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="pts-pill" style="font-size:11px">${fmtPts(e.pts)}pt</span>
+          <span style="color:var(--green);font-weight:500;font-size:13px;min-width:52px;text-align:right">${fmt(e.tipOut)}</span>
+        </div>
+      </div>`).join('');
+    return `<div class="hist-block">
+      <div class="hist-head">
+        <div class="hist-head-left">
+          <div class="hist-title">${label}</div>
+          <div class="hist-meta">${s.date}${s.supervisor?' · Sup: '+s.supervisor:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="hist-pool">${fmt(s.pool)}</span>
+          <button class="rm-btn" style="font-size:16px" onclick="deleteShift(${s.id})">×</button>
+        </div>
+      </div>
+      ${staffRows}
+      ${s.notes?`<div class="hist-notes">${s.notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function deleteShift(id){
+  if(!confirm('Delete this entry?'))return;
+  savedShifts=savedShifts.filter(s=>s.id!==id);persist();renderHistory();
+}
+
+// ROSTER
+function renderRoster(){
+  const el=document.getElementById('roster-list');
+  if(!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
+  el.innerHTML=roster.map((e,i)=>`
+    <div class="roster-row">
+      <div style="flex:1;font-weight:500">${e.name}</div>
+      <div style="font-size:12px;color:var(--muted);flex:1">${getRoleLabel(e.role)}</div>
+      <button class="rm-btn" onclick="removeRoster(${i})">×</button>
+    </div>`).join('');
+}
+function addRoster(){
+  const name=document.getElementById('r-name').value.trim();
+  const role=document.getElementById('r-role').value;
+  if(!name||!role){toast('Enter name and role');return;}
+  if(roster.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already on roster');return;}
+  roster.push({name,role});persist();
+  document.getElementById('r-name').value='';
+  renderRoster();populateSelects();toast(`${name} added`);
+}
+function removeRoster(i){roster.splice(i,1);persist();renderRoster();populateSelects();}
+
+// PAYROLL
+function renderPayroll(){
+  const from=document.getElementById('pay-from').value;
+  const to=document.getElementById('pay-to').value;
+  let filtered=savedShifts;
+  if(from)filtered=filtered.filter(s=>s.date>=from);
+  if(to)filtered=filtered.filter(s=>s.date<=to);
+  const el=document.getElementById('payroll-out');
+  if(!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
+  const empMap={};
+  filtered.forEach(s=>{
+    s.staff.forEach(e=>{
+      if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
+      empMap[e.name].total+=e.tipOut;
+      empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift'});
+    });
+  });
+  const totalPool=filtered.reduce((s,e)=>s+e.pool,0);
+  el.innerHTML=`
+    <div class="stats" style="margin-bottom:14px">
+      <div class="stat"><div class="slabel">Shifts</div><div class="sval">${filtered.length}</div></div>
+      <div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">${fmt(totalPool)}</div></div>
+      <div class="stat"><div class="slabel">Employees</div><div class="sval">${Object.keys(empMap).length}</div></div>
+    </div>
+    ${Object.entries(empMap).sort((a,b)=>b[1].total-a[1].total).map(([name,data])=>`
+      <div class="pay-row">
+        <div>
+          <div class="pay-name">${name}</div>
+          <div class="pay-detail">${data.shifts.map(s=>`${s.date} · ${s.label} · ${fmt(s.tipOut)}`).join('<br>')}</div>
+        </div>
+        <div class="pay-total">${fmt(data.total)}</div>
+      </div>`).join('')}`;
+}
+function exportCSV(){
+  const from=document.getElementById('pay-from').value;
+  const to=document.getElementById('pay-to').value;
+  let filtered=savedShifts;
+  if(from)filtered=filtered.filter(s=>s.date>=from);
+  if(to)filtered=filtered.filter(s=>s.date<=to);
+  if(!filtered.length){toast('No data to export');return;}
+  const empMap={};
+  filtered.forEach(s=>{
+    s.staff.forEach(e=>{
+      if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
+      empMap[e.name].total+=e.tipOut;
+      empMap[e.name].shifts.push({date:s.date,role:getRoleLabel(e.role),tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift',supervisor:s.supervisor||'',notes:s.notes||''});
+    });
+  });
+  let csv='Employee,Date,Shift/Event,Role,Supervisor,Notes,Tip Out\n';
+  Object.entries(empMap).forEach(([name,data])=>{
+    data.shifts.forEach(s=>{csv+=`"${name}","${s.date}","${s.label}","${s.role}","${s.supervisor}","${s.notes}","${s.tipOut.toFixed(2)}"\n`;});
+  });
+  csv+='\nSummary\nEmployee,Total Tips\n';
+  Object.entries(empMap).sort((a,b)=>b[1].total-a[1].total).forEach(([name,data])=>{csv+=`"${name}","${data.total.toFixed(2)}"\n`;});
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  const range=from&&to?`${from}_to_${to}`:from||to||'all';
+  a.download=`SSK_tipout_${range}.csv`;a.click();URL.revokeObjectURL(url);
+  toast('CSV exported!');
+}
+
+// SHEETS
+function saveSheetUrl(){
+  sheetsUrl=document.getElementById('sheets-url').value.trim();
+  localStorage.setItem('sskSheetsUrl',sheetsUrl);
+  updateSyncStatus();toast(sheetsUrl?'URL saved!':'URL cleared');
+}
+async function syncEntry(entry){
+  if(!sheetsUrl)return;
+  const el=document.getElementById('sync-status');
+  el.textContent='Syncing...';el.className='sync-pill syncing';
+  try{
+    await fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addEntry',entry}),headers:{'Content-Type':'text/plain'}});
+    el.textContent='Sheets connected';el.className='sync-pill ok';toast('Synced to Sheets!');
+  }catch(e){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — saved locally');}
+}
+async function syncToSheets(){
+  if(!sheetsUrl){toast('No URL set');return;}
+  const el=document.getElementById('sync-status');
+  el.textContent='Syncing...';el.className='sync-pill syncing';
+  try{
+    await fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'bulkSync',shifts:savedShifts}),headers:{'Content-Type':'text/plain'}});
+    el.textContent='Sheets connected';el.className='sync-pill ok';toast('All data synced!');
+  }catch(e){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — check URL');}
+}
+async function testConnection(){
+  if(!sheetsUrl){toast('Paste a URL first');return;}
+  try{
+    const r=await fetch(sheetsUrl+'?action=ping');
+    const t=await r.text();
+    if(t.includes('ok')){toast('Connected!');updateSyncStatus();}
+    else toast('Unexpected response');
+  }catch(e){toast('Connection failed');document.getElementById('sync-status').className='sync-pill err';}
+}
+
+const APPS_SCRIPT=`function doGet(e) {
+  if (e.parameter.action === 'ping') {
+    return ContentService.createTextOutput('ok');
+  }
+  return ContentService.createTextOutput('SSK Tip Pool API');
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (data.action === 'addEntry') {
+      writeEntry(ss, data.entry);
+    } else if (data.action === 'bulkSync') {
+      const sheet = ss.getSheetByName('Tip Log') || ss.insertSheet('Tip Log');
+      sheet.clearContents();
+      writeHeaders(sheet);
+      data.shifts.forEach(entry => writeEntryRows(sheet, entry));
+    }
+    return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+function writeHeaders(sheet) {
+  sheet.appendRow(['Date','Type','Shift/Event','Supervisor','Employee','Role','Points','Tip Out','Pool Total','Notes']);
+}
+function writeEntry(ss, entry) {
+  let sheet = ss.getSheetByName('Tip Log');
+  if (!sheet) { sheet = ss.insertSheet('Tip Log'); writeHeaders(sheet); }
+  writeEntryRows(sheet, entry);
+}
+function writeEntryRows(sheet, entry) {
+  const label = entry.type === 'event' ? entry.evtName : 'Shift';
+  entry.staff.forEach(emp => {
+    sheet.appendRow([entry.date,entry.type,label,entry.supervisor||'',emp.name,emp.role,emp.pts,emp.tipOut,entry.pool,entry.notes||'']);
+  });
+}`;
+
+function copyAppsScript(){
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=APPS_SCRIPT;
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);
+    ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const el=document.getElementById('copy-confirm');
+    el.textContent='Copied to clipboard!';
+    setTimeout(()=>{el.textContent='';},2200);
+  }catch(e){
+    const el=document.getElementById('copy-confirm');
+    el.textContent='Select all text below and copy manually.';
+    const fb=document.getElementById('script-fallback');
+    fb.value=APPS_SCRIPT;
+    fb.style.display='block';
+    fb.select();
+  }
+}
+function clearAllData(){
+  if(!confirm('Clear ALL local data? Cannot be undone.'))return;
+  localStorage.removeItem('sskRoster');localStorage.removeItem('sskShifts');
+  roster=[];savedShifts=[];shiftStaff=[];evtStaff=[];
+  renderShiftList();recalc();toast('Cleared');
+}
+
+function initApp(){
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('shift-date').value=today;
+  document.getElementById('evt-date').value=today;
+  document.getElementById('today-label').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const twoWeeksAgo=new Date();twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
+  document.getElementById('pay-from').value=twoWeeksAgo.toISOString().split('T')[0];
+  document.getElementById('pay-to').value=today;
+  document.getElementById('sheets-url').value=sheetsUrl;
+  populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
+}
+</script>
+</body>
+</html>
