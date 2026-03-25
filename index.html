@@ -104,6 +104,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .settings-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .settings-title{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
 .instructions{font-size:13px;color:#444;line-height:1.9;padding-left:18px}
+.admin-lock-card{text-align:center;padding:32px 16px}
+.banner{display:none;background:var(--amber-bg);border:0.5px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.banner.show{display:flex}
 .page{display:none}
 .page.active{display:block}
 .empty{color:var(--hint);font-size:13px;padding:16px 0;text-align:center}
@@ -135,12 +138,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="pin-btn" onclick="pinPress('9')">9</button>
     <button class="pin-btn empty"></button>
     <button class="pin-btn" onclick="pinPress('0')">0</button>
-    <button class="pin-btn del" onclick="pinDel()">⌫</button>
+    <button class="pin-btn del" onclick="pinDel()">&#9003;</button>
   </div>
 </div>
 
 <div id="main-app" style="display:none">
 <div class="app">
+
   <div class="header">
     <div>
       <h1>SSK Tip Pool</h1>
@@ -152,16 +156,26 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
+  <div id="roster-banner" class="banner">
+    <span style="font-size:13px;color:var(--amber)">Refresh roster to get the latest staff list</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn" style="font-size:12px;padding:6px 12px;color:var(--amber);border-color:var(--amber-border)" onclick="dismissRosterBanner()">Dismiss</button>
+      <button class="btn-export" style="font-size:12px;padding:6px 12px" onclick="loadRosterFromCSV();dismissRosterBanner()">Refresh now</button>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" onclick="showTab('shift',this)">Shift</button>
     <button class="tab" onclick="showTab('events',this)">Events</button>
     <button class="tab" onclick="showTab('history',this)">History</button>
     <button class="tab" onclick="showTab('roster',this)">Roster</button>
+    <button class="tab" onclick="showTab('employee',this)">Employee</button>
     <button class="tab" onclick="showTab('payroll',this)">Payroll</button>
-    <button class="tab" onclick="showTab('settings',this)">Settings</button>
     <button class="tab" onclick="showTab('admin',this)">Admin</button>
+    <button class="tab" onclick="showTab('settings',this)">Settings</button>
   </div>
 
+  <!-- SHIFT -->
   <div id="page-shift" class="page active">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -170,12 +184,17 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="field-row">
         <div class="field"><label>Date</label><input type="date" id="shift-date"></div>
-        <div class="field"><label>Tip pool ($)</label><input type="number" id="tip-pool" placeholder="0.00" min="0" step="0.01" oninput="recalc()"></div>
+        <div class="field"><label>Service charge pool ($)</label><input type="number" id="tip-pool" placeholder="0.00" min="0" step="0.01" oninput="recalc()"></div>
       </div>
       <div class="stats">
-        <div class="stat"><div class="slabel">Pool</div><div class="sval" id="stat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Gross pool</div><div class="sval" id="stat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Health (2%)</div><div class="sval" id="stat-health" style="color:var(--red)">-$0.00</div></div>
+        <div class="stat"><div class="slabel">Net pool</div><div class="sval" id="stat-net">$0.00</div></div>
+      </div>
+      <div class="stats" style="margin-top:-6px">
         <div class="stat"><div class="slabel">Points</div><div class="sval" id="stat-pts">0.00</div></div>
         <div class="stat"><div class="slabel">$/pt</div><div class="sval" id="stat-dpp">$0.00</div></div>
+        <div class="stat"></div>
       </div>
       <div class="field"><label>Shift notes (optional)</label><textarea id="shift-notes" placeholder="Any notes for this shift..."></textarea></div>
     </div>
@@ -190,12 +209,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <div class="field"><label>Name</label><input type="text" id="add-name" placeholder="Full name" autocomplete="off"></div>
           <div class="field"><label>Role</label><select id="add-role"></select></div>
         </div>
+        <div class="field"><label>CC tips for this server (optional)</label><input type="number" id="add-cc-tips" placeholder="0.00" min="0" step="0.01"></div>
         <button class="btn btn-primary" style="width:100%" onclick="addToShift()">Add to shift</button>
       </div>
     </div>
     <button class="btn-green" onclick="saveShift()">Save shift</button>
   </div>
 
+  <!-- EVENTS -->
   <div id="page-events" class="page">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -204,14 +225,19 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="field-row">
         <div class="field"><label>Date</label><input type="date" id="evt-date"></div>
-        <div class="field"><label>Tip pool ($)</label><input type="number" id="evt-pool" placeholder="0.00" min="0" step="0.01" oninput="recalcEvt()"></div>
+        <div class="field"><label>Service charge pool ($)</label><input type="number" id="evt-pool" placeholder="0.00" min="0" step="0.01" oninput="recalcEvt()"></div>
       </div>
       <div class="field"><label>Event name</label><input type="text" id="evt-name" placeholder="e.g. Smith wedding"></div>
       <div class="field"><label>Event subtotal ($)</label><input type="number" id="evt-subtotal" placeholder="0.00" min="0" step="0.01"></div>
       <div class="stats">
-        <div class="stat"><div class="slabel">Pool</div><div class="sval" id="estat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Gross pool</div><div class="sval" id="estat-pool">$0.00</div></div>
+        <div class="stat"><div class="slabel">Health (2%)</div><div class="sval" id="estat-health" style="color:var(--red)">-$0.00</div></div>
+        <div class="stat"><div class="slabel">Net pool</div><div class="sval" id="estat-net">$0.00</div></div>
+      </div>
+      <div class="stats" style="margin-top:-6px">
         <div class="stat"><div class="slabel">Points</div><div class="sval" id="estat-pts">0.00</div></div>
         <div class="stat"><div class="slabel">$/pt</div><div class="sval" id="estat-dpp">$0.00</div></div>
+        <div class="stat"></div>
       </div>
       <div class="field"><label>Event notes (optional)</label><textarea id="evt-notes" placeholder="Any notes for this event..."></textarea></div>
     </div>
@@ -232,10 +258,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="btn-green" onclick="saveEvt()">Save event</button>
   </div>
 
+  <!-- HISTORY -->
   <div id="page-history" class="page">
     <div id="history-list"></div>
   </div>
 
+  <!-- ROSTER -->
   <div id="page-roster" class="page">
     <div class="card">
       <div class="card-title">Employee roster</div>
@@ -251,83 +279,87 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <div id="page-payroll" class="page">
+  <!-- EMPLOYEE REPORT -->
+  <div id="page-employee" class="page">
     <div class="card">
-      <div class="card-title">Payroll summary</div>
+      <div class="card-title">Employee report</div>
       <div class="field-row" style="margin-bottom:10px">
-        <div class="field"><label>From</label><input type="date" id="pay-from"></div>
-        <div class="field"><label>To</label><input type="date" id="pay-to"></div>
+        <div class="field"><label>Employee</label><select id="emp-report-name"><option value="">— select employee —</option></select></div>
+        <div class="field"><label>From</label><input type="date" id="emp-report-from"></div>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="btn" onclick="renderPayroll()">View</button>
-        <button class="btn-export" onclick="exportCSV()">Export CSV</button>
-      </div>
-      <div id="payroll-out"></div>
-    </div>
-  </div>
-
-  <div id="page-settings" class="page">
-    <div class="card">
-      <div class="settings-section">
-        <div class="settings-title">Google Sheets sync</div>
-        <div class="field"><label>Web App URL</label><input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..."></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="saveSheetUrl()">Save URL</button>
-          <button class="btn-export" onclick="syncToSheets()">Sync all data</button>
-          <button class="btn" onclick="testConnection()">Test</button>
+      <div class="field-row" style="margin-bottom:14px">
+        <div class="field"><label>To</label><input type="date" id="emp-report-to"></div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <button class="btn btn-primary" style="width:100%" onclick="renderEmployeeReport()">Generate</button>
         </div>
       </div>
-      <div class="settings-section">
-        <div class="settings-title">Setup instructions</div>
-        <ol class="instructions">
-          <li>Go to <strong>sheets.google.com</strong> and create a new sheet named <strong>SSK Tip Pool</strong></li>
-          <li>Click <strong>Extensions → Apps Script</strong></li>
-          <li>Delete the default code and paste in the Apps Script code below</li>
-          <li>Hit ⌘S, then click <strong>Deploy → New deployment</strong></li>
-          <li>Type: Web app · Execute as: Me · Who has access: Anyone</li>
-          <li>Authorize, copy the Web App URL and paste it above</li>
-        </ol>
-        <button class="btn-export" style="margin-top:12px;width:100%" onclick="copyAppsScript()">Copy Apps Script code</button>
-        <div id="copy-confirm" style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;min-height:16px"></div>
-        <textarea id="script-fallback" style="display:none;margin-top:10px;width:100%;height:120px;font-size:11px;font-family:monospace;background:#f5f4f0;border:0.5px solid var(--border);border-radius:8px;padding:8px;color:var(--text);resize:vertical" readonly></textarea>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Change PIN</div>
-        <div class="field-row">
-          <div class="field"><label>New PIN</label><input type="password" id="new-pin" placeholder="4+ digits" inputmode="numeric"></div>
-          <div class="field"><label>Confirm</label><input type="password" id="confirm-pin" placeholder="Repeat" inputmode="numeric"></div>
-        </div>
-        <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
-      </div>
-      <div class="settings-section">
-        <div class="settings-title">Danger zone</div>
-        <button class="btn-danger" onclick="clearAllData()">Clear all local data</button>
-        <div style="font-size:12px;color:var(--hint);margin-top:6px">Does not affect your Google Sheet.</div>
+      <div id="emp-report-out"></div>
+      <div id="emp-report-actions" style="display:none;margin-top:14px">
+        <button class="btn-export" style="width:100%" onclick="copyEmployeeReport()">Copy as text to share</button>
+        <div id="emp-copy-confirm" style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;min-height:16px"></div>
       </div>
     </div>
   </div>
 
+  <!-- PAYROLL — admin locked -->
+  <div id="page-payroll" class="page">
+    <div id="payroll-lock" class="card admin-lock-card">
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to view payroll</div>
+      <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="payroll-pin-display">&#8203;</div>
+      <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="payroll-pin-error"></div>
+      <div class="pin-pad" style="margin:0 auto">
+        <button class="pin-btn" onclick="sectionPin('payroll','1')">1</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','2')">2</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','3')">3</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','4')">4</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','5')">5</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','6')">6</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','7')">7</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','8')">8</button>
+        <button class="pin-btn" onclick="sectionPin('payroll','9')">9</button>
+        <button class="pin-btn empty"></button>
+        <button class="pin-btn" onclick="sectionPin('payroll','0')">0</button>
+        <button class="pin-btn del" onclick="sectionDel('payroll')">&#9003;</button>
+      </div>
+    </div>
+    <div id="payroll-content" style="display:none">
+      <div class="card">
+        <div class="card-title">Payroll summary</div>
+        <div class="field-row" style="margin-bottom:10px">
+          <div class="field"><label>From</label><input type="date" id="pay-from"></div>
+          <div class="field"><label>To</label><input type="date" id="pay-to"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn" onclick="renderPayroll()">View</button>
+          <button class="btn-export" onclick="exportCSV()">Export CSV</button>
+          <button class="btn-danger" style="margin-left:auto" onclick="lockSection('payroll')">Lock</button>
+        </div>
+        <div id="payroll-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
   <div id="page-admin" class="page">
-    <div id="admin-lock">
-      <div class="card" style="text-align:center;padding:32px 16px">
-        <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to view commission reports</div>
-        <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="admin-pin-display">&#8203;</div>
-        <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="admin-pin-error"></div>
-        <div class="pin-pad" style="margin:0 auto">
-          <button class="pin-btn" onclick="adminPinPress('1')">1</button>
-          <button class="pin-btn" onclick="adminPinPress('2')">2</button>
-          <button class="pin-btn" onclick="adminPinPress('3')">3</button>
-          <button class="pin-btn" onclick="adminPinPress('4')">4</button>
-          <button class="pin-btn" onclick="adminPinPress('5')">5</button>
-          <button class="pin-btn" onclick="adminPinPress('6')">6</button>
-          <button class="pin-btn" onclick="adminPinPress('7')">7</button>
-          <button class="pin-btn" onclick="adminPinPress('8')">8</button>
-          <button class="pin-btn" onclick="adminPinPress('9')">9</button>
-          <button class="pin-btn empty"></button>
-          <button class="pin-btn" onclick="adminPinPress('0')">0</button>
-          <button class="pin-btn del" onclick="adminPinDel()">⌫</button>
-        </div>
+    <div id="admin-lock" class="card admin-lock-card">
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to view commission reports</div>
+      <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="admin-pin-display">&#8203;</div>
+      <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="admin-pin-error"></div>
+      <div class="pin-pad" style="margin:0 auto">
+        <button class="pin-btn" onclick="sectionPin('admin','1')">1</button>
+        <button class="pin-btn" onclick="sectionPin('admin','2')">2</button>
+        <button class="pin-btn" onclick="sectionPin('admin','3')">3</button>
+        <button class="pin-btn" onclick="sectionPin('admin','4')">4</button>
+        <button class="pin-btn" onclick="sectionPin('admin','5')">5</button>
+        <button class="pin-btn" onclick="sectionPin('admin','6')">6</button>
+        <button class="pin-btn" onclick="sectionPin('admin','7')">7</button>
+        <button class="pin-btn" onclick="sectionPin('admin','8')">8</button>
+        <button class="pin-btn" onclick="sectionPin('admin','9')">9</button>
+        <button class="pin-btn empty"></button>
+        <button class="pin-btn" onclick="sectionPin('admin','0')">0</button>
+        <button class="pin-btn del" onclick="sectionDel('admin')">&#9003;</button>
       </div>
     </div>
     <div id="admin-content" style="display:none">
@@ -337,12 +369,97 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <div class="field"><label>From</label><input type="date" id="admin-pay-from"></div>
           <div class="field"><label>To</label><input type="date" id="admin-pay-to"></div>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:16px">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
           <button class="btn" onclick="renderAdminReport()">View</button>
           <button class="btn-export" onclick="exportAdminCSV()">Export CSV</button>
-          <button class="btn-danger" style="margin-left:auto" onclick="lockAdmin()">Lock</button>
+          <button class="btn-danger" style="margin-left:auto" onclick="lockSection('admin')">Lock</button>
         </div>
         <div id="admin-report-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS — admin locked -->
+  <div id="page-settings" class="page">
+    <div id="settings-lock" class="card admin-lock-card">
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to access settings</div>
+      <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="settings-pin-display">&#8203;</div>
+      <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="settings-pin-error"></div>
+      <div class="pin-pad" style="margin:0 auto">
+        <button class="pin-btn" onclick="sectionPin('settings','1')">1</button>
+        <button class="pin-btn" onclick="sectionPin('settings','2')">2</button>
+        <button class="pin-btn" onclick="sectionPin('settings','3')">3</button>
+        <button class="pin-btn" onclick="sectionPin('settings','4')">4</button>
+        <button class="pin-btn" onclick="sectionPin('settings','5')">5</button>
+        <button class="pin-btn" onclick="sectionPin('settings','6')">6</button>
+        <button class="pin-btn" onclick="sectionPin('settings','7')">7</button>
+        <button class="pin-btn" onclick="sectionPin('settings','8')">8</button>
+        <button class="pin-btn" onclick="sectionPin('settings','9')">9</button>
+        <button class="pin-btn empty"></button>
+        <button class="pin-btn" onclick="sectionPin('settings','0')">0</button>
+        <button class="pin-btn del" onclick="sectionDel('settings')">&#9003;</button>
+      </div>
+    </div>
+    <div id="settings-content" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+          <button class="btn-danger" onclick="lockSection('settings')">Lock settings</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Google Sheets sync</div>
+          <div class="field"><label>Web App URL</label><input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/..."></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveSheetUrl()">Save URL</button>
+            <button class="btn-export" onclick="syncToSheets()">Sync all data</button>
+            <button class="btn" onclick="testConnection()">Test</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Roster sync</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Roster tab. Any device can then load the latest roster with one tap.</p>
+          <div class="field"><label>Roster CSV URL</label><input type="text" id="roster-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveRosterCsvUrl()">Save URL</button>
+            <button class="btn-export" onclick="loadRosterFromCSV()">Load roster now</button>
+          </div>
+          <div id="roster-load-confirm" style="font-size:12px;color:var(--green);margin-top:6px;min-height:16px"></div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
+            <strong>To get this URL:</strong><br>
+            1. Open your SSK Tip Pool Google Sheet<br>
+            2. Click <strong>File → Share → Publish to web</strong><br>
+            3. Change "Entire document" to <strong>Roster</strong><br>
+            4. Change "Web page" to <strong>Comma-separated values (.csv)</strong><br>
+            5. Click <strong>Publish</strong> and copy the URL
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Apps Script setup</div>
+          <ol class="instructions">
+            <li>Go to <strong>sheets.google.com</strong> and create a sheet named <strong>SSK Tip Pool</strong></li>
+            <li>Click <strong>Extensions → Apps Script</strong></li>
+            <li>Delete the default code and paste in the Apps Script code below</li>
+            <li>Hit ⌘S, then <strong>Deploy → New deployment</strong></li>
+            <li>Web app · Execute as: Me · Who has access: Anyone</li>
+            <li>Authorize, copy Web App URL and paste above</li>
+          </ol>
+          <button class="btn-export" style="margin-top:12px;width:100%" onclick="copyAppsScript()">Copy Apps Script code</button>
+          <div id="copy-confirm" style="font-size:12px;color:var(--green);text-align:center;margin-top:6px;min-height:16px"></div>
+          <textarea id="script-fallback" style="display:none;margin-top:10px;width:100%;height:120px;font-size:11px;font-family:monospace;background:#f5f4f0;border:0.5px solid var(--border);border-radius:8px;padding:8px;color:var(--text);resize:vertical" readonly></textarea>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Change supervisor PIN</div>
+          <div class="field-row">
+            <div class="field"><label>New PIN</label><input type="password" id="new-pin" placeholder="4+ digits" inputmode="numeric"></div>
+            <div class="field"><label>Confirm</label><input type="password" id="confirm-pin" placeholder="Repeat" inputmode="numeric"></div>
+          </div>
+          <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Danger zone</div>
+          <button class="btn-danger" onclick="clearAllData()">Clear all local data</button>
+          <div style="font-size:12px;color:var(--hint);margin-top:6px">Does not affect your Google Sheet.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -369,7 +486,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div class="modal-field">
       <label>Reason <span style="color:var(--red)">*</span></label>
-      <textarea id="adjust-reason" placeholder="Required — e.g. Left early at 8pm, family emergency" style="min-height:72px"></textarea>
+      <textarea id="adjust-reason" placeholder="Required — e.g. Left early at 8pm" style="min-height:72px"></textarea>
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeAdjustModal()">Cancel</button>
@@ -381,10 +498,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="toast" id="toast"></div>
 
 <script>
-const DEFAULT_PIN = '8021';
-const ADMIN_PIN = '7817';
+var DEFAULT_PIN = '8021';
+var ADMIN_PIN = '7817';
 
-const SHIFT_ROLES = [
+var SHIFT_ROLES = [
   {key:'lunch_server',label:'Lunch server',pts:0.5},
   {key:'lunch_bartender',label:'Lunch bartender',pts:0.5},
   {key:'lunch_lead_server',label:'Lunch lead server',pts:0.75},
@@ -396,7 +513,7 @@ const SHIFT_ROLES = [
   {key:'host',label:'Host',pts:0.3},
   {key:'busser',label:'Busser / food runner',pts:0.2}
 ];
-const EVT_ROLES = [
+var EVT_ROLES = [
   {key:'foh_onsite',label:'FOH onsite crew',pts:1},
   {key:'evt_sales_dir',label:'Event sales director',pts:0.5},
   {key:'setup_crew',label:'Setup crew',pts:0.2},
@@ -406,36 +523,39 @@ const EVT_ROLES = [
   {key:'bev_director',label:'Beverage director',pts:0.2},
   {key:'dishwasher',label:'Dishwashers',pts:0.3}
 ];
-const ALL_ROLES = SHIFT_ROLES.concat(EVT_ROLES);
+var ALL_ROLES = SHIFT_ROLES.concat(EVT_ROLES);
 
-let pin = localStorage.getItem('sskPin') || DEFAULT_PIN;
-let roster = JSON.parse(localStorage.getItem('sskRoster') || '[]');
-let savedShifts = JSON.parse(localStorage.getItem('sskShifts') || '[]');
-let sheetsUrl = localStorage.getItem('sskSheetsUrl') || '';
-let shiftStaff = [];
-let evtStaff = [];
-let pinEntry = '';
-let adminPinEntry = '';
-let adminUnlocked = false;
-let adjustTarget = null;
+var pin = localStorage.getItem('sskPin') || DEFAULT_PIN;
+var roster = JSON.parse(localStorage.getItem('sskRoster') || '[]');
+var savedShifts = JSON.parse(localStorage.getItem('sskShifts') || '[]');
+var sheetsUrl = localStorage.getItem('sskSheetsUrl') || '';
+var rosterCsvUrl = localStorage.getItem('sskRosterCsvUrl') || '';
+var shiftStaff = [];
+var evtStaff = [];
+var pinEntry = '';
+var secEntries = {admin:'', payroll:'', settings:''};
+var secUnlocked = {admin:false, payroll:false, settings:false};
+var adjustTarget = null;
+var empReportText = '';
 
 function persist() {
   localStorage.setItem('sskRoster', JSON.stringify(roster));
   localStorage.setItem('sskShifts', JSON.stringify(savedShifts));
 }
-function fmt(n) { return '$' + parseFloat(n || 0).toFixed(2); }
-function fmtPts(n) { return parseFloat(n || 0).toFixed(2); }
-function getRoleLabel(k) { const r = ALL_ROLES.find(r => r.key === k); return r ? r.label : k; }
-function getRolePts(k) { const r = ALL_ROLES.find(r => r.key === k); return r ? r.pts : 0; }
+function fmt(n) { return '$' + parseFloat(n||0).toFixed(2); }
+function fmtPts(n) { return parseFloat(n||0).toFixed(2); }
+function getRoleLabel(k) { var r = ALL_ROLES.find(function(r){return r.key===k;}); return r?r.label:k; }
+function getRolePts(k) { var r = ALL_ROLES.find(function(r){return r.key===k;}); return r?r.pts:0; }
 function getEffectivePts(e) { return e.isAdjusted && e.adjustedPts !== undefined ? e.adjustedPts : getRolePts(e.role); }
 
 function toast(msg, dur) {
-  dur = dur || 2400;
+  dur = dur||2400;
   var t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, dur);
+  setTimeout(function(){ t.classList.remove('show'); }, dur);
 }
 
+// MAIN PIN
 function pinPress(d) {
   if (pinEntry.length >= 6) return;
   pinEntry += d;
@@ -444,7 +564,7 @@ function pinPress(d) {
   if (pinEntry.length >= 4) setTimeout(checkPin, 120);
 }
 function pinDel() {
-  pinEntry = pinEntry.slice(0, -1);
+  pinEntry = pinEntry.slice(0,-1);
   document.getElementById('pin-display').textContent = pinEntry.length ? '●'.repeat(pinEntry.length) : '\u200b';
 }
 function checkPin() {
@@ -462,6 +582,7 @@ function logout() {
   pinEntry = '';
   document.getElementById('pin-display').textContent = '\u200b';
   document.getElementById('pin-error').textContent = '';
+  secUnlocked = {admin:false, payroll:false, settings:false};
   document.getElementById('main-app').style.display = 'none';
   document.getElementById('pin-screen').style.display = 'flex';
 }
@@ -476,48 +597,58 @@ function changePin() {
   toast('PIN updated!');
 }
 
-function adminPinPress(d) {
-  if (adminPinEntry.length >= 6) return;
-  adminPinEntry += d;
-  document.getElementById('admin-pin-display').textContent = '●'.repeat(adminPinEntry.length);
-  document.getElementById('admin-pin-error').textContent = '';
-  if (adminPinEntry.length >= 4) setTimeout(checkAdminPin, 120);
+// SECTION PINs (admin, payroll, settings)
+function sectionPin(sec, d) {
+  if (secEntries[sec].length >= 6) return;
+  secEntries[sec] += d;
+  document.getElementById(sec+'-pin-display').textContent = '●'.repeat(secEntries[sec].length);
+  document.getElementById(sec+'-pin-error').textContent = '';
+  if (secEntries[sec].length >= 4) setTimeout(function(){ checkSectionPin(sec); }, 120);
 }
-function adminPinDel() {
-  adminPinEntry = adminPinEntry.slice(0, -1);
-  document.getElementById('admin-pin-display').textContent = adminPinEntry.length ? '●'.repeat(adminPinEntry.length) : '\u200b';
+function sectionDel(sec) {
+  secEntries[sec] = secEntries[sec].slice(0,-1);
+  document.getElementById(sec+'-pin-display').textContent = secEntries[sec].length ? '●'.repeat(secEntries[sec].length) : '\u200b';
 }
-function checkAdminPin() {
-  if (adminPinEntry === ADMIN_PIN) {
-    adminUnlocked = true;
-    document.getElementById('admin-lock').style.display = 'none';
-    document.getElementById('admin-content').style.display = 'block';
-    renderAdminReport();
+function checkSectionPin(sec) {
+  if (secEntries[sec] === ADMIN_PIN) {
+    secUnlocked[sec] = true;
+    secEntries[sec] = '';
+    document.getElementById(sec+'-lock').style.display = 'none';
+    document.getElementById(sec+'-content').style.display = 'block';
+    if (sec === 'settings') {
+      document.getElementById('sheets-url').value = sheetsUrl;
+      document.getElementById('roster-csv-url').value = rosterCsvUrl;
+      updateSyncStatus();
+    }
+    if (sec === 'payroll') renderPayroll();
+    if (sec === 'admin') renderAdminReport();
   } else {
-    document.getElementById('admin-pin-error').textContent = 'Incorrect PIN.';
-    adminPinEntry = '';
-    document.getElementById('admin-pin-display').textContent = '\u200b';
+    document.getElementById(sec+'-pin-error').textContent = 'Incorrect PIN.';
+    secEntries[sec] = '';
+    document.getElementById(sec+'-pin-display').textContent = '\u200b';
   }
 }
-function lockAdmin() {
-  adminUnlocked = false;
-  adminPinEntry = '';
-  document.getElementById('admin-pin-display').textContent = '\u200b';
-  document.getElementById('admin-pin-error').textContent = '';
-  document.getElementById('admin-lock').style.display = 'block';
-  document.getElementById('admin-content').style.display = 'none';
+function lockSection(sec) {
+  secUnlocked[sec] = false;
+  secEntries[sec] = '';
+  document.getElementById(sec+'-pin-display').textContent = '\u200b';
+  document.getElementById(sec+'-pin-error').textContent = '';
+  document.getElementById(sec+'-lock').style.display = 'block';
+  document.getElementById(sec+'-content').style.display = 'none';
 }
 
+// TABS
 function showTab(t, el) {
-  document.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
-  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   if (el) el.classList.add('active');
-  document.getElementById('page-' + t).classList.add('active');
+  document.getElementById('page-'+t).classList.add('active');
   if (t === 'history') renderHistory();
   if (t === 'roster') { renderRoster(); populateSelects(); }
-  if (t === 'payroll') renderPayroll();
-  if (t === 'settings') { document.getElementById('sheets-url').value = sheetsUrl; updateSyncStatus(); }
-  if (t === 'admin' && !adminUnlocked) lockAdmin();
+  if (t === 'employee') renderEmployeeNameList();
+  if (t === 'payroll' && !secUnlocked.payroll) lockSection('payroll');
+  if (t === 'admin' && !secUnlocked.admin) lockSection('admin');
+  if (t === 'settings' && !secUnlocked.settings) lockSection('settings');
 }
 
 function updateSyncStatus() {
@@ -526,60 +657,65 @@ function updateSyncStatus() {
   else { el.textContent = 'No Sheets URL'; el.className = 'sync-pill'; }
 }
 
+// ROSTER BANNER
+function showRosterBanner() {
+  document.getElementById('roster-banner').classList.add('show');
+}
+function dismissRosterBanner() {
+  document.getElementById('roster-banner').classList.remove('show');
+}
+
 function populateSelects() {
   var sr = document.getElementById('add-role');
   sr.innerHTML = '<option value="">— select role —</option>';
-  SHIFT_ROLES.forEach(function(r) { sr.innerHTML += '<option value="' + r.key + '">' + r.label + ' (' + fmtPts(r.pts) + 'pt)</option>'; });
-
+  SHIFT_ROLES.forEach(function(r){ sr.innerHTML += '<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>'; });
   var er = document.getElementById('evtadd-role');
   er.innerHTML = '<option value="">— select role —</option>';
-  EVT_ROLES.forEach(function(r) { er.innerHTML += '<option value="' + r.key + '">' + r.label + ' (' + fmtPts(r.pts) + 'pt)</option>'; });
-
+  EVT_ROLES.forEach(function(r){ er.innerHTML += '<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>'; });
   var rr = document.getElementById('r-role');
   rr.innerHTML = '<option value="">— assign role —</option>';
-  ALL_ROLES.forEach(function(r) { rr.innerHTML += '<option value="' + r.key + '">' + r.label + '</option>'; });
-
-  ['add-from-roster', 'evtadd-from-roster'].forEach(function(id) {
+  ALL_ROLES.forEach(function(r){ rr.innerHTML += '<option value="'+r.key+'">'+r.label+'</option>'; });
+  ['add-from-roster','evtadd-from-roster'].forEach(function(id){
     var s = document.getElementById(id);
     s.innerHTML = '<option value="">— choose from roster —</option>';
-    roster.forEach(function(e, i) { s.innerHTML += '<option value="' + i + '">' + e.name + ' — ' + getRoleLabel(e.role) + '</option>'; });
+    roster.forEach(function(e,i){ s.innerHTML += '<option value="'+i+'">'+e.name+' — '+getRoleLabel(e.role)+'</option>'; });
   });
 }
 
+// ADJUST MODAL
 function openAdjustModal(list, idx) {
-  adjustTarget = {list: list, idx: idx};
+  adjustTarget = {list:list, idx:idx};
   var staff = list === 'shift' ? shiftStaff : evtStaff;
   var emp = staff[idx];
   var basePts = getRolePts(emp.role);
   document.getElementById('adjust-modal-title').textContent = 'Adjust points — ' + emp.name;
-  document.getElementById('adjust-modal-sub').textContent = 'Role: ' + getRoleLabel(emp.role) + ' · Base points: ' + fmtPts(basePts) + 'pt';
+  document.getElementById('adjust-modal-sub').textContent = 'Role: '+getRoleLabel(emp.role)+' · Base: '+fmtPts(basePts)+'pt';
   document.getElementById('adjust-pts-input').value = emp.adjustedPts !== undefined ? fmtPts(emp.adjustedPts) : fmtPts(basePts);
   document.getElementById('adjust-reason').value = emp.adjustReason || '';
-  document.querySelectorAll('.pct-btn').forEach(function(b) { b.classList.remove('selected'); });
+  document.querySelectorAll('.pct-btn').forEach(function(b){ b.classList.remove('selected'); });
   if (emp.adjustPct !== undefined) {
-    document.querySelectorAll('.pct-btn').forEach(function(b) { if (parseInt(b.textContent) === emp.adjustPct) b.classList.add('selected'); });
+    document.querySelectorAll('.pct-btn').forEach(function(b){ if (parseInt(b.textContent) === emp.adjustPct) b.classList.add('selected'); });
   }
   document.getElementById('adjust-modal').style.display = 'flex';
 }
 function closeAdjustModal() { document.getElementById('adjust-modal').style.display = 'none'; adjustTarget = null; }
 function selectPct(pct) {
-  document.querySelectorAll('.pct-btn').forEach(function(b) { b.classList.remove('selected'); });
+  document.querySelectorAll('.pct-btn').forEach(function(b){ b.classList.remove('selected'); });
   event.target.classList.add('selected');
   var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
   var basePts = getRolePts(staff[adjustTarget.idx].role);
-  document.getElementById('adjust-pts-input').value = (basePts * (pct / 100)).toFixed(2);
+  document.getElementById('adjust-pts-input').value = (basePts*(pct/100)).toFixed(2);
 }
 function saveAdjustment() {
   var reason = document.getElementById('adjust-reason').value.trim();
   if (!reason) { toast('Reason is required'); return; }
   var pts = parseFloat(document.getElementById('adjust-pts-input').value);
-  if (isNaN(pts) || pts < 0) { toast('Enter a valid point value'); return; }
+  if (isNaN(pts)||pts<0) { toast('Enter a valid point value'); return; }
   var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
   var emp = staff[adjustTarget.idx];
-  var selectedBtn = document.querySelector('.pct-btn.selected');
-  emp.adjustedPts = pts;
-  emp.adjustReason = reason;
-  emp.adjustPct = selectedBtn ? parseInt(selectedBtn.textContent) : null;
+  var btn = document.querySelector('.pct-btn.selected');
+  emp.adjustedPts = pts; emp.adjustReason = reason;
+  emp.adjustPct = btn ? parseInt(btn.textContent) : null;
   emp.isAdjusted = true;
   var list = adjustTarget.list;
   closeAdjustModal();
@@ -588,415 +724,527 @@ function saveAdjustment() {
   toast('Adjustment saved');
 }
 
+// SHIFT
 function addToShift() {
   var ri = document.getElementById('add-from-roster').value;
   var name, role;
-  if (ri !== '') { var e = roster[parseInt(ri)]; name = e.name; role = e.role; }
-  else { name = document.getElementById('add-name').value.trim(); role = document.getElementById('add-role').value; }
-  if (!name || !role) { toast('Enter name and role'); return; }
-  if (shiftStaff.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast(name + ' already on shift'); return; }
-  shiftStaff.push({name: name, role: role});
-  document.getElementById('add-name').value = '';
-  document.getElementById('add-from-roster').value = '';
+  if (ri !== '') { var e = roster[parseInt(ri)]; name=e.name; role=e.role; }
+  else { name=document.getElementById('add-name').value.trim(); role=document.getElementById('add-role').value; }
+  if (!name||!role) { toast('Enter name and role'); return; }
+  if (shiftStaff.find(function(e){ return e.name.toLowerCase()===name.toLowerCase(); })) { toast(name+' already on shift'); return; }
+  var cc = parseFloat(document.getElementById('add-cc-tips').value)||0;
+  shiftStaff.push({name:name, role:role, ccTips:cc});
+  document.getElementById('add-name').value='';
+  document.getElementById('add-from-roster').value='';
+  document.getElementById('add-cc-tips').value='';
   renderShiftList(); recalc();
 }
-function removeShiftStaff(i) { shiftStaff.splice(i, 1); renderShiftList(); recalc(); }
-function renderShiftList() {
-  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
-  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
+function removeShiftStaff(i) { shiftStaff.splice(i,1); renderShiftList(); recalc(); }
+function renderShiftList(net) {
+  var pool = parseFloat(document.getElementById('tip-pool').value)||0;
+  var health = pool*0.02;
+  if (net===undefined) net=pool-health;
+  var totalPts = shiftStaff.reduce(function(s,e){ return s+getEffectivePts(e); },0);
+  var dpp = totalPts>0 ? net/totalPts : 0;
   var el = document.getElementById('shift-staff-list');
-  if (!shiftStaff.length) { el.innerHTML = '<div class="empty">No staff added yet.</div>'; return; }
-  el.innerHTML = shiftStaff.map(function(e, i) {
-    var pts = getEffectivePts(e);
-    var adj = e.isAdjusted;
-    return '<div class="staff-row">' +
-      '<div class="staff-info">' +
-        '<div class="staff-name">' + e.name + '</div>' +
-        '<div class="staff-role">' + getRoleLabel(e.role) + '</div>' +
-        (adj ? '<div class="flag-note">&#9873; ' + e.adjustReason + '</div>' : '') +
-      '</div>' +
-      '<span class="pts-pill' + (adj ? ' adjusted' : '') + '">' + fmtPts(pts) + 'pt</span>' +
-      '<span class="tip-amt' + (adj ? ' adjusted' : '') + '">' + fmt(dpp * pts) + '</span>' +
-      '<button class="edit-btn" onclick="openAdjustModal(\'shift\',' + i + ')">Edit pts</button>' +
-      '<button class="rm-btn" onclick="removeShiftStaff(' + i + ')">×</button>' +
+  if (!shiftStaff.length) { el.innerHTML='<div class="empty">No staff added yet.</div>'; return; }
+  el.innerHTML = shiftStaff.map(function(e,i){
+    var pts=getEffectivePts(e); var adj=e.isAdjusted; var poolPay=dpp*pts; var cc=e.ccTips||0;
+    return '<div class="staff-row">'+
+      '<div class="staff-info">'+
+        '<div class="staff-name">'+e.name+'</div>'+
+        '<div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
+        (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
+        (cc>0?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Pool: '+fmt(poolPay)+' + CC: '+fmt(cc)+'</div>':'')+
+      '</div>'+
+      '<span class="pts-pill'+(adj?' adjusted':'')+'">'+fmtPts(pts)+'pt</span>'+
+      '<span class="tip-amt'+(adj?' adjusted':'')+'" style="min-width:80px">'+fmt(poolPay+cc)+'</span>'+
+      '<button class="edit-btn" onclick="openAdjustModal(\'shift\','+i+')">Edit pts</button>'+
+      '<button class="rm-btn" onclick="removeShiftStaff('+i+')">×</button>'+
     '</div>';
   }).join('');
 }
 function recalc() {
-  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
-  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
-  document.getElementById('stat-pool').textContent = fmt(pool);
-  document.getElementById('stat-pts').textContent = fmtPts(totalPts);
-  document.getElementById('stat-dpp').textContent = fmt(dpp);
-  renderShiftList();
+  var pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  var health=pool*0.02; var net=pool-health;
+  var totalPts=shiftStaff.reduce(function(s,e){ return s+getEffectivePts(e); },0);
+  var dpp=totalPts>0?net/totalPts:0;
+  document.getElementById('stat-pool').textContent=fmt(pool);
+  document.getElementById('stat-health').textContent='-'+fmt(health);
+  document.getElementById('stat-net').textContent=fmt(net);
+  document.getElementById('stat-pts').textContent=fmtPts(totalPts);
+  document.getElementById('stat-dpp').textContent=fmt(dpp);
+  renderShiftList(net);
 }
 function saveShift() {
-  var date = document.getElementById('shift-date').value;
-  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
-  var supervisor = document.getElementById('shift-supervisor').value.trim();
-  var notes = document.getElementById('shift-notes').value.trim();
-  if (!supervisor) { toast('Enter supervisor name'); return; }
-  if (!date) { toast('Select a date'); return; }
-  if (!pool) { toast('Enter tip pool amount'); return; }
-  if (!shiftStaff.length) { toast('Add at least one staff member'); return; }
-  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
-  var entry = {
-    id: Date.now(), type: 'shift', date: date, pool: pool,
-    totalPts: totalPts, dpp: dpp, supervisor: supervisor, notes: notes,
-    staff: shiftStaff.map(function(e) {
-      return {name: e.name, role: e.role, pts: getEffectivePts(e), basePts: getRolePts(e.role),
-        tipOut: parseFloat((dpp * getEffectivePts(e)).toFixed(2)),
-        isAdjusted: e.isAdjusted || false, adjustReason: e.adjustReason || '', adjustPct: e.adjustPct || null};
-    })
-  };
+  var date=document.getElementById('shift-date').value;
+  var pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  var supervisor=document.getElementById('shift-supervisor').value.trim();
+  var notes=document.getElementById('shift-notes').value.trim();
+  if (!supervisor){toast('Enter supervisor name');return;}
+  if (!date){toast('Select a date');return;}
+  if (!pool){toast('Enter service charge pool amount');return;}
+  if (!shiftStaff.length){toast('Add at least one staff member');return;}
+  var health=parseFloat((pool*0.02).toFixed(2));
+  var net=parseFloat((pool-health).toFixed(2));
+  var totalPts=shiftStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
+  var dpp=totalPts>0?net/totalPts:0;
+  var entry={id:Date.now(),type:'shift',date:date,pool:pool,healthDeduction:health,netPool:net,
+    totalPts:totalPts,dpp:dpp,supervisor:supervisor,notes:notes,
+    staff:shiftStaff.map(function(e){
+      var poolPay=parseFloat((dpp*getEffectivePts(e)).toFixed(2)); var cc=e.ccTips||0;
+      return {name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
+        tipOut:poolPay,ccTips:cc,totalPayout:parseFloat((poolPay+cc).toFixed(2)),
+        isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null};
+    })};
   savedShifts.push(entry); persist();
-  shiftStaff = [];
-  document.getElementById('tip-pool').value = '';
-  document.getElementById('shift-notes').value = '';
+  shiftStaff=[];
+  document.getElementById('tip-pool').value='';
+  document.getElementById('shift-notes').value='';
   renderShiftList(); recalc();
   toast('Shift saved!');
   if (sheetsUrl) syncEntry(entry);
 }
 
+// EVENTS
 function addToEvt() {
-  var ri = document.getElementById('evtadd-from-roster').value;
-  var name, role;
-  if (ri !== '') { var e = roster[parseInt(ri)]; name = e.name; role = e.role; }
-  else { name = document.getElementById('evtadd-name').value.trim(); role = document.getElementById('evtadd-role').value; }
-  if (!name || !role) { toast('Enter name and role'); return; }
-  if (evtStaff.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast(name + ' already on crew'); return; }
-  evtStaff.push({name: name, role: role});
-  document.getElementById('evtadd-name').value = '';
-  document.getElementById('evtadd-from-roster').value = '';
+  var ri=document.getElementById('evtadd-from-roster').value;
+  var name,role;
+  if (ri!==''){var e=roster[parseInt(ri)];name=e.name;role=e.role;}
+  else{name=document.getElementById('evtadd-name').value.trim();role=document.getElementById('evtadd-role').value;}
+  if (!name||!role){toast('Enter name and role');return;}
+  if (evtStaff.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast(name+' already on crew');return;}
+  evtStaff.push({name:name,role:role});
+  document.getElementById('evtadd-name').value='';
+  document.getElementById('evtadd-from-roster').value='';
   renderEvtList(); recalcEvt();
 }
-function removeEvtStaff(i) { evtStaff.splice(i, 1); renderEvtList(); recalcEvt(); }
-function renderEvtList() {
-  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
-  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
-  var el = document.getElementById('evt-staff-list');
-  if (!evtStaff.length) { el.innerHTML = '<div class="empty">No crew added yet.</div>'; return; }
-  el.innerHTML = evtStaff.map(function(e, i) {
-    var pts = getEffectivePts(e);
-    var adj = e.isAdjusted;
-    return '<div class="staff-row">' +
-      '<div class="staff-info">' +
-        '<div class="staff-name">' + e.name + '</div>' +
-        '<div class="staff-role">' + getRoleLabel(e.role) + '</div>' +
-        (adj ? '<div class="flag-note">&#9873; ' + e.adjustReason + '</div>' : '') +
-      '</div>' +
-      '<span class="pts-pill' + (adj ? ' adjusted' : '') + '">' + fmtPts(pts) + 'pt</span>' +
-      '<span class="tip-amt' + (adj ? ' adjusted' : '') + '">' + fmt(dpp * pts) + '</span>' +
-      '<button class="edit-btn" onclick="openAdjustModal(\'evt\',' + i + ')">Edit pts</button>' +
-      '<button class="rm-btn" onclick="removeEvtStaff(' + i + ')">×</button>' +
+function removeEvtStaff(i){evtStaff.splice(i,1);renderEvtList();recalcEvt();}
+function renderEvtList(net){
+  var pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  var health=pool*0.02;
+  if (net===undefined) net=pool-health;
+  var totalPts=evtStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
+  var dpp=totalPts>0?net/totalPts:0;
+  var el=document.getElementById('evt-staff-list');
+  if (!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
+  el.innerHTML=evtStaff.map(function(e,i){
+    var pts=getEffectivePts(e);var adj=e.isAdjusted;
+    return '<div class="staff-row">'+
+      '<div class="staff-info">'+
+        '<div class="staff-name">'+e.name+'</div>'+
+        '<div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
+        (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
+      '</div>'+
+      '<span class="pts-pill'+(adj?' adjusted':'')+'">'+fmtPts(pts)+'pt</span>'+
+      '<span class="tip-amt'+(adj?' adjusted':'')+'">'+fmt(dpp*pts)+'</span>'+
+      '<button class="edit-btn" onclick="openAdjustModal(\'evt\','+i+')">Edit pts</button>'+
+      '<button class="rm-btn" onclick="removeEvtStaff('+i+')">×</button>'+
     '</div>';
   }).join('');
 }
-function recalcEvt() {
-  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
-  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
-  document.getElementById('estat-pool').textContent = fmt(pool);
-  document.getElementById('estat-pts').textContent = fmtPts(totalPts);
-  document.getElementById('estat-dpp').textContent = fmt(dpp);
-  renderEvtList();
+function recalcEvt(){
+  var pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  var health=pool*0.02;var net=pool-health;
+  var totalPts=evtStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
+  var dpp=totalPts>0?net/totalPts:0;
+  document.getElementById('estat-pool').textContent=fmt(pool);
+  document.getElementById('estat-health').textContent='-'+fmt(health);
+  document.getElementById('estat-net').textContent=fmt(net);
+  document.getElementById('estat-pts').textContent=fmtPts(totalPts);
+  document.getElementById('estat-dpp').textContent=fmt(dpp);
+  renderEvtList(net);
 }
-function saveEvt() {
-  var date = document.getElementById('evt-date').value;
-  var evtName = document.getElementById('evt-name').value.trim() || 'Event';
-  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
-  var eventSubtotal = parseFloat(document.getElementById('evt-subtotal').value) || 0;
-  var supervisor = document.getElementById('evt-supervisor').value.trim();
-  var notes = document.getElementById('evt-notes').value.trim();
-  if (!supervisor) { toast('Enter supervisor name'); return; }
-  if (!date) { toast('Select a date'); return; }
-  if (!pool) { toast('Enter tip pool amount'); return; }
-  if (!evtStaff.length) { toast('Add at least one crew member'); return; }
-  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
-  var dpp = totalPts > 0 ? pool / totalPts : 0;
-  var entry = {
-    id: Date.now(), type: 'event', date: date, evtName: evtName,
-    pool: pool, eventSubtotal: eventSubtotal, totalPts: totalPts, dpp: dpp,
-    supervisor: supervisor, notes: notes,
-    staff: evtStaff.map(function(e) {
-      return {name: e.name, role: e.role, pts: getEffectivePts(e), basePts: getRolePts(e.role),
-        tipOut: parseFloat((dpp * getEffectivePts(e)).toFixed(2)),
-        isAdjusted: e.isAdjusted || false, adjustReason: e.adjustReason || '', adjustPct: e.adjustPct || null};
-    })
-  };
-  savedShifts.push(entry); persist();
-  evtStaff = [];
-  document.getElementById('evt-pool').value = '';
-  document.getElementById('evt-subtotal').value = '';
-  document.getElementById('evt-name').value = '';
-  document.getElementById('evt-notes').value = '';
-  renderEvtList(); recalcEvt();
+function saveEvt(){
+  var date=document.getElementById('evt-date').value;
+  var evtName=document.getElementById('evt-name').value.trim()||'Event';
+  var pool=parseFloat(document.getElementById('evt-pool').value)||0;
+  var eventSubtotal=parseFloat(document.getElementById('evt-subtotal').value)||0;
+  var supervisor=document.getElementById('evt-supervisor').value.trim();
+  var notes=document.getElementById('evt-notes').value.trim();
+  if (!supervisor){toast('Enter supervisor name');return;}
+  if (!date){toast('Select a date');return;}
+  if (!pool){toast('Enter service charge pool amount');return;}
+  if (!evtStaff.length){toast('Add at least one crew member');return;}
+  var health=parseFloat((pool*0.02).toFixed(2));
+  var net=parseFloat((pool-health).toFixed(2));
+  var totalPts=evtStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
+  var dpp=totalPts>0?net/totalPts:0;
+  var entry={id:Date.now(),type:'event',date:date,evtName:evtName,pool:pool,
+    healthDeduction:health,netPool:net,eventSubtotal:eventSubtotal,
+    totalPts:totalPts,dpp:dpp,supervisor:supervisor,notes:notes,
+    staff:evtStaff.map(function(e){
+      return {name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
+        tipOut:parseFloat((dpp*getEffectivePts(e)).toFixed(2)),
+        isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null};
+    })};
+  savedShifts.push(entry);persist();
+  evtStaff=[];
+  document.getElementById('evt-pool').value='';
+  document.getElementById('evt-subtotal').value='';
+  document.getElementById('evt-name').value='';
+  document.getElementById('evt-notes').value='';
+  renderEvtList();recalcEvt();
   toast('Event saved!');
   if (sheetsUrl) syncEntry(entry);
 }
 
-function renderHistory() {
-  var el = document.getElementById('history-list');
-  if (!savedShifts.length) { el.innerHTML = '<div class="card"><div class="empty">No saved shifts yet.</div></div>'; return; }
-  var sorted = savedShifts.slice().sort(function(a, b) { return b.date.localeCompare(a.date); });
-  el.innerHTML = sorted.map(function(s) {
-    var label = s.type === 'event' ? 'Event: ' + s.evtName : 'Shift';
-    var staffRows = s.staff.map(function(e) {
-      return '<div class="hist-staff">' +
-        '<div><span>' + e.name + '</span>' +
-        '<span style="color:var(--hint);font-size:11px;margin-left:4px">' + getRoleLabel(e.role) + '</span>' +
-        (e.isAdjusted ? '<div style="font-size:11px;color:var(--amber);margin-top:2px">&#9873; ' + e.adjustReason + '</div>' : '') +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
-        '<span class="pts-pill' + (e.isAdjusted ? ' adjusted' : '') + '" style="font-size:11px">' + fmtPts(e.pts) + 'pt' + (e.isAdjusted ? ' (base ' + fmtPts(e.basePts) + ')' : '') + '</span>' +
-        '<span style="color:' + (e.isAdjusted ? 'var(--amber)' : 'var(--green)') + ';font-weight:500;font-size:13px;min-width:52px;text-align:right">' + fmt(e.tipOut) + '</span>' +
+// HISTORY
+function renderHistory(){
+  var el=document.getElementById('history-list');
+  if (!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
+  var sorted=savedShifts.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  el.innerHTML=sorted.map(function(s){
+    var label=s.type==='event'?'Event: '+s.evtName:'Shift';
+    var staffRows=s.staff.map(function(e){
+      return '<div class="hist-staff">'+
+        '<div><span>'+e.name+'</span>'+
+        '<span style="color:var(--hint);font-size:11px;margin-left:4px">'+getRoleLabel(e.role)+'</span>'+
+        (e.isAdjusted?'<div style="font-size:11px;color:var(--amber);margin-top:2px">&#9873; '+e.adjustReason+'</div>':'')+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+
+        '<span class="pts-pill'+(e.isAdjusted?' adjusted':'')+'" style="font-size:11px">'+fmtPts(e.pts)+'pt'+(e.isAdjusted?' (base '+fmtPts(e.basePts)+'pt)':'')+'</span>'+
+        '<span style="color:'+(e.isAdjusted?'var(--amber)':'var(--green)')+';font-weight:500;font-size:13px;min-width:60px;text-align:right">'+fmt(e.totalPayout||e.tipOut)+'</span>'+
         '</div></div>';
     }).join('');
-    return '<div class="hist-block">' +
-      '<div class="hist-head">' +
-        '<div class="hist-head-left">' +
-          '<div class="hist-title">' + label + '</div>' +
-          '<div class="hist-meta">' + s.date + (s.supervisor ? ' · Sup: ' + s.supervisor : '') + '</div>' +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:10px">' +
-          '<span class="hist-pool">' + fmt(s.pool) + '</span>' +
-          '<button class="rm-btn" style="font-size:16px" onclick="deleteShift(' + s.id + ')">×</button>' +
-        '</div>' +
-      '</div>' +
-      staffRows +
-      (s.notes ? '<div class="hist-notes">' + s.notes + '</div>' : '') +
+    return '<div class="hist-block">'+
+      '<div class="hist-head">'+
+        '<div class="hist-head-left">'+
+          '<div class="hist-title">'+label+'</div>'+
+          '<div class="hist-meta">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+' · Health: -'+fmt(s.healthDeduction||0)+' · Net: '+fmt(s.netPool||s.pool)+'</div>'+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:10px">'+
+          '<span class="hist-pool">'+fmt(s.pool)+'</span>'+
+          '<button class="rm-btn" style="font-size:16px" onclick="deleteShift('+s.id+')">×</button>'+
+        '</div>'+
+      '</div>'+staffRows+
+      (s.notes?'<div class="hist-notes">'+s.notes+'</div>':'')+
     '</div>';
   }).join('');
 }
-function deleteShift(id) {
+function deleteShift(id){
   if (!confirm('Delete this entry?')) return;
-  savedShifts = savedShifts.filter(function(s) { return s.id !== id; });
-  persist(); renderHistory();
+  savedShifts=savedShifts.filter(function(s){return s.id!==id;});
+  persist();renderHistory();
 }
 
-function renderRoster() {
-  var el = document.getElementById('roster-list');
-  if (!roster.length) { el.innerHTML = '<div class="empty">No employees yet.</div>'; return; }
-  el.innerHTML = roster.map(function(e, i) {
-    return '<div class="roster-row">' +
-      '<div style="flex:1;font-weight:500">' + e.name + '</div>' +
-      '<div style="font-size:12px;color:var(--muted);flex:1">' + getRoleLabel(e.role) + '</div>' +
-      '<button class="rm-btn" onclick="removeRoster(' + i + ')">×</button>' +
+// ROSTER
+function renderRoster(){
+  var el=document.getElementById('roster-list');
+  if (!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
+  el.innerHTML=roster.map(function(e,i){
+    return '<div class="roster-row">'+
+      '<div style="flex:1;font-weight:500">'+e.name+'</div>'+
+      '<div style="font-size:12px;color:var(--muted);flex:1">'+getRoleLabel(e.role)+'</div>'+
+      '<button class="rm-btn" onclick="removeRoster('+i+')">×</button>'+
     '</div>';
   }).join('');
 }
-function addRoster() {
-  var name = document.getElementById('r-name').value.trim();
-  var role = document.getElementById('r-role').value;
-  if (!name || !role) { toast('Enter name and role'); return; }
-  if (roster.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast('Already on roster'); return; }
-  roster.push({name: name, role: role}); persist();
-  document.getElementById('r-name').value = '';
-  renderRoster(); populateSelects();
+function addRoster(){
+  var name=document.getElementById('r-name').value.trim();
+  var role=document.getElementById('r-role').value;
+  if (!name||!role){toast('Enter name and role');return;}
+  if (roster.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast('Already on roster');return;}
+  roster.push({name:name,role:role});persist();
+  document.getElementById('r-name').value='';
+  renderRoster();populateSelects();
   syncRoster();
-  toast(name + ' added');
+  toast(name+' added');
 }
-function removeRoster(i) { roster.splice(i, 1); persist(); renderRoster(); populateSelects(); syncRoster(); }
+function removeRoster(i){roster.splice(i,1);persist();renderRoster();populateSelects();syncRoster();}
 
-function renderPayroll() {
-  var from = document.getElementById('pay-from').value;
-  var to = document.getElementById('pay-to').value;
-  var filtered = savedShifts.filter(function(s) {
-    return (!from || s.date >= from) && (!to || s.date <= to);
-  });
-  var el = document.getElementById('payroll-out');
-  if (!filtered.length) { el.innerHTML = '<div class="empty">No shifts in this range.</div>'; return; }
-  var empMap = {};
-  filtered.forEach(function(s) {
-    s.staff.forEach(function(e) {
-      if (!empMap[e.name]) empMap[e.name] = {total: 0, shifts: []};
-      empMap[e.name].total += e.tipOut;
-      empMap[e.name].shifts.push({date: s.date, tipOut: e.tipOut, label: s.type === 'event' ? s.evtName : 'Shift', isAdjusted: e.isAdjusted});
+// ROSTER CSV
+function saveRosterCsvUrl(){
+  rosterCsvUrl=document.getElementById('roster-csv-url').value.trim();
+  localStorage.setItem('sskRosterCsvUrl',rosterCsvUrl);
+  toast(rosterCsvUrl?'Roster URL saved!':'URL cleared');
+}
+function loadRosterFromCSV(){
+  if (!rosterCsvUrl){toast('Paste a Roster CSV URL in Settings first');return;}
+  var el=document.getElementById('roster-load-confirm');
+  if (el) el.textContent='Loading...';
+  fetch(rosterCsvUrl)
+    .then(function(r){return r.text();})
+    .then(function(csv){
+      var lines=csv.trim().split('\n');
+      var newRoster=[];
+      for (var i=1;i<lines.length;i++){
+        var cols=lines[i].split(',');
+        var name=cols[0]?cols[0].replace(/^"|"$/g,'').trim():'';
+        var role=cols[1]?cols[1].replace(/^"|"$/g,'').trim():'';
+        if (name&&role) newRoster.push({name:name,role:role});
+      }
+      if (!newRoster.length){if(el)el.textContent='No roster data found.';return;}
+      roster=newRoster;persist();populateSelects();renderRoster();
+      if (el) el.textContent='Roster loaded — '+newRoster.length+' employees.';
+      setTimeout(function(){if(el)el.textContent='';},3000);
+      toast('Roster refreshed!');
+    })
+    .catch(function(){
+      if (el) el.textContent='Load failed — make sure the sheet is published.';
+      toast('Roster load failed');
     });
+}
+
+// EMPLOYEE REPORT
+function renderEmployeeNameList(){
+  var names={};
+  savedShifts.forEach(function(s){s.staff.forEach(function(e){names[e.name]=true;});});
+  var sel=document.getElementById('emp-report-name');
+  var current=sel.value;
+  sel.innerHTML='<option value="">— select employee —</option>';
+  Object.keys(names).sort().forEach(function(n){
+    sel.innerHTML+='<option value="'+n+'"'+(n===current?' selected':'')+'>'+n+'</option>';
   });
-  var totalPool = filtered.reduce(function(s, e) { return s + e.pool; }, 0);
-  var hasAdj = filtered.some(function(s) { return s.staff.some(function(e) { return e.isAdjusted; }); });
-  var rows = Object.keys(empMap).sort(function(a, b) { return empMap[b].total - empMap[a].total; }).map(function(name) {
-    var data = empMap[name];
-    return '<div class="pay-row">' +
-      '<div><div class="pay-name">' + name + (data.shifts.some(function(s) { return s.isAdjusted; }) ? ' <span style="font-size:11px;color:var(--amber)">&#9873;</span>' : '') + '</div>' +
-      '<div class="pay-detail">' + data.shifts.map(function(s) { return s.date + ' · ' + s.label + ' · ' + fmt(s.tipOut) + (s.isAdjusted ? ' &#9873;' : ''); }).join('<br>') + '</div></div>' +
-      '<div class="pay-total">' + fmt(data.total) + '</div>' +
+}
+function renderEmployeeReport(){
+  var name=document.getElementById('emp-report-name').value;
+  var from=document.getElementById('emp-report-from').value;
+  var to=document.getElementById('emp-report-to').value;
+  var el=document.getElementById('emp-report-out');
+  var actions=document.getElementById('emp-report-actions');
+  if (!name){toast('Select an employee');return;}
+  var shifts=savedShifts.filter(function(s){
+    return (!from||s.date>=from)&&(!to||s.date<=to)&&s.staff.some(function(e){return e.name===name;});
+  });
+  if (!shifts.length){el.innerHTML='<div class="empty">No shifts found for '+name+' in this range.</div>';actions.style.display='none';return;}
+  var totalPool=0,totalCC=0,totalAll=0;
+  var textLines=['Tip Summary — '+name,(from||'...')+' to '+(to||'...'),''];
+  var rows=shifts.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(s){
+    var emp=s.staff.find(function(e){return e.name===name;});
+    if (!emp) return '';
+    var label=s.type==='event'?s.evtName:'Shift';
+    var poolPay=emp.tipOut||0; var cc=emp.ccTips||0; var total=emp.totalPayout||(poolPay+cc);
+    totalPool+=poolPay;totalCC+=cc;totalAll+=total;
+    textLines.push(s.date+' · '+label+(s.supervisor?' (Sup: '+s.supervisor+')':''));
+    textLines.push('  Pool payout: '+fmt(poolPay));
+    if (cc>0) textLines.push('  CC tips: '+fmt(cc));
+    textLines.push('  Total: '+fmt(total));
+    textLines.push('');
+    return '<div class="pay-row">'+
+      '<div>'+
+        '<div class="pay-name" style="font-size:13px">'+s.date+' · '+label+'</div>'+
+        '<div class="pay-detail">Pool payout: '+fmt(poolPay)+(cc>0?' · CC tips: '+fmt(cc):'')+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div>'+
+      '</div>'+
+      '<div class="pay-total">'+fmt(total)+'</div>'+
     '</div>';
   }).join('');
-  el.innerHTML = '<div class="stats" style="margin-bottom:14px">' +
-    '<div class="stat"><div class="slabel">Shifts</div><div class="sval">' + filtered.length + '</div></div>' +
-    '<div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">' + fmt(totalPool) + '</div></div>' +
-    '<div class="stat"><div class="slabel">Employees</div><div class="sval">' + Object.keys(empMap).length + '</div></div>' +
-    '</div>' +
-    (hasAdj ? '<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">&#9873; This period includes point adjustments. See CSV for full details.</div>' : '') +
-    rows;
-}
-function exportCSV() {
-  var from = document.getElementById('pay-from').value;
-  var to = document.getElementById('pay-to').value;
-  var filtered = savedShifts.filter(function(s) { return (!from || s.date >= from) && (!to || s.date <= to); });
-  if (!filtered.length) { toast('No data to export'); return; }
-  var csv = 'Employee,Date,Shift/Event,Role,Supervisor,Pts Used,Base Pts,Adjusted,Adjust Reason,Tip Out,Pool Total,Notes\n';
-  filtered.forEach(function(s) {
-    var label = s.type === 'event' ? s.evtName : 'Shift';
-    s.staff.forEach(function(e) {
-      csv += '"' + e.name + '","' + s.date + '","' + label + '","' + getRoleLabel(e.role) + '","' + (s.supervisor || '') + '","' + e.pts + '","' + (e.basePts || e.pts) + '","' + (e.isAdjusted ? 'YES' : '') + '","' + (e.adjustReason || '') + '","' + e.tipOut.toFixed(2) + '","' + s.pool + '","' + (s.notes || '') + '"\n';
-    });
-  });
-  var empMap = {};
-  filtered.forEach(function(s) { s.staff.forEach(function(e) { if (!empMap[e.name]) empMap[e.name] = 0; empMap[e.name] += e.tipOut; }); });
-  csv += '\nSummary\nEmployee,Total Tips\n';
-  Object.keys(empMap).sort(function(a, b) { return empMap[b] - empMap[a]; }).forEach(function(name) { csv += '"' + name + '","' + empMap[name].toFixed(2) + '"\n'; });
-  var blob = new Blob([csv], {type: 'text/csv'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a'); a.href = url;
-  var range = from && to ? from + '_to_' + to : from || to || 'all';
-  a.download = 'SSK_tipout_' + range + '.csv'; a.click(); URL.revokeObjectURL(url);
-  toast('CSV exported!');
-}
-
-function renderAdminReport() {
-  var from = document.getElementById('admin-pay-from').value;
-  var to = document.getElementById('admin-pay-to').value;
-  var filtered = savedShifts.filter(function(s) { return s.type === 'event' && s.eventSubtotal && (!from || s.date >= from) && (!to || s.date <= to); });
-  var el = document.getElementById('admin-report-out');
-  if (!filtered.length) { el.innerHTML = '<div class="empty">No events with subtotals in this range.</div>'; return; }
-  var totalSubtotal = filtered.reduce(function(s, e) { return s + e.eventSubtotal; }, 0);
-  var totalCommission = totalSubtotal * 0.04;
-  var rows = filtered.slice().sort(function(a, b) { return b.date.localeCompare(a.date); }).map(function(s) {
-    return '<div class="pay-row">' +
-      '<div><div class="pay-name">' + s.evtName + '</div><div class="pay-detail">' + s.date + (s.supervisor ? ' · Sup: ' + s.supervisor : '') + '</div></div>' +
-      '<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted)">' + fmt(s.eventSubtotal) + ' subtotal</div><div class="pay-total">' + fmt(s.eventSubtotal * 0.04) + ' comm.</div></div>' +
+  textLines.push('─────────────────');
+  textLines.push('Pool total: '+fmt(totalPool));
+  if (totalCC>0) textLines.push('CC tips total: '+fmt(totalCC));
+  textLines.push('Grand total: '+fmt(totalAll));
+  empReportText=textLines.join('\n');
+  el.innerHTML=
+    '<div style="font-size:15px;font-weight:500;margin-bottom:12px">'+name+'</div>'+rows+
+    '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px">'+
+      '<div class="pay-row" style="padding:4px 0"><div>Pool payout total</div><div style="font-weight:500">'+fmt(totalPool)+'</div></div>'+
+      (totalCC>0?'<div class="pay-row" style="padding:4px 0"><div>CC tips total</div><div style="font-weight:500">'+fmt(totalCC)+'</div></div>':'')+
+      '<div class="pay-row" style="padding:6px 0"><div style="font-weight:500;font-size:15px">Grand total</div><div class="pay-total" style="font-size:18px">'+fmt(totalAll)+'</div></div>'+
     '</div>';
-  }).join('');
-  el.innerHTML = '<div class="stats" style="margin-bottom:14px">' +
-    '<div class="stat"><div class="slabel">Events</div><div class="sval">' + filtered.length + '</div></div>' +
-    '<div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">' + fmt(totalSubtotal) + '</div></div>' +
-    '<div class="stat"><div class="slabel">Commission</div><div class="sval" style="font-size:14px;color:var(--green)">' + fmt(totalCommission) + '</div></div>' +
-    '</div>' + rows +
-    '<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">' +
-    '<div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>' +
-    '<div style="font-size:18px;font-weight:500;color:var(--green)">' + fmt(totalCommission) + '</div></div>';
+  actions.style.display='block';
 }
-function exportAdminCSV() {
-  var from = document.getElementById('admin-pay-from').value;
-  var to = document.getElementById('admin-pay-to').value;
-  var filtered = savedShifts.filter(function(s) { return s.type === 'event' && s.eventSubtotal && (!from || s.date >= from) && (!to || s.date <= to); });
-  if (!filtered.length) { toast('No data to export'); return; }
-  var csv = 'Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
-  filtered.slice().sort(function(a, b) { return b.date.localeCompare(a.date); }).forEach(function(s) {
-    csv += '"' + s.date + '","' + s.evtName + '","' + (s.supervisor || '') + '","' + s.eventSubtotal.toFixed(2) + '","' + (s.eventSubtotal * 0.04).toFixed(2) + '"\n';
-  });
-  var total = filtered.reduce(function(s, e) { return s + e.eventSubtotal; }, 0);
-  csv += '\n"TOTAL","","","' + total.toFixed(2) + '","' + (total * 0.04).toFixed(2) + '"\n';
-  var blob = new Blob([csv], {type: 'text/csv'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a'); a.href = url;
-  var range = from && to ? from + '_to_' + to : from || to || 'all';
-  a.download = 'SSK_Alexx_commission_' + range + '.csv'; a.click(); URL.revokeObjectURL(url);
-  toast('CSV exported!');
-}
-
-function saveSheetUrl() {
-  sheetsUrl = document.getElementById('sheets-url').value.trim();
-  localStorage.setItem('sskSheetsUrl', sheetsUrl);
-  updateSyncStatus();
-  toast(sheetsUrl ? 'URL saved!' : 'URL cleared');
-}
-async function syncEntry(entry) {
-  if (!sheetsUrl) return;
-  var el = document.getElementById('sync-status');
-  el.textContent = 'Syncing...'; el.className = 'sync-pill syncing';
-  try {
-    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'addEntry', entry: entry}), headers:{'Content-Type':'text/plain'}});
-    el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; toast('Synced to Sheets!');
-  } catch(e) { el.textContent = 'Sync failed'; el.className = 'sync-pill err'; toast('Sync failed — saved locally'); }
-}
-async function syncToSheets() {
-  if (!sheetsUrl) { toast('No URL set'); return; }
-  var el = document.getElementById('sync-status');
-  el.textContent = 'Syncing...'; el.className = 'sync-pill syncing';
-  try {
-    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'bulkSync', shifts: savedShifts}), headers:{'Content-Type':'text/plain'}});
-    el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; toast('All data synced!');
-  } catch(e) { el.textContent = 'Sync failed'; el.className = 'sync-pill err'; toast('Sync failed — check URL'); }
-}
-async function syncRoster() {
-  if (!sheetsUrl) return;
-  try {
-    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'syncRoster', roster: roster}), headers:{'Content-Type':'text/plain'}});
-  } catch(e) { console.log('Roster sync failed', e); }
-}
-async function loadRosterFromSheets() {
-  if (!sheetsUrl) return;
-  try {
-    var r = await fetch(sheetsUrl + '?action=getRoster', {redirect: 'follow'});
-    var text = await r.text();
-    var data = JSON.parse(text);
-    if (data.roster && data.roster.length) {
-      roster = data.roster;
-      persist();
-      populateSelects();
-      renderRoster();
-      toast('Roster loaded from Sheets');
-    }
-  } catch(e) { console.log('Roster load failed', e); }
-}
-async function testConnection() {
-  if (!sheetsUrl) { toast('Paste a URL first'); return; }
-  try {
-    var r = await fetch(sheetsUrl + '?action=ping');
-    var t = await r.text();
-    if (t.includes('ok')) { toast('Connected!'); updateSyncStatus(); }
-    else toast('Unexpected response');
-  } catch(e) { toast('Connection failed'); document.getElementById('sync-status').className = 'sync-pill err'; }
-}
-
-var APPS_SCRIPT = 'function doGet(e) {\n  var action = e.parameter.action;\n  if (action === "ping") return ContentService.createTextOutput("ok");\n  if (action === "getRoster") {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var sheet = ss.getSheetByName("Roster");\n    if (!sheet || sheet.getLastRow() < 2) return ContentService.createTextOutput(JSON.stringify({roster:[]})).setMimeType(ContentService.MimeType.JSON);\n    var data = sheet.getRange(2, 1, sheet.getLastRow()-1, 2).getValues();\n    var roster = data.filter(function(r){return r[0];}).map(function(r){return {name:r[0],role:r[1]};});\n    return ContentService.createTextOutput(JSON.stringify({roster:roster})).setMimeType(ContentService.MimeType.JSON);\n  }\n  return ContentService.createTextOutput("SSK Tip Pool API");\n}\nfunction doPost(e) {\n  try {\n    var data = JSON.parse(e.postData.contents);\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    if (data.action === "addEntry") {\n      writeEntry(ss, data.entry);\n    } else if (data.action === "bulkSync") {\n      var sheet = ss.getSheetByName("Tip Log") || ss.insertSheet("Tip Log");\n      sheet.clearContents();\n      writeHeaders(sheet);\n      data.shifts.forEach(function(entry) { writeEntryRows(sheet, entry); });\n    } else if (data.action === "syncRoster") {\n      var rs = ss.getSheetByName("Roster") || ss.insertSheet("Roster");\n      rs.clearContents();\n      rs.appendRow(["Name","Role"]);\n      data.roster.forEach(function(e) { rs.appendRow([e.name, e.role]); });\n    }\n    return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);\n  } catch(err) {\n    return ContentService.createTextOutput(JSON.stringify({status:"error",message:err.toString()})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\nfunction writeHeaders(sheet) {\n  sheet.appendRow(["Date","Type","Shift/Event","Supervisor","Employee","Role","Pts Used","Base Pts","Adjusted?","Adjust Reason","Tip Out","Pool Total","Event Subtotal","Notes"]);\n}\nfunction writeEntry(ss, entry) {\n  var sheet = ss.getSheetByName("Tip Log");\n  if (!sheet) { sheet = ss.insertSheet("Tip Log"); writeHeaders(sheet); }\n  writeEntryRows(sheet, entry);\n}\nfunction writeEntryRows(sheet, entry) {\n  var label = entry.type === "event" ? entry.evtName : "Shift";\n  entry.staff.forEach(function(emp) {\n    sheet.appendRow([entry.date,entry.type,label,entry.supervisor||"",emp.name,emp.role,emp.pts,emp.basePts||emp.pts,emp.isAdjusted?"YES":"",emp.adjustReason||"",emp.tipOut,entry.pool,entry.eventSubtotal||"",entry.notes||""]);\n  });\n}';
-
-function copyAppsScript() {
-  try {
-    var ta = document.createElement('textarea');
-    ta.value = APPS_SCRIPT;
-    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta); ta.focus(); ta.select();
+function copyEmployeeReport(){
+  if (!empReportText) return;
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=empReportText;
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);ta.focus();ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    var el = document.getElementById('copy-confirm');
-    el.textContent = 'Copied to clipboard!';
-    setTimeout(function() { el.textContent = ''; }, 2200);
-  } catch(e) {
-    var el = document.getElementById('copy-confirm');
-    el.textContent = 'Select all text below and copy manually.';
-    var fb = document.getElementById('script-fallback');
-    fb.value = APPS_SCRIPT; fb.style.display = 'block'; fb.select();
-  }
-}
-function clearAllData() {
-  if (!confirm('Clear ALL local data? Cannot be undone.')) return;
-  localStorage.removeItem('sskRoster'); localStorage.removeItem('sskShifts');
-  roster = []; savedShifts = []; shiftStaff = []; evtStaff = [];
-  renderShiftList(); recalc(); toast('Cleared');
+    var el=document.getElementById('emp-copy-confirm');
+    el.textContent='Copied! Paste into a text or email to share.';
+    setTimeout(function(){el.textContent='';},3000);
+  }catch(e){toast('Copy failed');}
 }
 
-function initApp() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('shift-date').value = today;
-  document.getElementById('evt-date').value = today;
-  document.getElementById('today-label').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
-  var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-  document.getElementById('pay-from').value = twoWeeksAgo.toISOString().split('T')[0];
-  document.getElementById('pay-to').value = today;
-  document.getElementById('admin-pay-from').value = twoWeeksAgo.toISOString().split('T')[0];
-  document.getElementById('admin-pay-to').value = today;
-  document.getElementById('sheets-url').value = sheetsUrl;
-  populateSelects(); renderShiftList(); renderEvtList(); updateSyncStatus();
-  if (sheetsUrl) loadRosterFromSheets();
+// PAYROLL
+function renderPayroll(){
+  var from=document.getElementById('pay-from').value;
+  var to=document.getElementById('pay-to').value;
+  var filtered=savedShifts.filter(function(s){return(!from||s.date>=from)&&(!to||s.date<=to);});
+  var el=document.getElementById('payroll-out');
+  if (!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
+  var empMap={};
+  filtered.forEach(function(s){
+    s.staff.forEach(function(e){
+      if (!empMap[e.name]) empMap[e.name]={total:0,shifts:[]};
+      var total=e.totalPayout!==undefined?e.totalPayout:e.tipOut;
+      empMap[e.name].total+=total;
+      empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,ccTips:e.ccTips||0,totalPayout:total,label:s.type==='event'?s.evtName:'Shift',isAdjusted:e.isAdjusted});
+    });
+  });
+  var totalPool=filtered.reduce(function(s,e){return s+e.pool;},0);
+  var hasAdj=filtered.some(function(s){return s.staff.some(function(e){return e.isAdjusted;});});
+  var rows=Object.keys(empMap).sort(function(a,b){return empMap[b].total-empMap[a].total;}).map(function(name){
+    var data=empMap[name];
+    return '<div class="pay-row">'+
+      '<div><div class="pay-name">'+name+(data.shifts.some(function(s){return s.isAdjusted;})?'  <span style="font-size:11px;color:var(--amber)">&#9873;</span>':'')+'</div>'+
+      '<div class="pay-detail">'+data.shifts.map(function(s){
+        var d=s.date+' · '+s.label+' · Pool: '+fmt(s.tipOut);
+        if (s.ccTips) d+=' + CC: '+fmt(s.ccTips)+' = '+fmt(s.totalPayout);
+        if (s.isAdjusted) d+=' &#9873;';
+        return d;
+      }).join('<br>')+'</div></div>'+
+      '<div class="pay-total">'+fmt(data.total)+'</div>'+
+    '</div>';
+  }).join('');
+  el.innerHTML=
+    '<div class="stats" style="margin-bottom:14px">'+
+      '<div class="stat"><div class="slabel">Shifts</div><div class="sval">'+filtered.length+'</div></div>'+
+      '<div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">'+fmt(totalPool)+'</div></div>'+
+      '<div class="stat"><div class="slabel">Employees</div><div class="sval">'+Object.keys(empMap).length+'</div></div>'+
+    '</div>'+
+    (hasAdj?'<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">&#9873; Period includes adjustments. See CSV for details.</div>':'')+
+    rows;
+}
+function exportCSV(){
+  var from=document.getElementById('pay-from').value;
+  var to=document.getElementById('pay-to').value;
+  var filtered=savedShifts.filter(function(s){return(!from||s.date>=from)&&(!to||s.date<=to);});
+  if (!filtered.length){toast('No data to export');return;}
+  var csv='Employee,Date,Shift/Event,Role,Supervisor,Gross Pool,Health Deduction,Net Pool,Pts Used,Base Pts,Adjusted,Adjust Reason,Pool Payout,CC Tips,Total Payout,Notes\n';
+  filtered.forEach(function(s){
+    var label=s.type==='event'?s.evtName:'Shift';
+    s.staff.forEach(function(e){
+      csv+='"'+e.name+'","'+s.date+'","'+label+'","'+getRoleLabel(e.role)+'","'+(s.supervisor||'')+'","'+s.pool+'","'+(s.healthDeduction||0)+'","'+(s.netPool||s.pool)+'","'+e.pts+'","'+(e.basePts||e.pts)+'","'+(e.isAdjusted?'YES':'')+'","'+(e.adjustReason||'')+'","'+e.tipOut.toFixed(2)+'","'+(e.ccTips||0).toFixed(2)+'","'+(e.totalPayout||e.tipOut).toFixed(2)+'","'+(s.notes||'')+'"\n';
+    });
+  });
+  var empMap={};
+  filtered.forEach(function(s){s.staff.forEach(function(e){if(!empMap[e.name])empMap[e.name]=0;empMap[e.name]+=(e.totalPayout||e.tipOut);});});
+  csv+='\nSummary\nEmployee,Total Payout\n';
+  Object.keys(empMap).sort(function(a,b){return empMap[b]-empMap[a];}).forEach(function(n){csv+='"'+n+'","'+empMap[n].toFixed(2)+'"\n';});
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;
+  var range=from&&to?from+'_to_'+to:from||to||'all';
+  a.download='SSK_tipout_'+range+'.csv';a.click();URL.revokeObjectURL(url);
+  toast('CSV exported!');
+}
+
+// ADMIN REPORT
+function renderAdminReport(){
+  var from=document.getElementById('admin-pay-from').value;
+  var to=document.getElementById('admin-pay-to').value;
+  var filtered=savedShifts.filter(function(s){return s.type==='event'&&s.eventSubtotal&&(!from||s.date>=from)&&(!to||s.date<=to);});
+  var el=document.getElementById('admin-report-out');
+  if (!filtered.length){el.innerHTML='<div class="empty">No events with subtotals in this range.</div>';return;}
+  var totalSub=filtered.reduce(function(s,e){return s+e.eventSubtotal;},0);
+  var totalComm=totalSub*0.04;
+  var rows=filtered.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(s){
+    return '<div class="pay-row">'+
+      '<div><div class="pay-name">'+s.evtName+'</div><div class="pay-detail">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted)">'+fmt(s.eventSubtotal)+' subtotal</div><div class="pay-total">'+fmt(s.eventSubtotal*0.04)+' comm.</div></div>'+
+    '</div>';
+  }).join('');
+  el.innerHTML=
+    '<div class="stats" style="margin-bottom:14px">'+
+      '<div class="stat"><div class="slabel">Events</div><div class="sval">'+filtered.length+'</div></div>'+
+      '<div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">'+fmt(totalSub)+'</div></div>'+
+      '<div class="stat"><div class="slabel">Commission</div><div class="sval" style="font-size:14px;color:var(--green)">'+fmt(totalComm)+'</div></div>'+
+    '</div>'+rows+
+    '<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">'+
+      '<div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>'+
+      '<div style="font-size:18px;font-weight:500;color:var(--green)">'+fmt(totalComm)+'</div>'+
+    '</div>';
+}
+function exportAdminCSV(){
+  var from=document.getElementById('admin-pay-from').value;
+  var to=document.getElementById('admin-pay-to').value;
+  var filtered=savedShifts.filter(function(s){return s.type==='event'&&s.eventSubtotal&&(!from||s.date>=from)&&(!to||s.date<=to);});
+  if (!filtered.length){toast('No data to export');return;}
+  var csv='Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
+  filtered.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).forEach(function(s){
+    csv+='"'+s.date+'","'+s.evtName+'","'+(s.supervisor||'')+'","'+s.eventSubtotal.toFixed(2)+'","'+(s.eventSubtotal*0.04).toFixed(2)+'"\n';
+  });
+  var total=filtered.reduce(function(s,e){return s+e.eventSubtotal;},0);
+  csv+='\n"TOTAL","","","'+total.toFixed(2)+'","'+(total*0.04).toFixed(2)+'"\n';
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;
+  var range=from&&to?from+'_to_'+to:from||to||'all';
+  a.download='SSK_Alexx_commission_'+range+'.csv';a.click();URL.revokeObjectURL(url);
+  toast('CSV exported!');
+}
+
+// SHEETS
+function saveSheetUrl(){
+  sheetsUrl=document.getElementById('sheets-url').value.trim();
+  localStorage.setItem('sskSheetsUrl',sheetsUrl);
+  updateSyncStatus();
+  toast(sheetsUrl?'URL saved!':'URL cleared');
+}
+function syncEntry(entry){
+  if (!sheetsUrl) return;
+  var el=document.getElementById('sync-status');
+  el.textContent='Syncing...';el.className='sync-pill syncing';
+  fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addEntry',entry:entry}),headers:{'Content-Type':'text/plain'}})
+    .then(function(){el.textContent='Sheets connected';el.className='sync-pill ok';toast('Synced to Sheets!');})
+    .catch(function(){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — saved locally');});
+}
+function syncToSheets(){
+  if (!sheetsUrl){toast('No URL set');return;}
+  var el=document.getElementById('sync-status');
+  el.textContent='Syncing...';el.className='sync-pill syncing';
+  fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'bulkSync',shifts:savedShifts}),headers:{'Content-Type':'text/plain'}})
+    .then(function(){el.textContent='Sheets connected';el.className='sync-pill ok';toast('All data synced!');})
+    .catch(function(){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — check URL');});
+}
+function syncRoster(){
+  if (!sheetsUrl) return;
+  fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'syncRoster',roster:roster}),headers:{'Content-Type':'text/plain'}})
+    .catch(function(e){console.log('Roster sync failed',e);});
+}
+function testConnection(){
+  if (!sheetsUrl){toast('Paste a URL first');return;}
+  fetch(sheetsUrl+'?action=ping')
+    .then(function(r){return r.text();})
+    .then(function(t){if(t.includes('ok')){toast('Connected!');updateSyncStatus();}else toast('Unexpected response');})
+    .catch(function(){toast('Connection failed');document.getElementById('sync-status').className='sync-pill err';});
+}
+
+var APPS_SCRIPT='function doGet(e){\n  var action=e.parameter.action;\n  if(action==="ping") return ContentService.createTextOutput("ok");\n  if(action==="getRoster"){\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var sheet=ss.getSheetByName("Roster");\n    var roster=[];\n    if(sheet&&sheet.getLastRow()>=2){\n      var data=sheet.getRange(2,1,sheet.getLastRow()-1,2).getValues();\n      roster=data.filter(function(r){return r[0];}).map(function(r){return{name:String(r[0]),role:String(r[1])};});\n    }\n    return ContentService.createTextOutput(JSON.stringify({roster:roster})).setMimeType(ContentService.MimeType.JSON);\n  }\n  return ContentService.createTextOutput("SSK Tip Pool API");\n}\nfunction doPost(e){\n  try{\n    var data=JSON.parse(e.postData.contents);\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    if(data.action==="addEntry") writeEntry(ss,data.entry);\n    else if(data.action==="bulkSync"){\n      var sheet=ss.getSheetByName("Tip Log")||ss.insertSheet("Tip Log");\n      sheet.clearContents();writeHeaders(sheet);\n      data.shifts.forEach(function(entry){writeEntryRows(sheet,entry);});\n    } else if(data.action==="syncRoster"){\n      var rs=ss.getSheetByName("Roster")||ss.insertSheet("Roster");\n      rs.clearContents();rs.appendRow(["Name","Role"]);\n      data.roster.forEach(function(emp){rs.appendRow([emp.name,emp.role]);});\n    }\n    return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);\n  }catch(err){\n    return ContentService.createTextOutput(JSON.stringify({status:"error",message:err.toString()})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\nfunction writeHeaders(sheet){\n  sheet.appendRow(["Date","Type","Shift/Event","Supervisor","Employee","Role","Pts Used","Base Pts","Adjusted?","Adjust Reason","Pool Payout","CC Tips","Total Payout","Gross Pool","Health Deduction (2%)","Net Pool","Event Subtotal","Notes"]);\n}\nfunction writeEntry(ss,entry){\n  var sheet=ss.getSheetByName("Tip Log");\n  if(!sheet){sheet=ss.insertSheet("Tip Log");writeHeaders(sheet);}\n  writeEntryRows(sheet,entry);\n}\nfunction writeEntryRows(sheet,entry){\n  var label=entry.type==="event"?entry.evtName:"Shift";\n  var gross=entry.pool||0,ded=entry.healthDeduction||0,net=entry.netPool||gross;\n  entry.staff.forEach(function(emp){\n    sheet.appendRow([entry.date,entry.type,label,entry.supervisor||"",emp.name,emp.role,emp.pts,emp.basePts||emp.pts,emp.isAdjusted?"YES":"",emp.adjustReason||"",emp.tipOut,emp.ccTips||0,emp.totalPayout||emp.tipOut,gross,ded,net,entry.eventSubtotal||"",entry.notes||""]);\n  });\n}';
+
+function copyAppsScript(){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=APPS_SCRIPT;
+    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    var el=document.getElementById('copy-confirm');
+    el.textContent='Copied to clipboard!';
+    setTimeout(function(){el.textContent='';},2200);
+  }catch(e){
+    var el=document.getElementById('copy-confirm');
+    el.textContent='Select text below and copy manually.';
+    var fb=document.getElementById('script-fallback');
+    fb.value=APPS_SCRIPT;fb.style.display='block';fb.select();
+  }
+}
+function clearAllData(){
+  if(!confirm('Clear ALL local data? Cannot be undone.'))return;
+  localStorage.removeItem('sskRoster');localStorage.removeItem('sskShifts');
+  roster=[];savedShifts=[];shiftStaff=[];evtStaff=[];
+  renderShiftList();recalc();toast('Cleared');
+}
+
+function initApp(){
+  var today=new Date().toISOString().split('T')[0];
+  document.getElementById('shift-date').value=today;
+  document.getElementById('evt-date').value=today;
+  document.getElementById('today-label').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  var twa=new Date();twa.setDate(twa.getDate()-14);
+  var twaStr=twa.toISOString().split('T')[0];
+  document.getElementById('pay-from').value=twaStr;
+  document.getElementById('pay-to').value=today;
+  document.getElementById('admin-pay-from').value=twaStr;
+  document.getElementById('admin-pay-to').value=today;
+  document.getElementById('emp-report-from').value=twaStr;
+  document.getElementById('emp-report-to').value=today;
+  populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
+  if (rosterCsvUrl) showRosterBanner();
 }
 </script>
 </body>
