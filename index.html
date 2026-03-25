@@ -144,7 +144,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <div id="main-app" style="display:none">
 <div class="app">
-
   <div class="header">
     <div>
       <h1>SSK Tip Pool</h1>
@@ -301,7 +300,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- PAYROLL — admin locked -->
+  <!-- PAYROLL -->
   <div id="page-payroll" class="page">
     <div id="payroll-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
@@ -344,7 +343,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div id="page-admin" class="page">
     <div id="admin-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN to view commission reports</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Enter your admin PIN</div>
       <div style="font-size:28px;letter-spacing:10px;font-weight:300;height:44px;margin-bottom:6px" id="admin-pin-display">&#8203;</div>
       <div style="font-size:12px;color:var(--red);height:18px;margin-bottom:16px" id="admin-pin-error"></div>
       <div class="pin-pad" style="margin:0 auto">
@@ -379,7 +378,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- SETTINGS — admin locked -->
+  <!-- SETTINGS -->
   <div id="page-settings" class="page">
     <div id="settings-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
@@ -417,7 +416,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         </div>
         <div class="settings-section">
           <div class="settings-title">Roster sync</div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Roster tab. Any device can then load the latest roster with one tap.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Roster tab. Any device can load the latest roster with one tap.</p>
           <div class="field"><label>Roster CSV URL</label><input type="text" id="roster-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" onclick="saveRosterCsvUrl()">Save URL</button>
@@ -428,18 +427,34 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             <strong>To get this URL:</strong><br>
             1. Open your SSK Tip Pool Google Sheet<br>
             2. Click <strong>File → Share → Publish to web</strong><br>
-            3. Change "Entire document" to <strong>Roster</strong><br>
-            4. Change "Web page" to <strong>Comma-separated values (.csv)</strong><br>
-            5. Click <strong>Publish</strong> and copy the URL
+            3. Select <strong>Roster</strong> tab → <strong>Comma-separated values (.csv)</strong><br>
+            4. Click <strong>Publish</strong> and copy the URL
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">History sync</div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Tip Log tab. Any device can load and merge the full shift history.</p>
+          <div class="field"><label>Tip Log CSV URL</label><input type="text" id="tiplog-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveTiplogCsvUrl()">Save URL</button>
+            <button class="btn-export" onclick="loadHistoryFromCSV()">Load history now</button>
+          </div>
+          <div id="tiplog-load-confirm" style="font-size:12px;color:var(--green);margin-top:6px;min-height:16px"></div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
+            <strong>To get this URL:</strong><br>
+            1. Open your SSK Tip Pool Google Sheet<br>
+            2. Click <strong>File → Share → Publish to web</strong><br>
+            3. Select <strong>Tip Log</strong> tab → <strong>Comma-separated values (.csv)</strong><br>
+            4. Click <strong>Publish</strong> and copy the URL
           </div>
         </div>
         <div class="settings-section">
           <div class="settings-title">Apps Script setup</div>
           <ol class="instructions">
-            <li>Go to <strong>sheets.google.com</strong> and create a sheet named <strong>SSK Tip Pool</strong></li>
+            <li>Go to <strong>sheets.google.com</strong> → create a sheet named <strong>SSK Tip Pool</strong></li>
             <li>Click <strong>Extensions → Apps Script</strong></li>
-            <li>Delete the default code and paste in the Apps Script code below</li>
-            <li>Hit ⌘S, then <strong>Deploy → New deployment</strong></li>
+            <li>Delete default code and paste the Apps Script code below</li>
+            <li>Hit ⌘S → <strong>Deploy → New deployment</strong></li>
             <li>Web app · Execute as: Me · Who has access: Anyone</li>
             <li>Authorize, copy Web App URL and paste above</li>
           </ol>
@@ -467,6 +482,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 </div>
 
+<!-- ADJUST MODAL -->
 <div id="adjust-modal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-title" id="adjust-modal-title">Adjust points</div>
@@ -491,6 +507,25 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeAdjustModal()">Cancel</button>
       <button class="modal-save" onclick="saveAdjustment()">Save adjustment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROSTER EDIT MODAL -->
+<div id="roster-edit-modal" class="modal-backdrop" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Edit employee</div>
+    <div class="modal-field" style="margin-top:12px">
+      <label>Name</label>
+      <input type="text" id="roster-edit-name" placeholder="Full name">
+    </div>
+    <div class="modal-field">
+      <label>Default role</label>
+      <select id="roster-edit-role"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeRosterEdit()">Cancel</button>
+      <button class="modal-save" onclick="saveRosterEdit()">Save</button>
     </div>
   </div>
 </div>
@@ -530,226 +565,242 @@ var roster = JSON.parse(localStorage.getItem('sskRoster') || '[]');
 var savedShifts = JSON.parse(localStorage.getItem('sskShifts') || '[]');
 var sheetsUrl = localStorage.getItem('sskSheetsUrl') || '';
 var rosterCsvUrl = localStorage.getItem('sskRosterCsvUrl') || '';
+var tiplogCsvUrl = localStorage.getItem('sskTiplogCsvUrl') || '';
 var shiftStaff = [];
 var evtStaff = [];
 var pinEntry = '';
-var secEntries = {admin:'', payroll:'', settings:''};
-var secUnlocked = {admin:false, payroll:false, settings:false};
+var secEntries = {admin:'',payroll:'',settings:''};
+var secUnlocked = {admin:false,payroll:false,settings:false};
 var adjustTarget = null;
+var rosterEditIdx = null;
 var empReportText = '';
 
-function persist() {
-  localStorage.setItem('sskRoster', JSON.stringify(roster));
-  localStorage.setItem('sskShifts', JSON.stringify(savedShifts));
-}
-function fmt(n) { return '$' + parseFloat(n||0).toFixed(2); }
-function fmtPts(n) { return parseFloat(n||0).toFixed(2); }
-function getRoleLabel(k) { var r = ALL_ROLES.find(function(r){return r.key===k;}); return r?r.label:k; }
-function getRolePts(k) { var r = ALL_ROLES.find(function(r){return r.key===k;}); return r?r.pts:0; }
-function getEffectivePts(e) { return e.isAdjusted && e.adjustedPts !== undefined ? e.adjustedPts : getRolePts(e.role); }
+function persist(){localStorage.setItem('sskRoster',JSON.stringify(roster));localStorage.setItem('sskShifts',JSON.stringify(savedShifts));}
+function fmt(n){return '$'+parseFloat(n||0).toFixed(2);}
+function fmtPts(n){return parseFloat(n||0).toFixed(2);}
+function getRoleLabel(k){var r=ALL_ROLES.find(function(r){return r.key===k;});return r?r.label:k;}
+function getRolePts(k){var r=ALL_ROLES.find(function(r){return r.key===k;});return r?r.pts:0;}
+function getEffectivePts(e){return e.isAdjusted&&e.adjustedPts!==undefined?e.adjustedPts:getRolePts(e.role);}
 
-function toast(msg, dur) {
-  dur = dur||2400;
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, dur);
+function toast(msg,dur){
+  dur=dur||2400;
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},dur);
 }
 
 // MAIN PIN
-function pinPress(d) {
-  if (pinEntry.length >= 6) return;
-  pinEntry += d;
-  document.getElementById('pin-display').textContent = '●'.repeat(pinEntry.length);
-  document.getElementById('pin-error').textContent = '';
-  if (pinEntry.length >= 4) setTimeout(checkPin, 120);
+function pinPress(d){
+  if(pinEntry.length>=6)return;
+  pinEntry+=d;
+  document.getElementById('pin-display').textContent='●'.repeat(pinEntry.length);
+  document.getElementById('pin-error').textContent='';
+  if(pinEntry.length>=4)setTimeout(checkPin,120);
 }
-function pinDel() {
-  pinEntry = pinEntry.slice(0,-1);
-  document.getElementById('pin-display').textContent = pinEntry.length ? '●'.repeat(pinEntry.length) : '\u200b';
+function pinDel(){
+  pinEntry=pinEntry.slice(0,-1);
+  document.getElementById('pin-display').textContent=pinEntry.length?'●'.repeat(pinEntry.length):'\u200b';
 }
-function checkPin() {
-  if (pinEntry === pin) {
-    document.getElementById('pin-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'block';
+function checkPin(){
+  if(pinEntry===pin){
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('main-app').style.display='block';
     initApp();
   } else {
-    document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
-    pinEntry = '';
-    document.getElementById('pin-display').textContent = '\u200b';
+    document.getElementById('pin-error').textContent='Incorrect PIN. Try again.';
+    pinEntry='';
+    document.getElementById('pin-display').textContent='\u200b';
   }
 }
-function logout() {
-  pinEntry = '';
-  document.getElementById('pin-display').textContent = '\u200b';
-  document.getElementById('pin-error').textContent = '';
-  secUnlocked = {admin:false, payroll:false, settings:false};
-  document.getElementById('main-app').style.display = 'none';
-  document.getElementById('pin-screen').style.display = 'flex';
+function logout(){
+  pinEntry='';
+  document.getElementById('pin-display').textContent='\u200b';
+  document.getElementById('pin-error').textContent='';
+  secUnlocked={admin:false,payroll:false,settings:false};
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('pin-screen').style.display='flex';
 }
-function changePin() {
-  var np = document.getElementById('new-pin').value.trim();
-  var cp = document.getElementById('confirm-pin').value.trim();
-  if (np.length < 4) { toast('PIN must be at least 4 digits'); return; }
-  if (np !== cp) { toast('PINs do not match'); return; }
-  pin = np; localStorage.setItem('sskPin', pin);
-  document.getElementById('new-pin').value = '';
-  document.getElementById('confirm-pin').value = '';
+function changePin(){
+  var np=document.getElementById('new-pin').value.trim();
+  var cp=document.getElementById('confirm-pin').value.trim();
+  if(np.length<4){toast('PIN must be at least 4 digits');return;}
+  if(np!==cp){toast('PINs do not match');return;}
+  pin=np;localStorage.setItem('sskPin',pin);
+  document.getElementById('new-pin').value='';
+  document.getElementById('confirm-pin').value='';
   toast('PIN updated!');
 }
 
-// SECTION PINs (admin, payroll, settings)
-function sectionPin(sec, d) {
-  if (secEntries[sec].length >= 6) return;
-  secEntries[sec] += d;
-  document.getElementById(sec+'-pin-display').textContent = '●'.repeat(secEntries[sec].length);
-  document.getElementById(sec+'-pin-error').textContent = '';
-  if (secEntries[sec].length >= 4) setTimeout(function(){ checkSectionPin(sec); }, 120);
+// SECTION PINs
+function sectionPin(sec,d){
+  if(secEntries[sec].length>=6)return;
+  secEntries[sec]+=d;
+  document.getElementById(sec+'-pin-display').textContent='●'.repeat(secEntries[sec].length);
+  document.getElementById(sec+'-pin-error').textContent='';
+  if(secEntries[sec].length>=4)setTimeout(function(){checkSectionPin(sec);},120);
 }
-function sectionDel(sec) {
-  secEntries[sec] = secEntries[sec].slice(0,-1);
-  document.getElementById(sec+'-pin-display').textContent = secEntries[sec].length ? '●'.repeat(secEntries[sec].length) : '\u200b';
+function sectionDel(sec){
+  secEntries[sec]=secEntries[sec].slice(0,-1);
+  document.getElementById(sec+'-pin-display').textContent=secEntries[sec].length?'●'.repeat(secEntries[sec].length):'\u200b';
 }
-function checkSectionPin(sec) {
-  if (secEntries[sec] === ADMIN_PIN) {
-    secUnlocked[sec] = true;
-    secEntries[sec] = '';
-    document.getElementById(sec+'-lock').style.display = 'none';
-    document.getElementById(sec+'-content').style.display = 'block';
-    if (sec === 'settings') {
-      document.getElementById('sheets-url').value = sheetsUrl;
-      document.getElementById('roster-csv-url').value = rosterCsvUrl;
+function checkSectionPin(sec){
+  if(secEntries[sec]===ADMIN_PIN){
+    secUnlocked[sec]=true;
+    secEntries[sec]='';
+    document.getElementById(sec+'-lock').style.display='none';
+    document.getElementById(sec+'-content').style.display='block';
+    if(sec==='settings'){
+      document.getElementById('sheets-url').value=sheetsUrl;
+      document.getElementById('roster-csv-url').value=rosterCsvUrl;
+      document.getElementById('tiplog-csv-url').value=tiplogCsvUrl;
       updateSyncStatus();
     }
-    if (sec === 'payroll') renderPayroll();
-    if (sec === 'admin') renderAdminReport();
+    if(sec==='payroll')renderPayroll();
+    if(sec==='admin')renderAdminReport();
   } else {
-    document.getElementById(sec+'-pin-error').textContent = 'Incorrect PIN.';
-    secEntries[sec] = '';
-    document.getElementById(sec+'-pin-display').textContent = '\u200b';
+    document.getElementById(sec+'-pin-error').textContent='Incorrect PIN.';
+    secEntries[sec]='';
+    document.getElementById(sec+'-pin-display').textContent='\u200b';
   }
 }
-function lockSection(sec) {
-  secUnlocked[sec] = false;
-  secEntries[sec] = '';
-  document.getElementById(sec+'-pin-display').textContent = '\u200b';
-  document.getElementById(sec+'-pin-error').textContent = '';
-  document.getElementById(sec+'-lock').style.display = 'block';
-  document.getElementById(sec+'-content').style.display = 'none';
+function lockSection(sec){
+  secUnlocked[sec]=false;
+  secEntries[sec]='';
+  document.getElementById(sec+'-pin-display').textContent='\u200b';
+  document.getElementById(sec+'-pin-error').textContent='';
+  document.getElementById(sec+'-lock').style.display='block';
+  document.getElementById(sec+'-content').style.display='none';
 }
 
 // TABS
-function showTab(t, el) {
-  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  if (el) el.classList.add('active');
+function showTab(t,el){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  if(el)el.classList.add('active');
   document.getElementById('page-'+t).classList.add('active');
-  if (t === 'history') renderHistory();
-  if (t === 'roster') { renderRoster(); populateSelects(); }
-  if (t === 'employee') renderEmployeeNameList();
-  if (t === 'payroll' && !secUnlocked.payroll) lockSection('payroll');
-  if (t === 'admin' && !secUnlocked.admin) lockSection('admin');
-  if (t === 'settings' && !secUnlocked.settings) lockSection('settings');
+  if(t==='history')renderHistory();
+  if(t==='roster'){renderRoster();populateSelects();}
+  if(t==='employee')renderEmployeeNameList();
+  if(t==='payroll'&&!secUnlocked.payroll)lockSection('payroll');
+  if(t==='admin'&&!secUnlocked.admin)lockSection('admin');
+  if(t==='settings'&&!secUnlocked.settings)lockSection('settings');
 }
 
-function updateSyncStatus() {
-  var el = document.getElementById('sync-status');
-  if (sheetsUrl) { el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; }
-  else { el.textContent = 'No Sheets URL'; el.className = 'sync-pill'; }
+function updateSyncStatus(){
+  var el=document.getElementById('sync-status');
+  if(sheetsUrl){el.textContent='Sheets connected';el.className='sync-pill ok';}
+  else{el.textContent='No Sheets URL';el.className='sync-pill';}
 }
 
-// ROSTER BANNER
-function showRosterBanner() {
-  document.getElementById('roster-banner').classList.add('show');
-}
-function dismissRosterBanner() {
-  document.getElementById('roster-banner').classList.remove('show');
-}
+function showRosterBanner(){document.getElementById('roster-banner').classList.add('show');}
+function dismissRosterBanner(){document.getElementById('roster-banner').classList.remove('show');}
 
-function populateSelects() {
-  var sr = document.getElementById('add-role');
-  sr.innerHTML = '<option value="">— select role —</option>';
-  SHIFT_ROLES.forEach(function(r){ sr.innerHTML += '<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>'; });
-  var er = document.getElementById('evtadd-role');
-  er.innerHTML = '<option value="">— select role —</option>';
-  EVT_ROLES.forEach(function(r){ er.innerHTML += '<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>'; });
-  var rr = document.getElementById('r-role');
-  rr.innerHTML = '<option value="">— assign role —</option>';
-  ALL_ROLES.forEach(function(r){ rr.innerHTML += '<option value="'+r.key+'">'+r.label+'</option>'; });
+function populateSelects(){
+  var sr=document.getElementById('add-role');
+  sr.innerHTML='<option value="">— select role —</option>';
+  SHIFT_ROLES.forEach(function(r){sr.innerHTML+='<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>';});
+  var er=document.getElementById('evtadd-role');
+  er.innerHTML='<option value="">— select role —</option>';
+  EVT_ROLES.forEach(function(r){er.innerHTML+='<option value="'+r.key+'">'+r.label+' ('+fmtPts(r.pts)+'pt)</option>';});
+  var rr=document.getElementById('r-role');
+  rr.innerHTML='<option value="">— assign role —</option>';
+  ALL_ROLES.forEach(function(r){rr.innerHTML+='<option value="'+r.key+'">'+r.label+'</option>';});
   ['add-from-roster','evtadd-from-roster'].forEach(function(id){
-    var s = document.getElementById(id);
-    s.innerHTML = '<option value="">— choose from roster —</option>';
-    roster.forEach(function(e,i){ s.innerHTML += '<option value="'+i+'">'+e.name+' — '+getRoleLabel(e.role)+'</option>'; });
+    var s=document.getElementById(id);
+    s.innerHTML='<option value="">— choose from roster —</option>';
+    roster.forEach(function(e,i){s.innerHTML+='<option value="'+i+'">'+e.name+' — '+getRoleLabel(e.role)+'</option>';});
   });
 }
 
 // ADJUST MODAL
-function openAdjustModal(list, idx) {
-  adjustTarget = {list:list, idx:idx};
-  var staff = list === 'shift' ? shiftStaff : evtStaff;
-  var emp = staff[idx];
-  var basePts = getRolePts(emp.role);
-  document.getElementById('adjust-modal-title').textContent = 'Adjust points — ' + emp.name;
-  document.getElementById('adjust-modal-sub').textContent = 'Role: '+getRoleLabel(emp.role)+' · Base: '+fmtPts(basePts)+'pt';
-  document.getElementById('adjust-pts-input').value = emp.adjustedPts !== undefined ? fmtPts(emp.adjustedPts) : fmtPts(basePts);
-  document.getElementById('adjust-reason').value = emp.adjustReason || '';
-  document.querySelectorAll('.pct-btn').forEach(function(b){ b.classList.remove('selected'); });
-  if (emp.adjustPct !== undefined) {
-    document.querySelectorAll('.pct-btn').forEach(function(b){ if (parseInt(b.textContent) === emp.adjustPct) b.classList.add('selected'); });
-  }
-  document.getElementById('adjust-modal').style.display = 'flex';
+function openAdjustModal(list,idx){
+  adjustTarget={list:list,idx:idx};
+  var staff=list==='shift'?shiftStaff:evtStaff;
+  var emp=staff[idx];
+  var basePts=getRolePts(emp.role);
+  document.getElementById('adjust-modal-title').textContent='Adjust points — '+emp.name;
+  document.getElementById('adjust-modal-sub').textContent='Role: '+getRoleLabel(emp.role)+' · Base: '+fmtPts(basePts)+'pt';
+  document.getElementById('adjust-pts-input').value=emp.adjustedPts!==undefined?fmtPts(emp.adjustedPts):fmtPts(basePts);
+  document.getElementById('adjust-reason').value=emp.adjustReason||'';
+  document.querySelectorAll('.pct-btn').forEach(function(b){b.classList.remove('selected');});
+  if(emp.adjustPct!==undefined){document.querySelectorAll('.pct-btn').forEach(function(b){if(parseInt(b.textContent)===emp.adjustPct)b.classList.add('selected');});}
+  document.getElementById('adjust-modal').style.display='flex';
 }
-function closeAdjustModal() { document.getElementById('adjust-modal').style.display = 'none'; adjustTarget = null; }
-function selectPct(pct) {
-  document.querySelectorAll('.pct-btn').forEach(function(b){ b.classList.remove('selected'); });
+function closeAdjustModal(){document.getElementById('adjust-modal').style.display='none';adjustTarget=null;}
+function selectPct(pct){
+  document.querySelectorAll('.pct-btn').forEach(function(b){b.classList.remove('selected');});
   event.target.classList.add('selected');
-  var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
-  var basePts = getRolePts(staff[adjustTarget.idx].role);
-  document.getElementById('adjust-pts-input').value = (basePts*(pct/100)).toFixed(2);
+  var staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
+  var basePts=getRolePts(staff[adjustTarget.idx].role);
+  document.getElementById('adjust-pts-input').value=(basePts*(pct/100)).toFixed(2);
 }
-function saveAdjustment() {
-  var reason = document.getElementById('adjust-reason').value.trim();
-  if (!reason) { toast('Reason is required'); return; }
-  var pts = parseFloat(document.getElementById('adjust-pts-input').value);
-  if (isNaN(pts)||pts<0) { toast('Enter a valid point value'); return; }
-  var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
-  var emp = staff[adjustTarget.idx];
-  var btn = document.querySelector('.pct-btn.selected');
-  emp.adjustedPts = pts; emp.adjustReason = reason;
-  emp.adjustPct = btn ? parseInt(btn.textContent) : null;
-  emp.isAdjusted = true;
-  var list = adjustTarget.list;
+function saveAdjustment(){
+  var reason=document.getElementById('adjust-reason').value.trim();
+  if(!reason){toast('Reason is required');return;}
+  var pts=parseFloat(document.getElementById('adjust-pts-input').value);
+  if(isNaN(pts)||pts<0){toast('Enter a valid point value');return;}
+  var staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
+  var emp=staff[adjustTarget.idx];
+  var btn=document.querySelector('.pct-btn.selected');
+  emp.adjustedPts=pts;emp.adjustReason=reason;
+  emp.adjustPct=btn?parseInt(btn.textContent):null;
+  emp.isAdjusted=true;
+  var list=adjustTarget.list;
   closeAdjustModal();
-  if (list === 'shift') { renderShiftList(); recalc(); }
-  else { renderEvtList(); recalcEvt(); }
+  if(list==='shift'){renderShiftList();recalc();}else{renderEvtList();recalcEvt();}
   toast('Adjustment saved');
 }
 
+// ROSTER EDIT MODAL
+function openRosterEdit(i){
+  rosterEditIdx=i;
+  var emp=roster[i];
+  document.getElementById('roster-edit-name').value=emp.name;
+  var sel=document.getElementById('roster-edit-role');
+  sel.innerHTML='<option value="">— select role —</option>';
+  ALL_ROLES.forEach(function(r){sel.innerHTML+='<option value="'+r.key+'"'+(r.key===emp.role?' selected':'')+'>'+r.label+'</option>';});
+  document.getElementById('roster-edit-modal').style.display='flex';
+}
+function closeRosterEdit(){document.getElementById('roster-edit-modal').style.display='none';rosterEditIdx=null;}
+function saveRosterEdit(){
+  var name=document.getElementById('roster-edit-name').value.trim();
+  var role=document.getElementById('roster-edit-role').value;
+  if(!name||!role){toast('Enter name and role');return;}
+  var dup=roster.find(function(e,i){return e.name.toLowerCase()===name.toLowerCase()&&i!==rosterEditIdx;});
+  if(dup){toast('Name already on roster');return;}
+  roster[rosterEditIdx]={name:name,role:role};
+  persist();syncRoster();
+  closeRosterEdit();
+  renderRoster();populateSelects();
+  toast('Updated!');
+}
+
 // SHIFT
-function addToShift() {
-  var ri = document.getElementById('add-from-roster').value;
-  var name, role;
-  if (ri !== '') { var e = roster[parseInt(ri)]; name=e.name; role=e.role; }
-  else { name=document.getElementById('add-name').value.trim(); role=document.getElementById('add-role').value; }
-  if (!name||!role) { toast('Enter name and role'); return; }
-  if (shiftStaff.find(function(e){ return e.name.toLowerCase()===name.toLowerCase(); })) { toast(name+' already on shift'); return; }
-  var cc = parseFloat(document.getElementById('add-cc-tips').value)||0;
-  shiftStaff.push({name:name, role:role, ccTips:cc});
+function addToShift(){
+  var ri=document.getElementById('add-from-roster').value;
+  var name,role;
+  if(ri!==''){var e=roster[parseInt(ri)];name=e.name;role=e.role;}
+  else{name=document.getElementById('add-name').value.trim();role=document.getElementById('add-role').value;}
+  if(!name||!role){toast('Enter name and role');return;}
+  if(shiftStaff.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast(name+' already on shift');return;}
+  var cc=parseFloat(document.getElementById('add-cc-tips').value)||0;
+  shiftStaff.push({name:name,role:role,ccTips:cc});
   document.getElementById('add-name').value='';
   document.getElementById('add-from-roster').value='';
   document.getElementById('add-cc-tips').value='';
-  renderShiftList(); recalc();
+  renderShiftList();recalc();
 }
-function removeShiftStaff(i) { shiftStaff.splice(i,1); renderShiftList(); recalc(); }
-function renderShiftList(net) {
-  var pool = parseFloat(document.getElementById('tip-pool').value)||0;
-  var health = pool*0.02;
-  if (net===undefined) net=pool-health;
-  var totalPts = shiftStaff.reduce(function(s,e){ return s+getEffectivePts(e); },0);
-  var dpp = totalPts>0 ? net/totalPts : 0;
-  var el = document.getElementById('shift-staff-list');
-  if (!shiftStaff.length) { el.innerHTML='<div class="empty">No staff added yet.</div>'; return; }
-  el.innerHTML = shiftStaff.map(function(e,i){
-    var pts=getEffectivePts(e); var adj=e.isAdjusted; var poolPay=dpp*pts; var cc=e.ccTips||0;
+function removeShiftStaff(i){shiftStaff.splice(i,1);renderShiftList();recalc();}
+function renderShiftList(net){
+  var pool=parseFloat(document.getElementById('tip-pool').value)||0;
+  var health=pool*0.02;
+  if(net===undefined)net=pool-health;
+  var totalPts=shiftStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
+  var dpp=totalPts>0?net/totalPts:0;
+  var el=document.getElementById('shift-staff-list');
+  if(!shiftStaff.length){el.innerHTML='<div class="empty">No staff added yet.</div>';return;}
+  el.innerHTML=shiftStaff.map(function(e,i){
+    var pts=getEffectivePts(e);var adj=e.isAdjusted;var poolPay=dpp*pts;var cc=e.ccTips||0;
     return '<div class="staff-row">'+
       '<div class="staff-info">'+
         '<div class="staff-name">'+e.name+'</div>'+
@@ -764,10 +815,10 @@ function renderShiftList(net) {
     '</div>';
   }).join('');
 }
-function recalc() {
+function recalc(){
   var pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  var health=pool*0.02; var net=pool-health;
-  var totalPts=shiftStaff.reduce(function(s,e){ return s+getEffectivePts(e); },0);
+  var health=pool*0.02;var net=pool-health;
+  var totalPts=shiftStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
   var dpp=totalPts>0?net/totalPts:0;
   document.getElementById('stat-pool').textContent=fmt(pool);
   document.getElementById('stat-health').textContent='-'+fmt(health);
@@ -776,15 +827,15 @@ function recalc() {
   document.getElementById('stat-dpp').textContent=fmt(dpp);
   renderShiftList(net);
 }
-function saveShift() {
+function saveShift(){
   var date=document.getElementById('shift-date').value;
   var pool=parseFloat(document.getElementById('tip-pool').value)||0;
   var supervisor=document.getElementById('shift-supervisor').value.trim();
   var notes=document.getElementById('shift-notes').value.trim();
-  if (!supervisor){toast('Enter supervisor name');return;}
-  if (!date){toast('Select a date');return;}
-  if (!pool){toast('Enter service charge pool amount');return;}
-  if (!shiftStaff.length){toast('Add at least one staff member');return;}
+  if(!supervisor){toast('Enter supervisor name');return;}
+  if(!date){toast('Select a date');return;}
+  if(!pool){toast('Enter service charge pool amount');return;}
+  if(!shiftStaff.length){toast('Add at least one staff member');return;}
   var health=parseFloat((pool*0.02).toFixed(2));
   var net=parseFloat((pool-health).toFixed(2));
   var totalPts=shiftStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
@@ -792,42 +843,42 @@ function saveShift() {
   var entry={id:Date.now(),type:'shift',date:date,pool:pool,healthDeduction:health,netPool:net,
     totalPts:totalPts,dpp:dpp,supervisor:supervisor,notes:notes,
     staff:shiftStaff.map(function(e){
-      var poolPay=parseFloat((dpp*getEffectivePts(e)).toFixed(2)); var cc=e.ccTips||0;
+      var poolPay=parseFloat((dpp*getEffectivePts(e)).toFixed(2));var cc=e.ccTips||0;
       return {name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
         tipOut:poolPay,ccTips:cc,totalPayout:parseFloat((poolPay+cc).toFixed(2)),
         isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null};
     })};
-  savedShifts.push(entry); persist();
+  savedShifts.push(entry);persist();
   shiftStaff=[];
   document.getElementById('tip-pool').value='';
   document.getElementById('shift-notes').value='';
-  renderShiftList(); recalc();
+  renderShiftList();recalc();
   toast('Shift saved!');
-  if (sheetsUrl) syncEntry(entry);
+  if(sheetsUrl)syncEntry(entry);
 }
 
 // EVENTS
-function addToEvt() {
+function addToEvt(){
   var ri=document.getElementById('evtadd-from-roster').value;
   var name,role;
-  if (ri!==''){var e=roster[parseInt(ri)];name=e.name;role=e.role;}
+  if(ri!==''){var e=roster[parseInt(ri)];name=e.name;role=e.role;}
   else{name=document.getElementById('evtadd-name').value.trim();role=document.getElementById('evtadd-role').value;}
-  if (!name||!role){toast('Enter name and role');return;}
-  if (evtStaff.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast(name+' already on crew');return;}
+  if(!name||!role){toast('Enter name and role');return;}
+  if(evtStaff.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast(name+' already on crew');return;}
   evtStaff.push({name:name,role:role});
   document.getElementById('evtadd-name').value='';
   document.getElementById('evtadd-from-roster').value='';
-  renderEvtList(); recalcEvt();
+  renderEvtList();recalcEvt();
 }
 function removeEvtStaff(i){evtStaff.splice(i,1);renderEvtList();recalcEvt();}
 function renderEvtList(net){
   var pool=parseFloat(document.getElementById('evt-pool').value)||0;
   var health=pool*0.02;
-  if (net===undefined) net=pool-health;
+  if(net===undefined)net=pool-health;
   var totalPts=evtStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
   var dpp=totalPts>0?net/totalPts:0;
   var el=document.getElementById('evt-staff-list');
-  if (!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
+  if(!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
   el.innerHTML=evtStaff.map(function(e,i){
     var pts=getEffectivePts(e);var adj=e.isAdjusted;
     return '<div class="staff-row">'+
@@ -862,10 +913,10 @@ function saveEvt(){
   var eventSubtotal=parseFloat(document.getElementById('evt-subtotal').value)||0;
   var supervisor=document.getElementById('evt-supervisor').value.trim();
   var notes=document.getElementById('evt-notes').value.trim();
-  if (!supervisor){toast('Enter supervisor name');return;}
-  if (!date){toast('Select a date');return;}
-  if (!pool){toast('Enter service charge pool amount');return;}
-  if (!evtStaff.length){toast('Add at least one crew member');return;}
+  if(!supervisor){toast('Enter supervisor name');return;}
+  if(!date){toast('Select a date');return;}
+  if(!pool){toast('Enter service charge pool amount');return;}
+  if(!evtStaff.length){toast('Add at least one crew member');return;}
   var health=parseFloat((pool*0.02).toFixed(2));
   var net=parseFloat((pool-health).toFixed(2));
   var totalPts=evtStaff.reduce(function(s,e){return s+getEffectivePts(e);},0);
@@ -886,13 +937,13 @@ function saveEvt(){
   document.getElementById('evt-notes').value='';
   renderEvtList();recalcEvt();
   toast('Event saved!');
-  if (sheetsUrl) syncEntry(entry);
+  if(sheetsUrl)syncEntry(entry);
 }
 
 // HISTORY
 function renderHistory(){
   var el=document.getElementById('history-list');
-  if (!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
+  if(!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
   var sorted=savedShifts.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
   el.innerHTML=sorted.map(function(s){
     var label=s.type==='event'?'Event: '+s.evtName:'Shift';
@@ -923,7 +974,7 @@ function renderHistory(){
   }).join('');
 }
 function deleteShift(id){
-  if (!confirm('Delete this entry?')) return;
+  if(!confirm('Delete this entry?'))return;
   savedShifts=savedShifts.filter(function(s){return s.id!==id;});
   persist();renderHistory();
 }
@@ -931,11 +982,12 @@ function deleteShift(id){
 // ROSTER
 function renderRoster(){
   var el=document.getElementById('roster-list');
-  if (!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
+  if(!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
   el.innerHTML=roster.map(function(e,i){
     return '<div class="roster-row">'+
       '<div style="flex:1;font-weight:500">'+e.name+'</div>'+
       '<div style="font-size:12px;color:var(--muted);flex:1">'+getRoleLabel(e.role)+'</div>'+
+      '<button class="edit-btn" style="margin-right:6px" onclick="openRosterEdit('+i+')">Edit</button>'+
       '<button class="rm-btn" onclick="removeRoster('+i+')">×</button>'+
     '</div>';
   }).join('');
@@ -943,12 +995,11 @@ function renderRoster(){
 function addRoster(){
   var name=document.getElementById('r-name').value.trim();
   var role=document.getElementById('r-role').value;
-  if (!name||!role){toast('Enter name and role');return;}
-  if (roster.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast('Already on roster');return;}
+  if(!name||!role){toast('Enter name and role');return;}
+  if(roster.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast('Already on roster');return;}
   roster.push({name:name,role:role});persist();
   document.getElementById('r-name').value='';
-  renderRoster();populateSelects();
-  syncRoster();
+  renderRoster();populateSelects();syncRoster();
   toast(name+' added');
 }
 function removeRoster(i){roster.splice(i,1);persist();renderRoster();populateSelects();syncRoster();}
@@ -960,29 +1011,106 @@ function saveRosterCsvUrl(){
   toast(rosterCsvUrl?'Roster URL saved!':'URL cleared');
 }
 function loadRosterFromCSV(){
-  if (!rosterCsvUrl){toast('Paste a Roster CSV URL in Settings first');return;}
+  if(!rosterCsvUrl){toast('Paste a Roster CSV URL in Settings first');return;}
   var el=document.getElementById('roster-load-confirm');
-  if (el) el.textContent='Loading...';
+  if(el)el.textContent='Loading...';
   fetch(rosterCsvUrl)
     .then(function(r){return r.text();})
     .then(function(csv){
       var lines=csv.trim().split('\n');
       var newRoster=[];
-      for (var i=1;i<lines.length;i++){
+      for(var i=1;i<lines.length;i++){
         var cols=lines[i].split(',');
         var name=cols[0]?cols[0].replace(/^"|"$/g,'').trim():'';
         var role=cols[1]?cols[1].replace(/^"|"$/g,'').trim():'';
-        if (name&&role) newRoster.push({name:name,role:role});
+        if(name&&role)newRoster.push({name:name,role:role});
       }
-      if (!newRoster.length){if(el)el.textContent='No roster data found.';return;}
+      if(!newRoster.length){if(el)el.textContent='No roster data found.';return;}
       roster=newRoster;persist();populateSelects();renderRoster();
-      if (el) el.textContent='Roster loaded — '+newRoster.length+' employees.';
+      if(el)el.textContent='Roster loaded — '+newRoster.length+' employees.';
       setTimeout(function(){if(el)el.textContent='';},3000);
       toast('Roster refreshed!');
     })
     .catch(function(){
-      if (el) el.textContent='Load failed — make sure the sheet is published.';
+      if(el)el.textContent='Load failed — make sure the sheet is published.';
       toast('Roster load failed');
+    });
+}
+
+// TIP LOG CSV (history sync)
+function saveTiplogCsvUrl(){
+  tiplogCsvUrl=document.getElementById('tiplog-csv-url').value.trim();
+  localStorage.setItem('sskTiplogCsvUrl',tiplogCsvUrl);
+  toast(tiplogCsvUrl?'Tip Log URL saved!':'URL cleared');
+}
+function parseCSVLine(line){
+  var result=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur.trim());
+  return result;
+}
+function loadHistoryFromCSV(){
+  if(!tiplogCsvUrl){toast('Paste a Tip Log CSV URL in Settings first');return;}
+  var el=document.getElementById('tiplog-load-confirm');
+  if(el)el.textContent='Loading...';
+  fetch(tiplogCsvUrl)
+    .then(function(r){return r.text();})
+    .then(function(csv){
+      var lines=csv.trim().split('\n');
+      if(lines.length<2){if(el)el.textContent='No data found.';return;}
+      var shiftMap={};
+      for(var i=1;i<lines.length;i++){
+        var cols=parseCSVLine(lines[i]);
+        if(cols.length<13)continue;
+        var date=cols[0],type=cols[1],label=cols[2],supervisor=cols[3];
+        var empName=cols[4],empRole=cols[5];
+        var pts=parseFloat(cols[6])||0,basePts=parseFloat(cols[7])||0;
+        var isAdj=cols[8]==='YES',adjReason=cols[9];
+        var poolPayout=parseFloat(cols[10])||0,ccTips=parseFloat(cols[11])||0;
+        var totalPayout=parseFloat(cols[12])||0;
+        var grossPool=parseFloat(cols[13])||0,healthDed=parseFloat(cols[14])||0;
+        var netPool=parseFloat(cols[15])||0,eventSubtotal=parseFloat(cols[16])||0;
+        var notes=cols[17]||'';
+        var key=date+'|'+type+'|'+label+'|'+supervisor;
+        if(!shiftMap[key]){
+          shiftMap[key]={
+            id:Date.now()+i,type:type,date:date,
+            evtName:type==='event'?label:undefined,
+            pool:grossPool,healthDeduction:healthDed,netPool:netPool,
+            eventSubtotal:eventSubtotal||undefined,
+            supervisor:supervisor,notes:notes,
+            totalPts:0,dpp:0,staff:[]
+          };
+        }
+        shiftMap[key].staff.push({
+          name:empName,role:empRole,pts:pts,basePts:basePts,
+          tipOut:poolPayout,ccTips:ccTips,totalPayout:totalPayout,
+          isAdjusted:isAdj,adjustReason:adjReason,adjustPct:null
+        });
+      }
+      var newShifts=Object.keys(shiftMap).map(function(k){return shiftMap[k];});
+      var merged=0;
+      newShifts.forEach(function(ns){
+        var exists=savedShifts.some(function(s){
+          return s.date===ns.date&&s.type===ns.type&&
+            (ns.type==='event'?s.evtName===ns.evtName:true)&&
+            s.supervisor===ns.supervisor;
+        });
+        if(!exists){savedShifts.push(ns);merged++;}
+      });
+      persist();
+      if(el)el.textContent='Loaded '+newShifts.length+' shifts, '+merged+' new added.';
+      setTimeout(function(){if(el)el.textContent='';},4000);
+      toast('History synced — '+merged+' new shifts added');
+    })
+    .catch(function(){
+      if(el)el.textContent='Load failed — make sure the Tip Log tab is published.';
+      toast('History load failed');
     });
 }
 
@@ -1003,22 +1131,22 @@ function renderEmployeeReport(){
   var to=document.getElementById('emp-report-to').value;
   var el=document.getElementById('emp-report-out');
   var actions=document.getElementById('emp-report-actions');
-  if (!name){toast('Select an employee');return;}
+  if(!name){toast('Select an employee');return;}
   var shifts=savedShifts.filter(function(s){
-    return (!from||s.date>=from)&&(!to||s.date<=to)&&s.staff.some(function(e){return e.name===name;});
+    return(!from||s.date>=from)&&(!to||s.date<=to)&&s.staff.some(function(e){return e.name===name;});
   });
-  if (!shifts.length){el.innerHTML='<div class="empty">No shifts found for '+name+' in this range.</div>';actions.style.display='none';return;}
+  if(!shifts.length){el.innerHTML='<div class="empty">No shifts found for '+name+' in this range.</div>';actions.style.display='none';return;}
   var totalPool=0,totalCC=0,totalAll=0;
   var textLines=['Tip Summary — '+name,(from||'...')+' to '+(to||'...'),''];
   var rows=shifts.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(s){
     var emp=s.staff.find(function(e){return e.name===name;});
-    if (!emp) return '';
+    if(!emp)return '';
     var label=s.type==='event'?s.evtName:'Shift';
-    var poolPay=emp.tipOut||0; var cc=emp.ccTips||0; var total=emp.totalPayout||(poolPay+cc);
+    var poolPay=emp.tipOut||0;var cc=emp.ccTips||0;var total=emp.totalPayout||(poolPay+cc);
     totalPool+=poolPay;totalCC+=cc;totalAll+=total;
     textLines.push(s.date+' · '+label+(s.supervisor?' (Sup: '+s.supervisor+')':''));
     textLines.push('  Pool payout: '+fmt(poolPay));
-    if (cc>0) textLines.push('  CC tips: '+fmt(cc));
+    if(cc>0)textLines.push('  CC tips: '+fmt(cc));
     textLines.push('  Total: '+fmt(total));
     textLines.push('');
     return '<div class="pay-row">'+
@@ -1031,7 +1159,7 @@ function renderEmployeeReport(){
   }).join('');
   textLines.push('─────────────────');
   textLines.push('Pool total: '+fmt(totalPool));
-  if (totalCC>0) textLines.push('CC tips total: '+fmt(totalCC));
+  if(totalCC>0)textLines.push('CC tips total: '+fmt(totalCC));
   textLines.push('Grand total: '+fmt(totalAll));
   empReportText=textLines.join('\n');
   el.innerHTML=
@@ -1044,7 +1172,7 @@ function renderEmployeeReport(){
   actions.style.display='block';
 }
 function copyEmployeeReport(){
-  if (!empReportText) return;
+  if(!empReportText)return;
   try{
     var ta=document.createElement('textarea');
     ta.value=empReportText;
@@ -1064,11 +1192,11 @@ function renderPayroll(){
   var to=document.getElementById('pay-to').value;
   var filtered=savedShifts.filter(function(s){return(!from||s.date>=from)&&(!to||s.date<=to);});
   var el=document.getElementById('payroll-out');
-  if (!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
+  if(!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
   var empMap={};
   filtered.forEach(function(s){
     s.staff.forEach(function(e){
-      if (!empMap[e.name]) empMap[e.name]={total:0,shifts:[]};
+      if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
       var total=e.totalPayout!==undefined?e.totalPayout:e.tipOut;
       empMap[e.name].total+=total;
       empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,ccTips:e.ccTips||0,totalPayout:total,label:s.type==='event'?s.evtName:'Shift',isAdjusted:e.isAdjusted});
@@ -1082,8 +1210,8 @@ function renderPayroll(){
       '<div><div class="pay-name">'+name+(data.shifts.some(function(s){return s.isAdjusted;})?'  <span style="font-size:11px;color:var(--amber)">&#9873;</span>':'')+'</div>'+
       '<div class="pay-detail">'+data.shifts.map(function(s){
         var d=s.date+' · '+s.label+' · Pool: '+fmt(s.tipOut);
-        if (s.ccTips) d+=' + CC: '+fmt(s.ccTips)+' = '+fmt(s.totalPayout);
-        if (s.isAdjusted) d+=' &#9873;';
+        if(s.ccTips)d+=' + CC: '+fmt(s.ccTips)+' = '+fmt(s.totalPayout);
+        if(s.isAdjusted)d+=' &#9873;';
         return d;
       }).join('<br>')+'</div></div>'+
       '<div class="pay-total">'+fmt(data.total)+'</div>'+
@@ -1102,7 +1230,7 @@ function exportCSV(){
   var from=document.getElementById('pay-from').value;
   var to=document.getElementById('pay-to').value;
   var filtered=savedShifts.filter(function(s){return(!from||s.date>=from)&&(!to||s.date<=to);});
-  if (!filtered.length){toast('No data to export');return;}
+  if(!filtered.length){toast('No data to export');return;}
   var csv='Employee,Date,Shift/Event,Role,Supervisor,Gross Pool,Health Deduction,Net Pool,Pts Used,Base Pts,Adjusted,Adjust Reason,Pool Payout,CC Tips,Total Payout,Notes\n';
   filtered.forEach(function(s){
     var label=s.type==='event'?s.evtName:'Shift';
@@ -1128,7 +1256,7 @@ function renderAdminReport(){
   var to=document.getElementById('admin-pay-to').value;
   var filtered=savedShifts.filter(function(s){return s.type==='event'&&s.eventSubtotal&&(!from||s.date>=from)&&(!to||s.date<=to);});
   var el=document.getElementById('admin-report-out');
-  if (!filtered.length){el.innerHTML='<div class="empty">No events with subtotals in this range.</div>';return;}
+  if(!filtered.length){el.innerHTML='<div class="empty">No events with subtotals in this range.</div>';return;}
   var totalSub=filtered.reduce(function(s,e){return s+e.eventSubtotal;},0);
   var totalComm=totalSub*0.04;
   var rows=filtered.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(s){
@@ -1152,7 +1280,7 @@ function exportAdminCSV(){
   var from=document.getElementById('admin-pay-from').value;
   var to=document.getElementById('admin-pay-to').value;
   var filtered=savedShifts.filter(function(s){return s.type==='event'&&s.eventSubtotal&&(!from||s.date>=from)&&(!to||s.date<=to);});
-  if (!filtered.length){toast('No data to export');return;}
+  if(!filtered.length){toast('No data to export');return;}
   var csv='Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
   filtered.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).forEach(function(s){
     csv+='"'+s.date+'","'+s.evtName+'","'+(s.supervisor||'')+'","'+s.eventSubtotal.toFixed(2)+'","'+(s.eventSubtotal*0.04).toFixed(2)+'"\n';
@@ -1175,7 +1303,7 @@ function saveSheetUrl(){
   toast(sheetsUrl?'URL saved!':'URL cleared');
 }
 function syncEntry(entry){
-  if (!sheetsUrl) return;
+  if(!sheetsUrl)return;
   var el=document.getElementById('sync-status');
   el.textContent='Syncing...';el.className='sync-pill syncing';
   fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addEntry',entry:entry}),headers:{'Content-Type':'text/plain'}})
@@ -1183,7 +1311,7 @@ function syncEntry(entry){
     .catch(function(){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — saved locally');});
 }
 function syncToSheets(){
-  if (!sheetsUrl){toast('No URL set');return;}
+  if(!sheetsUrl){toast('No URL set');return;}
   var el=document.getElementById('sync-status');
   el.textContent='Syncing...';el.className='sync-pill syncing';
   fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'bulkSync',shifts:savedShifts}),headers:{'Content-Type':'text/plain'}})
@@ -1191,12 +1319,12 @@ function syncToSheets(){
     .catch(function(){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — check URL');});
 }
 function syncRoster(){
-  if (!sheetsUrl) return;
+  if(!sheetsUrl)return;
   fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'syncRoster',roster:roster}),headers:{'Content-Type':'text/plain'}})
     .catch(function(e){console.log('Roster sync failed',e);});
 }
 function testConnection(){
-  if (!sheetsUrl){toast('Paste a URL first');return;}
+  if(!sheetsUrl){toast('Paste a URL first');return;}
   fetch(sheetsUrl+'?action=ping')
     .then(function(r){return r.text();})
     .then(function(t){if(t.includes('ok')){toast('Connected!');updateSyncStatus();}else toast('Unexpected response');})
@@ -1244,7 +1372,7 @@ function initApp(){
   document.getElementById('emp-report-from').value=twaStr;
   document.getElementById('emp-report-to').value=today;
   populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
-  if (rosterCsvUrl) showRosterBanner();
+  if(rosterCsvUrl)showRosterBanner();
 }
 </script>
 </body>
