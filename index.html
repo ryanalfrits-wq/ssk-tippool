@@ -118,7 +118,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <body>
 
 <div id="pin-screen" class="pin-screen">
-  <img src="https://ryanalfrits-wq.github.io/ssk-tippool/logo.png" style="width:180px;margin-bottom:16px;object-fit:contain">
+  <img src="https://ryanalfrits-wq.github.io/ssk-tippool/logo.png" style="width:180px;margin-bottom:16px;object-fit:contain" onerror="this.style.display='none'">
   <div class="pin-logo">Sama Sama Kitchen</div>
   <div class="pin-sub">Tip Pool Manager</div>
   <div class="pin-display" id="pin-display">&#8203;</div>
@@ -162,7 +162,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="tab" onclick="showTab('admin',this)">Admin</button>
   </div>
 
-  <!-- SHIFT -->
   <div id="page-shift" class="page active">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -197,7 +196,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="btn-green" onclick="saveShift()">Save shift</button>
   </div>
 
-  <!-- EVENTS -->
   <div id="page-events" class="page">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -234,12 +232,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="btn-green" onclick="saveEvt()">Save event</button>
   </div>
 
-  <!-- HISTORY -->
   <div id="page-history" class="page">
     <div id="history-list"></div>
   </div>
 
-  <!-- ROSTER -->
   <div id="page-roster" class="page">
     <div class="card">
       <div class="card-title">Employee roster</div>
@@ -255,7 +251,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- PAYROLL -->
   <div id="page-payroll" class="page">
     <div class="card">
       <div class="card-title">Payroll summary</div>
@@ -271,7 +266,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div id="page-settings" class="page">
     <div class="card">
       <div class="settings-section">
@@ -286,10 +280,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="settings-section">
         <div class="settings-title">Setup instructions</div>
         <ol class="instructions">
-          <li>Go to <strong>sheets.google.com</strong> → create a new sheet named <strong>SSK Tip Pool</strong></li>
+          <li>Go to <strong>sheets.google.com</strong> and create a new sheet named <strong>SSK Tip Pool</strong></li>
           <li>Click <strong>Extensions → Apps Script</strong></li>
           <li>Delete the default code and paste in the Apps Script code below</li>
-          <li>Hit ⌘S to save, then click <strong>Deploy → New deployment</strong></li>
+          <li>Hit ⌘S, then click <strong>Deploy → New deployment</strong></li>
           <li>Type: Web app · Execute as: Me · Who has access: Anyone</li>
           <li>Authorize, copy the Web App URL and paste it above</li>
         </ol>
@@ -313,7 +307,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div id="page-admin" class="page">
     <div id="admin-lock">
       <div class="card" style="text-align:center;padding:32px 16px">
@@ -357,7 +350,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 </div>
 
-<!-- ADJUST MODAL -->
 <div id="adjust-modal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-title" id="adjust-modal-title">Adjust points</div>
@@ -402,7 +394,7 @@ const SHIFT_ROLES = [
   {key:'dinner_lead_server',label:'Dinner lead server',pts:1},
   {key:'dinner_lead_bartender',label:'Dinner lead bartender',pts:1},
   {key:'host',label:'Host',pts:0.3},
-  {key:'busser',label:'Busser / food runner',pts:0.2},
+  {key:'busser',label:'Busser / food runner',pts:0.2}
 ];
 const EVT_ROLES = [
   {key:'foh_onsite',label:'FOH onsite crew',pts:1},
@@ -412,7 +404,7 @@ const EVT_ROLES = [
   {key:'banquet_chef',label:'Banquet chef',pts:0.75},
   {key:'catering_chef',label:'Catering chefs',pts:0.5},
   {key:'bev_director',label:'Beverage director',pts:0.2},
-  {key:'dishwasher',label:'Dishwashers',pts:0.3},
+  {key:'dishwasher',label:'Dishwashers',pts:0.3}
 ];
 const ALL_ROLES = SHIFT_ROLES.concat(EVT_ROLES);
 
@@ -427,620 +419,584 @@ let adminPinEntry = '';
 let adminUnlocked = false;
 let adjustTarget = null;
 
-function persist(){localStorage.setItem('sskRoster',JSON.stringify(roster));localStorage.setItem('sskShifts',JSON.stringify(savedShifts));}
-function fmt(n){return '$'+parseFloat(n||0).toFixed(2);}
-function fmtPts(n){return parseFloat(n||0).toFixed(2);}
-function getRoleLabel(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.label:k;}
-function getRolePts(k){const r=ALL_ROLES.find(r=>r.key===k);return r?r.pts:0;}
-function getEffectivePts(e){return e.isAdjusted&&e.adjustedPts!==undefined?e.adjustedPts:getRolePts(e.role);}
+function persist() {
+  localStorage.setItem('sskRoster', JSON.stringify(roster));
+  localStorage.setItem('sskShifts', JSON.stringify(savedShifts));
+}
+function fmt(n) { return '$' + parseFloat(n || 0).toFixed(2); }
+function fmtPts(n) { return parseFloat(n || 0).toFixed(2); }
+function getRoleLabel(k) { const r = ALL_ROLES.find(r => r.key === k); return r ? r.label : k; }
+function getRolePts(k) { const r = ALL_ROLES.find(r => r.key === k); return r ? r.pts : 0; }
+function getEffectivePts(e) { return e.isAdjusted && e.adjustedPts !== undefined ? e.adjustedPts : getRolePts(e.role); }
 
-function toast(msg,dur=2400){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
+function toast(msg, dur) {
+  dur = dur || 2400;
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, dur);
 }
 
-// MAIN PIN
-function pinPress(d){
-  if(pinEntry.length>=6)return;
-  pinEntry+=d;
-  document.getElementById('pin-display').textContent='●'.repeat(pinEntry.length);
-  document.getElementById('pin-error').textContent='';
-  if(pinEntry.length>=4)setTimeout(checkPin,120);
+function pinPress(d) {
+  if (pinEntry.length >= 6) return;
+  pinEntry += d;
+  document.getElementById('pin-display').textContent = '●'.repeat(pinEntry.length);
+  document.getElementById('pin-error').textContent = '';
+  if (pinEntry.length >= 4) setTimeout(checkPin, 120);
 }
-function pinDel(){
-  pinEntry=pinEntry.slice(0,-1);
-  document.getElementById('pin-display').textContent=pinEntry.length?'●'.repeat(pinEntry.length):'​';
+function pinDel() {
+  pinEntry = pinEntry.slice(0, -1);
+  document.getElementById('pin-display').textContent = pinEntry.length ? '●'.repeat(pinEntry.length) : '\u200b';
 }
-function checkPin(){
-  if(pinEntry===pin){
-    document.getElementById('pin-screen').style.display='none';
-    document.getElementById('main-app').style.display='block';
+function checkPin() {
+  if (pinEntry === pin) {
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
     initApp();
   } else {
-    document.getElementById('pin-error').textContent='Incorrect PIN. Try again.';
-    pinEntry='';
-    document.getElementById('pin-display').textContent='​';
+    document.getElementById('pin-error').textContent = 'Incorrect PIN. Try again.';
+    pinEntry = '';
+    document.getElementById('pin-display').textContent = '\u200b';
   }
 }
-function logout(){
-  pinEntry='';
-  document.getElementById('pin-display').textContent='​';
-  document.getElementById('pin-error').textContent='';
-  document.getElementById('main-app').style.display='none';
-  document.getElementById('pin-screen').style.display='flex';
+function logout() {
+  pinEntry = '';
+  document.getElementById('pin-display').textContent = '\u200b';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('pin-screen').style.display = 'flex';
 }
-function changePin(){
-  const np=document.getElementById('new-pin').value.trim();
-  const cp=document.getElementById('confirm-pin').value.trim();
-  if(np.length<4){toast('PIN must be at least 4 digits');return;}
-  if(np!==cp){toast('PINs do not match');return;}
-  pin=np;localStorage.setItem('sskPin',pin);
-  document.getElementById('new-pin').value='';
-  document.getElementById('confirm-pin').value='';
+function changePin() {
+  var np = document.getElementById('new-pin').value.trim();
+  var cp = document.getElementById('confirm-pin').value.trim();
+  if (np.length < 4) { toast('PIN must be at least 4 digits'); return; }
+  if (np !== cp) { toast('PINs do not match'); return; }
+  pin = np; localStorage.setItem('sskPin', pin);
+  document.getElementById('new-pin').value = '';
+  document.getElementById('confirm-pin').value = '';
   toast('PIN updated!');
 }
 
-// ADMIN PIN
-function adminPinPress(d){
-  if(adminPinEntry.length>=6)return;
-  adminPinEntry+=d;
-  document.getElementById('admin-pin-display').textContent='●'.repeat(adminPinEntry.length);
-  document.getElementById('admin-pin-error').textContent='';
-  if(adminPinEntry.length>=4)setTimeout(checkAdminPin,120);
+function adminPinPress(d) {
+  if (adminPinEntry.length >= 6) return;
+  adminPinEntry += d;
+  document.getElementById('admin-pin-display').textContent = '●'.repeat(adminPinEntry.length);
+  document.getElementById('admin-pin-error').textContent = '';
+  if (adminPinEntry.length >= 4) setTimeout(checkAdminPin, 120);
 }
-function adminPinDel(){
-  adminPinEntry=adminPinEntry.slice(0,-1);
-  document.getElementById('admin-pin-display').textContent=adminPinEntry.length?'●'.repeat(adminPinEntry.length):'​';
+function adminPinDel() {
+  adminPinEntry = adminPinEntry.slice(0, -1);
+  document.getElementById('admin-pin-display').textContent = adminPinEntry.length ? '●'.repeat(adminPinEntry.length) : '\u200b';
 }
-function checkAdminPin(){
-  if(adminPinEntry===ADMIN_PIN){
-    adminUnlocked=true;
-    document.getElementById('admin-lock').style.display='none';
-    document.getElementById('admin-content').style.display='block';
+function checkAdminPin() {
+  if (adminPinEntry === ADMIN_PIN) {
+    adminUnlocked = true;
+    document.getElementById('admin-lock').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
     renderAdminReport();
   } else {
-    document.getElementById('admin-pin-error').textContent='Incorrect PIN.';
-    adminPinEntry='';
-    document.getElementById('admin-pin-display').textContent='​';
+    document.getElementById('admin-pin-error').textContent = 'Incorrect PIN.';
+    adminPinEntry = '';
+    document.getElementById('admin-pin-display').textContent = '\u200b';
   }
 }
-function lockAdmin(){
-  adminUnlocked=false;
-  adminPinEntry='';
-  document.getElementById('admin-pin-display').textContent='​';
-  document.getElementById('admin-pin-error').textContent='';
-  document.getElementById('admin-lock').style.display='block';
-  document.getElementById('admin-content').style.display='none';
+function lockAdmin() {
+  adminUnlocked = false;
+  adminPinEntry = '';
+  document.getElementById('admin-pin-display').textContent = '\u200b';
+  document.getElementById('admin-pin-error').textContent = '';
+  document.getElementById('admin-lock').style.display = 'block';
+  document.getElementById('admin-content').style.display = 'none';
 }
 
-// TABS
-function showTab(t,el){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  if(el)el.classList.add('active');
-  document.getElementById('page-'+t).classList.add('active');
-  if(t==='history')renderHistory();
-  if(t==='roster'){renderRoster();populateSelects();}
-  if(t==='payroll')renderPayroll();
-  if(t==='settings'){document.getElementById('sheets-url').value=sheetsUrl;updateSyncStatus();}
-  if(t==='admin'&&!adminUnlocked){lockAdmin();}
+function showTab(t, el) {
+  document.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  document.getElementById('page-' + t).classList.add('active');
+  if (t === 'history') renderHistory();
+  if (t === 'roster') { renderRoster(); populateSelects(); }
+  if (t === 'payroll') renderPayroll();
+  if (t === 'settings') { document.getElementById('sheets-url').value = sheetsUrl; updateSyncStatus(); }
+  if (t === 'admin' && !adminUnlocked) lockAdmin();
 }
 
-function updateSyncStatus(){
-  const el=document.getElementById('sync-status');
-  if(sheetsUrl){el.textContent='Sheets connected';el.className='sync-pill ok';}
-  else{el.textContent='No Sheets URL';el.className='sync-pill';}
+function updateSyncStatus() {
+  var el = document.getElementById('sync-status');
+  if (sheetsUrl) { el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; }
+  else { el.textContent = 'No Sheets URL'; el.className = 'sync-pill'; }
 }
 
-function populateSelects(){
-  const sr=document.getElementById('add-role');
-  sr.innerHTML='<option value="">— select role —</option>';
-  SHIFT_ROLES.forEach(r=>{sr.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
-  const er=document.getElementById('evtadd-role');
-  er.innerHTML='<option value="">— select role —</option>';
-  EVT_ROLES.forEach(r=>{er.innerHTML+=`<option value="${r.key}">${r.label} (${fmtPts(r.pts)}pt)</option>`;});
-  const rr=document.getElementById('r-role');
-  rr.innerHTML='<option value="">— assign role —</option>';
-  ALL_ROLES.forEach(r=>{rr.innerHTML+=`<option value="${r.key}">${r.label}</option>`;});
-  ['add-from-roster','evtadd-from-roster'].forEach(id=>{
-    const s=document.getElementById(id);
-    s.innerHTML='<option value="">— choose from roster —</option>';
-    roster.forEach((e,i)=>{s.innerHTML+=`<option value="${i}">${e.name} — ${getRoleLabel(e.role)}</option>`;});
+function populateSelects() {
+  var sr = document.getElementById('add-role');
+  sr.innerHTML = '<option value="">— select role —</option>';
+  SHIFT_ROLES.forEach(function(r) { sr.innerHTML += '<option value="' + r.key + '">' + r.label + ' (' + fmtPts(r.pts) + 'pt)</option>'; });
+
+  var er = document.getElementById('evtadd-role');
+  er.innerHTML = '<option value="">— select role —</option>';
+  EVT_ROLES.forEach(function(r) { er.innerHTML += '<option value="' + r.key + '">' + r.label + ' (' + fmtPts(r.pts) + 'pt)</option>'; });
+
+  var rr = document.getElementById('r-role');
+  rr.innerHTML = '<option value="">— assign role —</option>';
+  ALL_ROLES.forEach(function(r) { rr.innerHTML += '<option value="' + r.key + '">' + r.label + '</option>'; });
+
+  ['add-from-roster', 'evtadd-from-roster'].forEach(function(id) {
+    var s = document.getElementById(id);
+    s.innerHTML = '<option value="">— choose from roster —</option>';
+    roster.forEach(function(e, i) { s.innerHTML += '<option value="' + i + '">' + e.name + ' — ' + getRoleLabel(e.role) + '</option>'; });
   });
 }
 
-// ADJUST MODAL
-function openAdjustModal(list,idx){
-  adjustTarget={list,idx};
-  const staff=list==='shift'?shiftStaff:evtStaff;
-  const emp=staff[idx];
-  const basePts=getRolePts(emp.role);
-  document.getElementById('adjust-modal-title').textContent=`Adjust points — ${emp.name}`;
-  document.getElementById('adjust-modal-sub').textContent=`Role: ${getRoleLabel(emp.role)} · Base points: ${fmtPts(basePts)}pt`;
-  document.getElementById('adjust-pts-input').value=emp.adjustedPts!==undefined?fmtPts(emp.adjustedPts):fmtPts(basePts);
-  document.getElementById('adjust-reason').value=emp.adjustReason||'';
-  document.querySelectorAll('.pct-btn').forEach(b=>b.classList.remove('selected'));
-  if(emp.adjustPct!==undefined){document.querySelectorAll('.pct-btn').forEach(b=>{if(parseInt(b.textContent)===emp.adjustPct)b.classList.add('selected');});}
-  document.getElementById('adjust-modal').style.display='flex';
+function openAdjustModal(list, idx) {
+  adjustTarget = {list: list, idx: idx};
+  var staff = list === 'shift' ? shiftStaff : evtStaff;
+  var emp = staff[idx];
+  var basePts = getRolePts(emp.role);
+  document.getElementById('adjust-modal-title').textContent = 'Adjust points — ' + emp.name;
+  document.getElementById('adjust-modal-sub').textContent = 'Role: ' + getRoleLabel(emp.role) + ' · Base points: ' + fmtPts(basePts) + 'pt';
+  document.getElementById('adjust-pts-input').value = emp.adjustedPts !== undefined ? fmtPts(emp.adjustedPts) : fmtPts(basePts);
+  document.getElementById('adjust-reason').value = emp.adjustReason || '';
+  document.querySelectorAll('.pct-btn').forEach(function(b) { b.classList.remove('selected'); });
+  if (emp.adjustPct !== undefined) {
+    document.querySelectorAll('.pct-btn').forEach(function(b) { if (parseInt(b.textContent) === emp.adjustPct) b.classList.add('selected'); });
+  }
+  document.getElementById('adjust-modal').style.display = 'flex';
 }
-function closeAdjustModal(){document.getElementById('adjust-modal').style.display='none';adjustTarget=null;}
-function selectPct(pct){
-  document.querySelectorAll('.pct-btn').forEach(b=>b.classList.remove('selected'));
+function closeAdjustModal() { document.getElementById('adjust-modal').style.display = 'none'; adjustTarget = null; }
+function selectPct(pct) {
+  document.querySelectorAll('.pct-btn').forEach(function(b) { b.classList.remove('selected'); });
   event.target.classList.add('selected');
-  const staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
-  const basePts=getRolePts(staff[adjustTarget.idx].role);
-  document.getElementById('adjust-pts-input').value=(basePts*(pct/100)).toFixed(2);
+  var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
+  var basePts = getRolePts(staff[adjustTarget.idx].role);
+  document.getElementById('adjust-pts-input').value = (basePts * (pct / 100)).toFixed(2);
 }
-function saveAdjustment(){
-  const reason=document.getElementById('adjust-reason').value.trim();
-  if(!reason){toast('Reason is required');return;}
-  const pts=parseFloat(document.getElementById('adjust-pts-input').value);
-  if(isNaN(pts)||pts<0){toast('Enter a valid point value');return;}
-  const staff=adjustTarget.list==='shift'?shiftStaff:evtStaff;
-  const emp=staff[adjustTarget.idx];
-  const selectedBtn=document.querySelector('.pct-btn.selected');
-  emp.adjustedPts=pts;
-  emp.adjustReason=reason;
-  emp.adjustPct=selectedBtn?parseInt(selectedBtn.textContent):null;
-  emp.isAdjusted=true;
-  const list=adjustTarget.list;
+function saveAdjustment() {
+  var reason = document.getElementById('adjust-reason').value.trim();
+  if (!reason) { toast('Reason is required'); return; }
+  var pts = parseFloat(document.getElementById('adjust-pts-input').value);
+  if (isNaN(pts) || pts < 0) { toast('Enter a valid point value'); return; }
+  var staff = adjustTarget.list === 'shift' ? shiftStaff : evtStaff;
+  var emp = staff[adjustTarget.idx];
+  var selectedBtn = document.querySelector('.pct-btn.selected');
+  emp.adjustedPts = pts;
+  emp.adjustReason = reason;
+  emp.adjustPct = selectedBtn ? parseInt(selectedBtn.textContent) : null;
+  emp.isAdjusted = true;
+  var list = adjustTarget.list;
   closeAdjustModal();
-  if(list==='shift'){renderShiftList();recalc();}
-  else{renderEvtList();recalcEvt();}
+  if (list === 'shift') { renderShiftList(); recalc(); }
+  else { renderEvtList(); recalcEvt(); }
   toast('Adjustment saved');
 }
 
-// SHIFT
-function addToShift(){
-  const ri=document.getElementById('add-from-roster').value;
-  let name,role;
-  if(ri!==''){const e=roster[parseInt(ri)];name=e.name;role=e.role;}
-  else{name=document.getElementById('add-name').value.trim();role=document.getElementById('add-role').value;}
-  if(!name||!role){toast('Enter name and role');return;}
-  if(shiftStaff.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast(`${name} already on shift`);return;}
-  shiftStaff.push({name,role});
-  document.getElementById('add-name').value='';
-  document.getElementById('add-from-roster').value='';
-  renderShiftList();recalc();
+function addToShift() {
+  var ri = document.getElementById('add-from-roster').value;
+  var name, role;
+  if (ri !== '') { var e = roster[parseInt(ri)]; name = e.name; role = e.role; }
+  else { name = document.getElementById('add-name').value.trim(); role = document.getElementById('add-role').value; }
+  if (!name || !role) { toast('Enter name and role'); return; }
+  if (shiftStaff.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast(name + ' already on shift'); return; }
+  shiftStaff.push({name: name, role: role});
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-from-roster').value = '';
+  renderShiftList(); recalc();
 }
-function removeShiftStaff(i){shiftStaff.splice(i,1);renderShiftList();recalc();}
-function renderShiftList(){
-  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  const el=document.getElementById('shift-staff-list');
-  if(!shiftStaff.length){el.innerHTML='<div class="empty">No staff added yet.</div>';return;}
-  el.innerHTML=shiftStaff.map((e,i)=>{
-    const pts=getEffectivePts(e);
-    const adj=e.isAdjusted;
-    return `<div class="staff-row">
-      <div class="staff-info">
-        <div class="staff-name">${e.name}</div>
-        <div class="staff-role">${getRoleLabel(e.role)}</div>
-        ${adj?`<div class="flag-note">⚑ ${e.adjustReason}</div>`:''}
-      </div>
-      <span class="pts-pill${adj?' adjusted':''}">${fmtPts(pts)}pt</span>
-      <span class="tip-amt${adj?' adjusted':''}">${fmt(dpp*pts)}</span>
-      <button class="edit-btn" onclick="openAdjustModal('shift',${i})">Edit pts</button>
-      <button class="rm-btn" onclick="removeShiftStaff(${i})">×</button>
-    </div>`;
+function removeShiftStaff(i) { shiftStaff.splice(i, 1); renderShiftList(); recalc(); }
+function renderShiftList() {
+  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
+  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  var el = document.getElementById('shift-staff-list');
+  if (!shiftStaff.length) { el.innerHTML = '<div class="empty">No staff added yet.</div>'; return; }
+  el.innerHTML = shiftStaff.map(function(e, i) {
+    var pts = getEffectivePts(e);
+    var adj = e.isAdjusted;
+    return '<div class="staff-row">' +
+      '<div class="staff-info">' +
+        '<div class="staff-name">' + e.name + '</div>' +
+        '<div class="staff-role">' + getRoleLabel(e.role) + '</div>' +
+        (adj ? '<div class="flag-note">&#9873; ' + e.adjustReason + '</div>' : '') +
+      '</div>' +
+      '<span class="pts-pill' + (adj ? ' adjusted' : '') + '">' + fmtPts(pts) + 'pt</span>' +
+      '<span class="tip-amt' + (adj ? ' adjusted' : '') + '">' + fmt(dpp * pts) + '</span>' +
+      '<button class="edit-btn" onclick="openAdjustModal(\'shift\',' + i + ')">Edit pts</button>' +
+      '<button class="rm-btn" onclick="removeShiftStaff(' + i + ')">×</button>' +
+    '</div>';
   }).join('');
 }
-function recalc(){
-  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  document.getElementById('stat-pool').textContent=fmt(pool);
-  document.getElementById('stat-pts').textContent=fmtPts(totalPts);
-  document.getElementById('stat-dpp').textContent=fmt(dpp);
+function recalc() {
+  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
+  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  document.getElementById('stat-pool').textContent = fmt(pool);
+  document.getElementById('stat-pts').textContent = fmtPts(totalPts);
+  document.getElementById('stat-dpp').textContent = fmt(dpp);
   renderShiftList();
 }
-function saveShift(){
-  const date=document.getElementById('shift-date').value;
-  const pool=parseFloat(document.getElementById('tip-pool').value)||0;
-  const supervisor=document.getElementById('shift-supervisor').value.trim();
-  const notes=document.getElementById('shift-notes').value.trim();
-  if(!supervisor){toast('Enter supervisor name');return;}
-  if(!date){toast('Select a date');return;}
-  if(!pool){toast('Enter tip pool amount');return;}
-  if(!shiftStaff.length){toast('Add at least one staff member');return;}
-  const totalPts=shiftStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  const entry={id:Date.now(),type:'shift',date,pool,totalPts,dpp,supervisor,notes,
-    staff:shiftStaff.map(e=>({name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
-      tipOut:parseFloat((dpp*getEffectivePts(e)).toFixed(2)),isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null}))};
-  savedShifts.push(entry);persist();
-  shiftStaff=[];
-  document.getElementById('tip-pool').value='';
-  document.getElementById('shift-notes').value='';
-  renderShiftList();recalc();
+function saveShift() {
+  var date = document.getElementById('shift-date').value;
+  var pool = parseFloat(document.getElementById('tip-pool').value) || 0;
+  var supervisor = document.getElementById('shift-supervisor').value.trim();
+  var notes = document.getElementById('shift-notes').value.trim();
+  if (!supervisor) { toast('Enter supervisor name'); return; }
+  if (!date) { toast('Select a date'); return; }
+  if (!pool) { toast('Enter tip pool amount'); return; }
+  if (!shiftStaff.length) { toast('Add at least one staff member'); return; }
+  var totalPts = shiftStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  var entry = {
+    id: Date.now(), type: 'shift', date: date, pool: pool,
+    totalPts: totalPts, dpp: dpp, supervisor: supervisor, notes: notes,
+    staff: shiftStaff.map(function(e) {
+      return {name: e.name, role: e.role, pts: getEffectivePts(e), basePts: getRolePts(e.role),
+        tipOut: parseFloat((dpp * getEffectivePts(e)).toFixed(2)),
+        isAdjusted: e.isAdjusted || false, adjustReason: e.adjustReason || '', adjustPct: e.adjustPct || null};
+    })
+  };
+  savedShifts.push(entry); persist();
+  shiftStaff = [];
+  document.getElementById('tip-pool').value = '';
+  document.getElementById('shift-notes').value = '';
+  renderShiftList(); recalc();
   toast('Shift saved!');
-  if(sheetsUrl)syncEntry(entry);
+  if (sheetsUrl) syncEntry(entry);
 }
 
-// EVENTS
-function addToEvt(){
-  const ri=document.getElementById('evtadd-from-roster').value;
-  let name,role;
-  if(ri!==''){const e=roster[parseInt(ri)];name=e.name;role=e.role;}
-  else{name=document.getElementById('evtadd-name').value.trim();role=document.getElementById('evtadd-role').value;}
-  if(!name||!role){toast('Enter name and role');return;}
-  if(evtStaff.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast(`${name} already on crew`);return;}
-  evtStaff.push({name,role});
-  document.getElementById('evtadd-name').value='';
-  document.getElementById('evtadd-from-roster').value='';
-  renderEvtList();recalcEvt();
+function addToEvt() {
+  var ri = document.getElementById('evtadd-from-roster').value;
+  var name, role;
+  if (ri !== '') { var e = roster[parseInt(ri)]; name = e.name; role = e.role; }
+  else { name = document.getElementById('evtadd-name').value.trim(); role = document.getElementById('evtadd-role').value; }
+  if (!name || !role) { toast('Enter name and role'); return; }
+  if (evtStaff.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast(name + ' already on crew'); return; }
+  evtStaff.push({name: name, role: role});
+  document.getElementById('evtadd-name').value = '';
+  document.getElementById('evtadd-from-roster').value = '';
+  renderEvtList(); recalcEvt();
 }
-function removeEvtStaff(i){evtStaff.splice(i,1);renderEvtList();recalcEvt();}
-function renderEvtList(){
-  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
-  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  const el=document.getElementById('evt-staff-list');
-  if(!evtStaff.length){el.innerHTML='<div class="empty">No crew added yet.</div>';return;}
-  el.innerHTML=evtStaff.map((e,i)=>{
-    const pts=getEffectivePts(e);
-    const adj=e.isAdjusted;
-    return `<div class="staff-row">
-      <div class="staff-info">
-        <div class="staff-name">${e.name}</div>
-        <div class="staff-role">${getRoleLabel(e.role)}</div>
-        ${adj?`<div class="flag-note">⚑ ${e.adjustReason}</div>`:''}
-      </div>
-      <span class="pts-pill${adj?' adjusted':''}">${fmtPts(pts)}pt</span>
-      <span class="tip-amt${adj?' adjusted':''}">${fmt(dpp*pts)}</span>
-      <button class="edit-btn" onclick="openAdjustModal('evt',${i})">Edit pts</button>
-      <button class="rm-btn" onclick="removeEvtStaff(${i})">×</button>
-    </div>`;
+function removeEvtStaff(i) { evtStaff.splice(i, 1); renderEvtList(); recalcEvt(); }
+function renderEvtList() {
+  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
+  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  var el = document.getElementById('evt-staff-list');
+  if (!evtStaff.length) { el.innerHTML = '<div class="empty">No crew added yet.</div>'; return; }
+  el.innerHTML = evtStaff.map(function(e, i) {
+    var pts = getEffectivePts(e);
+    var adj = e.isAdjusted;
+    return '<div class="staff-row">' +
+      '<div class="staff-info">' +
+        '<div class="staff-name">' + e.name + '</div>' +
+        '<div class="staff-role">' + getRoleLabel(e.role) + '</div>' +
+        (adj ? '<div class="flag-note">&#9873; ' + e.adjustReason + '</div>' : '') +
+      '</div>' +
+      '<span class="pts-pill' + (adj ? ' adjusted' : '') + '">' + fmtPts(pts) + 'pt</span>' +
+      '<span class="tip-amt' + (adj ? ' adjusted' : '') + '">' + fmt(dpp * pts) + '</span>' +
+      '<button class="edit-btn" onclick="openAdjustModal(\'evt\',' + i + ')">Edit pts</button>' +
+      '<button class="rm-btn" onclick="removeEvtStaff(' + i + ')">×</button>' +
+    '</div>';
   }).join('');
 }
-function recalcEvt(){
-  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
-  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  document.getElementById('estat-pool').textContent=fmt(pool);
-  document.getElementById('estat-pts').textContent=fmtPts(totalPts);
-  document.getElementById('estat-dpp').textContent=fmt(dpp);
+function recalcEvt() {
+  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
+  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  document.getElementById('estat-pool').textContent = fmt(pool);
+  document.getElementById('estat-pts').textContent = fmtPts(totalPts);
+  document.getElementById('estat-dpp').textContent = fmt(dpp);
   renderEvtList();
 }
-function saveEvt(){
-  const date=document.getElementById('evt-date').value;
-  const evtName=document.getElementById('evt-name').value.trim()||'Event';
-  const pool=parseFloat(document.getElementById('evt-pool').value)||0;
-  const eventSubtotal=parseFloat(document.getElementById('evt-subtotal').value)||0;
-  const supervisor=document.getElementById('evt-supervisor').value.trim();
-  const notes=document.getElementById('evt-notes').value.trim();
-  if(!supervisor){toast('Enter supervisor name');return;}
-  if(!date){toast('Select a date');return;}
-  if(!pool){toast('Enter tip pool amount');return;}
-  if(!evtStaff.length){toast('Add at least one crew member');return;}
-  const totalPts=evtStaff.reduce((s,e)=>s+getEffectivePts(e),0);
-  const dpp=totalPts>0?pool/totalPts:0;
-  const entry={id:Date.now(),type:'event',date,evtName,pool,eventSubtotal,totalPts,dpp,supervisor,notes,
-    staff:evtStaff.map(e=>({name:e.name,role:e.role,pts:getEffectivePts(e),basePts:getRolePts(e.role),
-      tipOut:parseFloat((dpp*getEffectivePts(e)).toFixed(2)),isAdjusted:e.isAdjusted||false,adjustReason:e.adjustReason||'',adjustPct:e.adjustPct||null}))};
-  savedShifts.push(entry);persist();
-  evtStaff=[];
-  document.getElementById('evt-pool').value='';
-  document.getElementById('evt-subtotal').value='';
-  document.getElementById('evt-name').value='';
-  document.getElementById('evt-notes').value='';
-  renderEvtList();recalcEvt();
+function saveEvt() {
+  var date = document.getElementById('evt-date').value;
+  var evtName = document.getElementById('evt-name').value.trim() || 'Event';
+  var pool = parseFloat(document.getElementById('evt-pool').value) || 0;
+  var eventSubtotal = parseFloat(document.getElementById('evt-subtotal').value) || 0;
+  var supervisor = document.getElementById('evt-supervisor').value.trim();
+  var notes = document.getElementById('evt-notes').value.trim();
+  if (!supervisor) { toast('Enter supervisor name'); return; }
+  if (!date) { toast('Select a date'); return; }
+  if (!pool) { toast('Enter tip pool amount'); return; }
+  if (!evtStaff.length) { toast('Add at least one crew member'); return; }
+  var totalPts = evtStaff.reduce(function(s, e) { return s + getEffectivePts(e); }, 0);
+  var dpp = totalPts > 0 ? pool / totalPts : 0;
+  var entry = {
+    id: Date.now(), type: 'event', date: date, evtName: evtName,
+    pool: pool, eventSubtotal: eventSubtotal, totalPts: totalPts, dpp: dpp,
+    supervisor: supervisor, notes: notes,
+    staff: evtStaff.map(function(e) {
+      return {name: e.name, role: e.role, pts: getEffectivePts(e), basePts: getRolePts(e.role),
+        tipOut: parseFloat((dpp * getEffectivePts(e)).toFixed(2)),
+        isAdjusted: e.isAdjusted || false, adjustReason: e.adjustReason || '', adjustPct: e.adjustPct || null};
+    })
+  };
+  savedShifts.push(entry); persist();
+  evtStaff = [];
+  document.getElementById('evt-pool').value = '';
+  document.getElementById('evt-subtotal').value = '';
+  document.getElementById('evt-name').value = '';
+  document.getElementById('evt-notes').value = '';
+  renderEvtList(); recalcEvt();
   toast('Event saved!');
-  if(sheetsUrl)syncEntry(entry);
+  if (sheetsUrl) syncEntry(entry);
 }
 
-// HISTORY
-function renderHistory(){
-  const el=document.getElementById('history-list');
-  if(!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
-  const sorted=[...savedShifts].sort((a,b)=>b.date.localeCompare(a.date));
-  el.innerHTML=sorted.map(s=>{
-    const label=s.type==='event'?`Event: ${s.evtName}`:'Shift';
-    const staffRows=s.staff.map(e=>`
-      <div class="hist-staff">
-        <div>
-          <span>${e.name}</span>
-          <span style="color:var(--hint);font-size:11px;margin-left:4px">${getRoleLabel(e.role)}</span>
-          ${e.isAdjusted?`<div style="font-size:11px;color:var(--amber);margin-top:2px">⚑ ${e.adjustReason}</div>`:''}
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <span class="pts-pill${e.isAdjusted?' adjusted':''}" style="font-size:11px">${fmtPts(e.pts)}pt${e.isAdjusted?` (base ${fmtPts(e.basePts)})`:''}</span>
-          <span style="color:${e.isAdjusted?'var(--amber)':'var(--green)'};font-weight:500;font-size:13px;min-width:52px;text-align:right">${fmt(e.tipOut)}</span>
-        </div>
-      </div>`).join('');
-    return `<div class="hist-block">
-      <div class="hist-head">
-        <div class="hist-head-left">
-          <div class="hist-title">${label}</div>
-          <div class="hist-meta">${s.date}${s.supervisor?' · Sup: '+s.supervisor:''}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <span class="hist-pool">${fmt(s.pool)}</span>
-          <button class="rm-btn" style="font-size:16px" onclick="deleteShift(${s.id})">×</button>
-        </div>
-      </div>
-      ${staffRows}
-      ${s.notes?`<div class="hist-notes">${s.notes}</div>`:''}
-    </div>`;
+function renderHistory() {
+  var el = document.getElementById('history-list');
+  if (!savedShifts.length) { el.innerHTML = '<div class="card"><div class="empty">No saved shifts yet.</div></div>'; return; }
+  var sorted = savedShifts.slice().sort(function(a, b) { return b.date.localeCompare(a.date); });
+  el.innerHTML = sorted.map(function(s) {
+    var label = s.type === 'event' ? 'Event: ' + s.evtName : 'Shift';
+    var staffRows = s.staff.map(function(e) {
+      return '<div class="hist-staff">' +
+        '<div><span>' + e.name + '</span>' +
+        '<span style="color:var(--hint);font-size:11px;margin-left:4px">' + getRoleLabel(e.role) + '</span>' +
+        (e.isAdjusted ? '<div style="font-size:11px;color:var(--amber);margin-top:2px">&#9873; ' + e.adjustReason + '</div>' : '') +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
+        '<span class="pts-pill' + (e.isAdjusted ? ' adjusted' : '') + '" style="font-size:11px">' + fmtPts(e.pts) + 'pt' + (e.isAdjusted ? ' (base ' + fmtPts(e.basePts) + ')' : '') + '</span>' +
+        '<span style="color:' + (e.isAdjusted ? 'var(--amber)' : 'var(--green)') + ';font-weight:500;font-size:13px;min-width:52px;text-align:right">' + fmt(e.tipOut) + '</span>' +
+        '</div></div>';
+    }).join('');
+    return '<div class="hist-block">' +
+      '<div class="hist-head">' +
+        '<div class="hist-head-left">' +
+          '<div class="hist-title">' + label + '</div>' +
+          '<div class="hist-meta">' + s.date + (s.supervisor ? ' · Sup: ' + s.supervisor : '') + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<span class="hist-pool">' + fmt(s.pool) + '</span>' +
+          '<button class="rm-btn" style="font-size:16px" onclick="deleteShift(' + s.id + ')">×</button>' +
+        '</div>' +
+      '</div>' +
+      staffRows +
+      (s.notes ? '<div class="hist-notes">' + s.notes + '</div>' : '') +
+    '</div>';
   }).join('');
 }
-function deleteShift(id){
-  if(!confirm('Delete this entry?'))return;
-  savedShifts=savedShifts.filter(s=>s.id!==id);persist();renderHistory();
+function deleteShift(id) {
+  if (!confirm('Delete this entry?')) return;
+  savedShifts = savedShifts.filter(function(s) { return s.id !== id; });
+  persist(); renderHistory();
 }
 
-// ROSTER
-function renderRoster(){
-  const el=document.getElementById('roster-list');
-  if(!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
-  el.innerHTML=roster.map((e,i)=>`
-    <div class="roster-row">
-      <div style="flex:1;font-weight:500">${e.name}</div>
-      <div style="font-size:12px;color:var(--muted);flex:1">${getRoleLabel(e.role)}</div>
-      <button class="rm-btn" onclick="removeRoster(${i})">×</button>
-    </div>`).join('');
+function renderRoster() {
+  var el = document.getElementById('roster-list');
+  if (!roster.length) { el.innerHTML = '<div class="empty">No employees yet.</div>'; return; }
+  el.innerHTML = roster.map(function(e, i) {
+    return '<div class="roster-row">' +
+      '<div style="flex:1;font-weight:500">' + e.name + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);flex:1">' + getRoleLabel(e.role) + '</div>' +
+      '<button class="rm-btn" onclick="removeRoster(' + i + ')">×</button>' +
+    '</div>';
+  }).join('');
 }
-function addRoster(){
-  const name=document.getElementById('r-name').value.trim();
-  const role=document.getElementById('r-role').value;
-  if(!name||!role){toast('Enter name and role');return;}
-  if(roster.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Already on roster');return;}
-  roster.push({name,role});persist();
-  document.getElementById('r-name').value='';
-  renderRoster();populateSelects();
+function addRoster() {
+  var name = document.getElementById('r-name').value.trim();
+  var role = document.getElementById('r-role').value;
+  if (!name || !role) { toast('Enter name and role'); return; }
+  if (roster.find(function(e) { return e.name.toLowerCase() === name.toLowerCase(); })) { toast('Already on roster'); return; }
+  roster.push({name: name, role: role}); persist();
+  document.getElementById('r-name').value = '';
+  renderRoster(); populateSelects();
   syncRoster();
-  toast(`${name} added`);
+  toast(name + ' added');
 }
-function removeRoster(i){roster.splice(i,1);persist();renderRoster();populateSelects();syncRoster();}
+function removeRoster(i) { roster.splice(i, 1); persist(); renderRoster(); populateSelects(); syncRoster(); }
 
-// PAYROLL
-function renderPayroll(){
-  const from=document.getElementById('pay-from').value;
-  const to=document.getElementById('pay-to').value;
-  let filtered=savedShifts;
-  if(from)filtered=filtered.filter(s=>s.date>=from);
-  if(to)filtered=filtered.filter(s=>s.date<=to);
-  const el=document.getElementById('payroll-out');
-  if(!filtered.length){el.innerHTML='<div class="empty">No shifts in this range.</div>';return;}
-  const empMap={};
-  filtered.forEach(s=>{s.staff.forEach(e=>{
-    if(!empMap[e.name])empMap[e.name]={total:0,shifts:[]};
-    empMap[e.name].total+=e.tipOut;
-    empMap[e.name].shifts.push({date:s.date,tipOut:e.tipOut,label:s.type==='event'?s.evtName:'Shift',isAdjusted:e.isAdjusted});
-  });});
-  const totalPool=filtered.reduce((s,e)=>s+e.pool,0);
-  const hasAdj=filtered.some(s=>s.staff.some(e=>e.isAdjusted));
-  el.innerHTML=`
-    <div class="stats" style="margin-bottom:14px">
-      <div class="stat"><div class="slabel">Shifts</div><div class="sval">${filtered.length}</div></div>
-      <div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">${fmt(totalPool)}</div></div>
-      <div class="stat"><div class="slabel">Employees</div><div class="sval">${Object.keys(empMap).length}</div></div>
-    </div>
-    ${hasAdj?`<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">⚑ This period includes point adjustments. See CSV for full details.</div>`:''}
-    ${Object.entries(empMap).sort((a,b)=>b[1].total-a[1].total).map(([name,data])=>`
-      <div class="pay-row">
-        <div>
-          <div class="pay-name">${name}${data.shifts.some(s=>s.isAdjusted)?' <span style="font-size:11px;color:var(--amber)">⚑</span>':''}</div>
-          <div class="pay-detail">${data.shifts.map(s=>`${s.date} · ${s.label} · ${fmt(s.tipOut)}${s.isAdjusted?' ⚑':''}`).join('<br>')}</div>
-        </div>
-        <div class="pay-total">${fmt(data.total)}</div>
-      </div>`).join('')}`;
-}
-function exportCSV(){
-  const from=document.getElementById('pay-from').value;
-  const to=document.getElementById('pay-to').value;
-  let filtered=savedShifts;
-  if(from)filtered=filtered.filter(s=>s.date>=from);
-  if(to)filtered=filtered.filter(s=>s.date<=to);
-  if(!filtered.length){toast('No data to export');return;}
-  let csv='Employee,Date,Shift/Event,Role,Supervisor,Pts Used,Base Pts,Adjusted,Adjust Reason,Tip Out,Pool Total,Notes\n';
-  filtered.forEach(s=>{
-    const label=s.type==='event'?s.evtName:'Shift';
-    s.staff.forEach(e=>{csv+=`"${e.name}","${s.date}","${label}","${getRoleLabel(e.role)}","${s.supervisor||''}","${e.pts}","${e.basePts||e.pts}","${e.isAdjusted?'YES':''}","${e.adjustReason||''}","${e.tipOut.toFixed(2)}","${s.pool}","${s.notes||''}"\n`;});
+function renderPayroll() {
+  var from = document.getElementById('pay-from').value;
+  var to = document.getElementById('pay-to').value;
+  var filtered = savedShifts.filter(function(s) {
+    return (!from || s.date >= from) && (!to || s.date <= to);
   });
-  const empMap={};
-  filtered.forEach(s=>{s.staff.forEach(e=>{if(!empMap[e.name])empMap[e.name]=0;empMap[e.name]+=e.tipOut;});});
-  csv+='\nSummary\nEmployee,Total Tips\n';
-  Object.entries(empMap).sort((a,b)=>b[1]-a[1]).forEach(([name,total])=>{csv+=`"${name}","${total.toFixed(2)}"\n`;});
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;
-  const range=from&&to?`${from}_to_${to}`:from||to||'all';
-  a.download=`SSK_tipout_${range}.csv`;a.click();URL.revokeObjectURL(url);
+  var el = document.getElementById('payroll-out');
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No shifts in this range.</div>'; return; }
+  var empMap = {};
+  filtered.forEach(function(s) {
+    s.staff.forEach(function(e) {
+      if (!empMap[e.name]) empMap[e.name] = {total: 0, shifts: []};
+      empMap[e.name].total += e.tipOut;
+      empMap[e.name].shifts.push({date: s.date, tipOut: e.tipOut, label: s.type === 'event' ? s.evtName : 'Shift', isAdjusted: e.isAdjusted});
+    });
+  });
+  var totalPool = filtered.reduce(function(s, e) { return s + e.pool; }, 0);
+  var hasAdj = filtered.some(function(s) { return s.staff.some(function(e) { return e.isAdjusted; }); });
+  var rows = Object.keys(empMap).sort(function(a, b) { return empMap[b].total - empMap[a].total; }).map(function(name) {
+    var data = empMap[name];
+    return '<div class="pay-row">' +
+      '<div><div class="pay-name">' + name + (data.shifts.some(function(s) { return s.isAdjusted; }) ? ' <span style="font-size:11px;color:var(--amber)">&#9873;</span>' : '') + '</div>' +
+      '<div class="pay-detail">' + data.shifts.map(function(s) { return s.date + ' · ' + s.label + ' · ' + fmt(s.tipOut) + (s.isAdjusted ? ' &#9873;' : ''); }).join('<br>') + '</div></div>' +
+      '<div class="pay-total">' + fmt(data.total) + '</div>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = '<div class="stats" style="margin-bottom:14px">' +
+    '<div class="stat"><div class="slabel">Shifts</div><div class="sval">' + filtered.length + '</div></div>' +
+    '<div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">' + fmt(totalPool) + '</div></div>' +
+    '<div class="stat"><div class="slabel">Employees</div><div class="sval">' + Object.keys(empMap).length + '</div></div>' +
+    '</div>' +
+    (hasAdj ? '<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">&#9873; This period includes point adjustments. See CSV for full details.</div>' : '') +
+    rows;
+}
+function exportCSV() {
+  var from = document.getElementById('pay-from').value;
+  var to = document.getElementById('pay-to').value;
+  var filtered = savedShifts.filter(function(s) { return (!from || s.date >= from) && (!to || s.date <= to); });
+  if (!filtered.length) { toast('No data to export'); return; }
+  var csv = 'Employee,Date,Shift/Event,Role,Supervisor,Pts Used,Base Pts,Adjusted,Adjust Reason,Tip Out,Pool Total,Notes\n';
+  filtered.forEach(function(s) {
+    var label = s.type === 'event' ? s.evtName : 'Shift';
+    s.staff.forEach(function(e) {
+      csv += '"' + e.name + '","' + s.date + '","' + label + '","' + getRoleLabel(e.role) + '","' + (s.supervisor || '') + '","' + e.pts + '","' + (e.basePts || e.pts) + '","' + (e.isAdjusted ? 'YES' : '') + '","' + (e.adjustReason || '') + '","' + e.tipOut.toFixed(2) + '","' + s.pool + '","' + (s.notes || '') + '"\n';
+    });
+  });
+  var empMap = {};
+  filtered.forEach(function(s) { s.staff.forEach(function(e) { if (!empMap[e.name]) empMap[e.name] = 0; empMap[e.name] += e.tipOut; }); });
+  csv += '\nSummary\nEmployee,Total Tips\n';
+  Object.keys(empMap).sort(function(a, b) { return empMap[b] - empMap[a]; }).forEach(function(name) { csv += '"' + name + '","' + empMap[name].toFixed(2) + '"\n'; });
+  var blob = new Blob([csv], {type: 'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url;
+  var range = from && to ? from + '_to_' + to : from || to || 'all';
+  a.download = 'SSK_tipout_' + range + '.csv'; a.click(); URL.revokeObjectURL(url);
   toast('CSV exported!');
 }
 
-// ADMIN REPORT
-function renderAdminReport(){
-  const from=document.getElementById('admin-pay-from').value;
-  const to=document.getElementById('admin-pay-to').value;
-  let filtered=savedShifts.filter(s=>s.type==='event'&&s.eventSubtotal);
-  if(from)filtered=filtered.filter(s=>s.date>=from);
-  if(to)filtered=filtered.filter(s=>s.date<=to);
-  const el=document.getElementById('admin-report-out');
-  if(!filtered.length){el.innerHTML='<div class="empty">No events with subtotals in this range.</div>';return;}
-  const totalSubtotal=filtered.reduce((s,e)=>s+e.eventSubtotal,0);
-  const totalCommission=totalSubtotal*0.04;
-  el.innerHTML=`
-    <div class="stats" style="margin-bottom:14px">
-      <div class="stat"><div class="slabel">Events</div><div class="sval">${filtered.length}</div></div>
-      <div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">${fmt(totalSubtotal)}</div></div>
-      <div class="stat"><div class="slabel">Total commission</div><div class="sval" style="font-size:14px;color:var(--green)">${fmt(totalCommission)}</div></div>
-    </div>
-    <div style="font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Event breakdown</div>
-    ${filtered.sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`
-      <div class="pay-row">
-        <div>
-          <div class="pay-name">${s.evtName}</div>
-          <div class="pay-detail">${s.date}${s.supervisor?' · Sup: '+s.supervisor:''}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:12px;color:var(--muted)">${fmt(s.eventSubtotal)} subtotal</div>
-          <div class="pay-total">${fmt(s.eventSubtotal*0.04)} comm.</div>
-        </div>
-      </div>`).join('')}
-    <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">
-      <div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>
-      <div style="font-size:18px;font-weight:500;color:var(--green)">${fmt(totalCommission)}</div>
-    </div>`;
+function renderAdminReport() {
+  var from = document.getElementById('admin-pay-from').value;
+  var to = document.getElementById('admin-pay-to').value;
+  var filtered = savedShifts.filter(function(s) { return s.type === 'event' && s.eventSubtotal && (!from || s.date >= from) && (!to || s.date <= to); });
+  var el = document.getElementById('admin-report-out');
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No events with subtotals in this range.</div>'; return; }
+  var totalSubtotal = filtered.reduce(function(s, e) { return s + e.eventSubtotal; }, 0);
+  var totalCommission = totalSubtotal * 0.04;
+  var rows = filtered.slice().sort(function(a, b) { return b.date.localeCompare(a.date); }).map(function(s) {
+    return '<div class="pay-row">' +
+      '<div><div class="pay-name">' + s.evtName + '</div><div class="pay-detail">' + s.date + (s.supervisor ? ' · Sup: ' + s.supervisor : '') + '</div></div>' +
+      '<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted)">' + fmt(s.eventSubtotal) + ' subtotal</div><div class="pay-total">' + fmt(s.eventSubtotal * 0.04) + ' comm.</div></div>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = '<div class="stats" style="margin-bottom:14px">' +
+    '<div class="stat"><div class="slabel">Events</div><div class="sval">' + filtered.length + '</div></div>' +
+    '<div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">' + fmt(totalSubtotal) + '</div></div>' +
+    '<div class="stat"><div class="slabel">Commission</div><div class="sval" style="font-size:14px;color:var(--green)">' + fmt(totalCommission) + '</div></div>' +
+    '</div>' + rows +
+    '<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">' +
+    '<div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>' +
+    '<div style="font-size:18px;font-weight:500;color:var(--green)">' + fmt(totalCommission) + '</div></div>';
 }
-function exportAdminCSV(){
-  const from=document.getElementById('admin-pay-from').value;
-  const to=document.getElementById('admin-pay-to').value;
-  let filtered=savedShifts.filter(s=>s.type==='event'&&s.eventSubtotal);
-  if(from)filtered=filtered.filter(s=>s.date>=from);
-  if(to)filtered=filtered.filter(s=>s.date<=to);
-  if(!filtered.length){toast('No data to export');return;}
-  let csv='Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
-  filtered.sort((a,b)=>b.date.localeCompare(a.date)).forEach(s=>{
-    csv+=`"${s.date}","${s.evtName}","${s.supervisor||''}","${s.eventSubtotal.toFixed(2)}","${(s.eventSubtotal*0.04).toFixed(2)}"\n`;
+function exportAdminCSV() {
+  var from = document.getElementById('admin-pay-from').value;
+  var to = document.getElementById('admin-pay-to').value;
+  var filtered = savedShifts.filter(function(s) { return s.type === 'event' && s.eventSubtotal && (!from || s.date >= from) && (!to || s.date <= to); });
+  if (!filtered.length) { toast('No data to export'); return; }
+  var csv = 'Date,Event,Supervisor,Event Subtotal,Commission (4%)\n';
+  filtered.slice().sort(function(a, b) { return b.date.localeCompare(a.date); }).forEach(function(s) {
+    csv += '"' + s.date + '","' + s.evtName + '","' + (s.supervisor || '') + '","' + s.eventSubtotal.toFixed(2) + '","' + (s.eventSubtotal * 0.04).toFixed(2) + '"\n';
   });
-  const total=filtered.reduce((s,e)=>s+e.eventSubtotal,0);
-  csv+=`\n"TOTAL","","","${total.toFixed(2)}","${(total*0.04).toFixed(2)}"\n`;
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;
-  const range=from&&to?`${from}_to_${to}`:from||to||'all';
-  a.download=`SSK_Alexx_commission_${range}.csv`;a.click();URL.revokeObjectURL(url);
+  var total = filtered.reduce(function(s, e) { return s + e.eventSubtotal; }, 0);
+  csv += '\n"TOTAL","","","' + total.toFixed(2) + '","' + (total * 0.04).toFixed(2) + '"\n';
+  var blob = new Blob([csv], {type: 'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href = url;
+  var range = from && to ? from + '_to_' + to : from || to || 'all';
+  a.download = 'SSK_Alexx_commission_' + range + '.csv'; a.click(); URL.revokeObjectURL(url);
   toast('CSV exported!');
 }
 
-// SHEETS
-async function syncRoster(){
-  if(!sheetsUrl)return;
-  try{
-    await fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'syncRoster',roster}),headers:{'Content-Type':'text/plain'}});
-  }catch(e){console.log('Roster sync failed',e);}
+function saveSheetUrl() {
+  sheetsUrl = document.getElementById('sheets-url').value.trim();
+  localStorage.setItem('sskSheetsUrl', sheetsUrl);
+  updateSyncStatus();
+  toast(sheetsUrl ? 'URL saved!' : 'URL cleared');
 }
-async function loadRosterFromSheets(){
-  if(!sheetsUrl)return;
-  try{
-    const r=await fetch(sheetsUrl+'?action=getRoster');
-    const data=await r.json();
-    if(data.roster&&data.roster.length){
-      roster=data.roster;
+async function syncEntry(entry) {
+  if (!sheetsUrl) return;
+  var el = document.getElementById('sync-status');
+  el.textContent = 'Syncing...'; el.className = 'sync-pill syncing';
+  try {
+    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'addEntry', entry: entry}), headers:{'Content-Type':'text/plain'}});
+    el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; toast('Synced to Sheets!');
+  } catch(e) { el.textContent = 'Sync failed'; el.className = 'sync-pill err'; toast('Sync failed — saved locally'); }
+}
+async function syncToSheets() {
+  if (!sheetsUrl) { toast('No URL set'); return; }
+  var el = document.getElementById('sync-status');
+  el.textContent = 'Syncing...'; el.className = 'sync-pill syncing';
+  try {
+    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'bulkSync', shifts: savedShifts}), headers:{'Content-Type':'text/plain'}});
+    el.textContent = 'Sheets connected'; el.className = 'sync-pill ok'; toast('All data synced!');
+  } catch(e) { el.textContent = 'Sync failed'; el.className = 'sync-pill err'; toast('Sync failed — check URL'); }
+}
+async function syncRoster() {
+  if (!sheetsUrl) return;
+  try {
+    await fetch(sheetsUrl, {method:'POST', mode:'no-cors', body: JSON.stringify({action:'syncRoster', roster: roster}), headers:{'Content-Type':'text/plain'}});
+  } catch(e) { console.log('Roster sync failed', e); }
+}
+async function loadRosterFromSheets() {
+  if (!sheetsUrl) return;
+  try {
+    var r = await fetch(sheetsUrl + '?action=getRoster', {redirect: 'follow'});
+    var text = await r.text();
+    var data = JSON.parse(text);
+    if (data.roster && data.roster.length) {
+      roster = data.roster;
       persist();
       populateSelects();
       renderRoster();
       toast('Roster loaded from Sheets');
     }
-  }catch(e){console.log('Roster load failed',e);}
+  } catch(e) { console.log('Roster load failed', e); }
 }
-  sheetsUrl=document.getElementById('sheets-url').value.trim();
-  localStorage.setItem('sskSheetsUrl',sheetsUrl);
-  updateSyncStatus();toast(sheetsUrl?'URL saved!':'URL cleared');
-}
-async function syncEntry(entry){
-  if(!sheetsUrl)return;
-  const el=document.getElementById('sync-status');
-  el.textContent='Syncing...';el.className='sync-pill syncing';
-  try{
-    await fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'addEntry',entry}),headers:{'Content-Type':'text/plain'}});
-    el.textContent='Sheets connected';el.className='sync-pill ok';toast('Synced to Sheets!');
-  }catch(e){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — saved locally');}
-}
-async function syncToSheets(){
-  if(!sheetsUrl){toast('No URL set');return;}
-  const el=document.getElementById('sync-status');
-  el.textContent='Syncing...';el.className='sync-pill syncing';
-  try{
-    await fetch(sheetsUrl,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'bulkSync',shifts:savedShifts}),headers:{'Content-Type':'text/plain'}});
-    el.textContent='Sheets connected';el.className='sync-pill ok';toast('All data synced!');
-  }catch(e){el.textContent='Sync failed';el.className='sync-pill err';toast('Sync failed — check URL');}
-}
-async function testConnection(){
-  if(!sheetsUrl){toast('Paste a URL first');return;}
-  try{
-    const r=await fetch(sheetsUrl+'?action=ping');
-    const t=await r.text();
-    if(t.includes('ok')){toast('Connected!');updateSyncStatus();}
-    else toast('Unexpected response');
-  }catch(e){toast('Connection failed');document.getElementById('sync-status').className='sync-pill err';}
-}
-
-const APPS_SCRIPT=`function doGet(e) {
-  if (e.parameter.action === 'ping') {
-    return ContentService.createTextOutput('ok');
-  }
-  return ContentService.createTextOutput('SSK Tip Pool API');
-}
-function doPost(e) {
+async function testConnection() {
+  if (!sheetsUrl) { toast('Paste a URL first'); return; }
   try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    if (data.action === 'addEntry') {
-      writeEntry(ss, data.entry);
-    } else if (data.action === 'bulkSync') {
-      const sheet = ss.getSheetByName('Tip Log') || ss.insertSheet('Tip Log');
-      sheet.clearContents();
-      writeHeaders(sheet);
-      data.shifts.forEach(entry => writeEntryRows(sheet, entry));
-    }
-    return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.toString()})).setMimeType(ContentService.MimeType.JSON);
-  }
+    var r = await fetch(sheetsUrl + '?action=ping');
+    var t = await r.text();
+    if (t.includes('ok')) { toast('Connected!'); updateSyncStatus(); }
+    else toast('Unexpected response');
+  } catch(e) { toast('Connection failed'); document.getElementById('sync-status').className = 'sync-pill err'; }
 }
-function writeHeaders(sheet) {
-  sheet.appendRow(['Date','Type','Shift/Event','Supervisor','Employee','Role','Pts Used','Base Pts','Adjusted?','Adjust Reason','Tip Out','Pool Total','Event Subtotal','Notes']);
-}
-function writeEntry(ss, entry) {
-  let sheet = ss.getSheetByName('Tip Log');
-  if (!sheet) { sheet = ss.insertSheet('Tip Log'); writeHeaders(sheet); }
-  writeEntryRows(sheet, entry);
-}
-function writeEntryRows(sheet, entry) {
-  const label = entry.type === 'event' ? entry.evtName : 'Shift';
-  entry.staff.forEach(emp => {
-    sheet.appendRow([
-      entry.date, entry.type, label, entry.supervisor||'',
-      emp.name, emp.role, emp.pts, emp.basePts||emp.pts,
-      emp.isAdjusted?'YES':'', emp.adjustReason||'',
-      emp.tipOut, entry.pool, entry.eventSubtotal||'', entry.notes||''
-    ]);
-  });
-}`;
 
-function copyAppsScript(){
-  try{
-    const ta=document.createElement('textarea');
-    ta.value=APPS_SCRIPT;
-    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta);ta.focus();ta.select();
+var APPS_SCRIPT = 'function doGet(e) {\n  var action = e.parameter.action;\n  if (action === "ping") return ContentService.createTextOutput("ok");\n  if (action === "getRoster") {\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    var sheet = ss.getSheetByName("Roster");\n    if (!sheet || sheet.getLastRow() < 2) return ContentService.createTextOutput(JSON.stringify({roster:[]})).setMimeType(ContentService.MimeType.JSON);\n    var data = sheet.getRange(2, 1, sheet.getLastRow()-1, 2).getValues();\n    var roster = data.filter(function(r){return r[0];}).map(function(r){return {name:r[0],role:r[1]};});\n    return ContentService.createTextOutput(JSON.stringify({roster:roster})).setMimeType(ContentService.MimeType.JSON);\n  }\n  return ContentService.createTextOutput("SSK Tip Pool API");\n}\nfunction doPost(e) {\n  try {\n    var data = JSON.parse(e.postData.contents);\n    var ss = SpreadsheetApp.getActiveSpreadsheet();\n    if (data.action === "addEntry") {\n      writeEntry(ss, data.entry);\n    } else if (data.action === "bulkSync") {\n      var sheet = ss.getSheetByName("Tip Log") || ss.insertSheet("Tip Log");\n      sheet.clearContents();\n      writeHeaders(sheet);\n      data.shifts.forEach(function(entry) { writeEntryRows(sheet, entry); });\n    } else if (data.action === "syncRoster") {\n      var rs = ss.getSheetByName("Roster") || ss.insertSheet("Roster");\n      rs.clearContents();\n      rs.appendRow(["Name","Role"]);\n      data.roster.forEach(function(e) { rs.appendRow([e.name, e.role]); });\n    }\n    return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);\n  } catch(err) {\n    return ContentService.createTextOutput(JSON.stringify({status:"error",message:err.toString()})).setMimeType(ContentService.MimeType.JSON);\n  }\n}\nfunction writeHeaders(sheet) {\n  sheet.appendRow(["Date","Type","Shift/Event","Supervisor","Employee","Role","Pts Used","Base Pts","Adjusted?","Adjust Reason","Tip Out","Pool Total","Event Subtotal","Notes"]);\n}\nfunction writeEntry(ss, entry) {\n  var sheet = ss.getSheetByName("Tip Log");\n  if (!sheet) { sheet = ss.insertSheet("Tip Log"); writeHeaders(sheet); }\n  writeEntryRows(sheet, entry);\n}\nfunction writeEntryRows(sheet, entry) {\n  var label = entry.type === "event" ? entry.evtName : "Shift";\n  entry.staff.forEach(function(emp) {\n    sheet.appendRow([entry.date,entry.type,label,entry.supervisor||"",emp.name,emp.role,emp.pts,emp.basePts||emp.pts,emp.isAdjusted?"YES":"",emp.adjustReason||"",emp.tipOut,entry.pool,entry.eventSubtotal||"",entry.notes||""]);\n  });\n}';
+
+function copyAppsScript() {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = APPS_SCRIPT;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta); ta.focus(); ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    const el=document.getElementById('copy-confirm');
-    el.textContent='Copied to clipboard!';
-    setTimeout(()=>{el.textContent='';},2200);
-  }catch(e){
-    const el=document.getElementById('copy-confirm');
-    el.textContent='Select all text below and copy manually.';
-    const fb=document.getElementById('script-fallback');
-    fb.value=APPS_SCRIPT;fb.style.display='block';fb.select();
+    var el = document.getElementById('copy-confirm');
+    el.textContent = 'Copied to clipboard!';
+    setTimeout(function() { el.textContent = ''; }, 2200);
+  } catch(e) {
+    var el = document.getElementById('copy-confirm');
+    el.textContent = 'Select all text below and copy manually.';
+    var fb = document.getElementById('script-fallback');
+    fb.value = APPS_SCRIPT; fb.style.display = 'block'; fb.select();
   }
 }
-function clearAllData(){
-  if(!confirm('Clear ALL local data? Cannot be undone.'))return;
-  localStorage.removeItem('sskRoster');localStorage.removeItem('sskShifts');
-  roster=[];savedShifts=[];shiftStaff=[];evtStaff=[];
-  renderShiftList();recalc();toast('Cleared');
+function clearAllData() {
+  if (!confirm('Clear ALL local data? Cannot be undone.')) return;
+  localStorage.removeItem('sskRoster'); localStorage.removeItem('sskShifts');
+  roster = []; savedShifts = []; shiftStaff = []; evtStaff = [];
+  renderShiftList(); recalc(); toast('Cleared');
 }
 
-function initApp(){
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('shift-date').value=today;
-  document.getElementById('evt-date').value=today;
-  document.getElementById('today-label').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  const twoWeeksAgo=new Date();twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
-  document.getElementById('pay-from').value=twoWeeksAgo.toISOString().split('T')[0];
-  document.getElementById('pay-to').value=today;
-  document.getElementById('admin-pay-from').value=twoWeeksAgo.toISOString().split('T')[0];
-  document.getElementById('admin-pay-to').value=today;
-  document.getElementById('sheets-url').value=sheetsUrl;
-  populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
-  if(sheetsUrl)loadRosterFromSheets();
+function initApp() {
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('shift-date').value = today;
+  document.getElementById('evt-date').value = today;
+  document.getElementById('today-label').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+  var twoWeeksAgo = new Date(); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  document.getElementById('pay-from').value = twoWeeksAgo.toISOString().split('T')[0];
+  document.getElementById('pay-to').value = today;
+  document.getElementById('admin-pay-from').value = twoWeeksAgo.toISOString().split('T')[0];
+  document.getElementById('admin-pay-to').value = today;
+  document.getElementById('sheets-url').value = sheetsUrl;
+  populateSelects(); renderShiftList(); renderEvtList(); updateSyncStatus();
+  if (sheetsUrl) loadRosterFromSheets();
 }
 </script>
 </body>
