@@ -144,6 +144,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <div id="main-app" style="display:none">
 <div class="app">
+
   <div class="header">
     <div>
       <h1>SSK Tip Pool</h1>
@@ -156,10 +157,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
   <div id="roster-banner" class="banner">
-    <span style="font-size:13px;color:var(--amber)">Refresh roster to get the latest staff list</span>
+    <span style="font-size:13px;color:var(--amber)">Refresh roster &amp; history to get the latest data</span>
     <div style="display:flex;gap:8px">
-      <button class="btn" style="font-size:12px;padding:6px 12px;color:var(--amber);border-color:var(--amber-border)" onclick="dismissRosterBanner()">Dismiss</button>
-      <button class="btn-export" style="font-size:12px;padding:6px 12px" onclick="loadRosterFromCSV();dismissRosterBanner()">Refresh now</button>
+      <button class="btn" style="font-size:12px;padding:6px 12px;color:var(--amber);border-color:var(--amber-border)" onclick="dismissBanner()">Dismiss</button>
+      <button class="btn-export" style="font-size:12px;padding:6px 12px" onclick="refreshAll()">Refresh now</button>
     </div>
   </div>
 
@@ -174,7 +175,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="tab" onclick="showTab('settings',this)">Settings</button>
   </div>
 
-  <!-- SHIFT -->
   <div id="page-shift" class="page active">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -215,7 +215,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="btn-green" onclick="saveShift()">Save shift</button>
   </div>
 
-  <!-- EVENTS -->
   <div id="page-events" class="page">
     <div class="supervisor-bar">
       <label>Supervisor</label>
@@ -257,12 +256,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="btn-green" onclick="saveEvt()">Save event</button>
   </div>
 
-  <!-- HISTORY -->
   <div id="page-history" class="page">
     <div id="history-list"></div>
   </div>
 
-  <!-- ROSTER -->
   <div id="page-roster" class="page">
     <div class="card">
       <div class="card-title">Employee roster</div>
@@ -278,7 +275,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- EMPLOYEE REPORT -->
   <div id="page-employee" class="page">
     <div class="card">
       <div class="card-title">Employee report</div>
@@ -300,7 +296,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- PAYROLL -->
   <div id="page-payroll" class="page">
     <div id="payroll-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
@@ -339,7 +334,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- ADMIN -->
   <div id="page-admin" class="page">
     <div id="admin-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
@@ -378,7 +372,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div id="page-settings" class="page">
     <div id="settings-lock" class="card admin-lock-card">
       <div style="font-size:15px;font-weight:500;margin-bottom:6px">Admin access required</div>
@@ -416,37 +409,25 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         </div>
         <div class="settings-section">
           <div class="settings-title">Roster sync</div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Roster tab. Any device can load the latest roster with one tap.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Roster tab.</p>
           <div class="field"><label>Roster CSV URL</label><input type="text" id="roster-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" onclick="saveRosterCsvUrl()">Save URL</button>
             <button class="btn-export" onclick="loadRosterFromCSV()">Load roster now</button>
           </div>
           <div id="roster-load-confirm" style="font-size:12px;color:var(--green);margin-top:6px;min-height:16px"></div>
-          <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
-            <strong>To get this URL:</strong><br>
-            1. Open your SSK Tip Pool Google Sheet<br>
-            2. Click <strong>File → Share → Publish to web</strong><br>
-            3. Select <strong>Roster</strong> tab → <strong>Comma-separated values (.csv)</strong><br>
-            4. Click <strong>Publish</strong> and copy the URL
-          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.8"><strong>To get this URL:</strong> File → Share → Publish to web → select <strong>Roster</strong> tab → <strong>CSV</strong> → Publish → copy URL</div>
         </div>
         <div class="settings-section">
           <div class="settings-title">History sync</div>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Tip Log tab. Any device can load and merge the full shift history.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6">Paste the published CSV URL for your Tip Log tab.</p>
           <div class="field"><label>Tip Log CSV URL</label><input type="text" id="tiplog-csv-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?..."></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-primary" onclick="saveTiplogCsvUrl()">Save URL</button>
             <button class="btn-export" onclick="loadHistoryFromCSV()">Load history now</button>
           </div>
           <div id="tiplog-load-confirm" style="font-size:12px;color:var(--green);margin-top:6px;min-height:16px"></div>
-          <div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8">
-            <strong>To get this URL:</strong><br>
-            1. Open your SSK Tip Pool Google Sheet<br>
-            2. Click <strong>File → Share → Publish to web</strong><br>
-            3. Select <strong>Tip Log</strong> tab → <strong>Comma-separated values (.csv)</strong><br>
-            4. Click <strong>Publish</strong> and copy the URL
-          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.8"><strong>To get this URL:</strong> File → Share → Publish to web → select <strong>Tip Log</strong> tab → <strong>CSV</strong> → Publish → copy URL</div>
         </div>
         <div class="settings-section">
           <div class="settings-title">Apps Script setup</div>
@@ -482,7 +463,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 </div>
 
-<!-- ADJUST MODAL -->
 <div id="adjust-modal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-title" id="adjust-modal-title">Adjust points</div>
@@ -511,7 +491,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 
-<!-- ROSTER EDIT MODAL -->
 <div id="roster-edit-modal" class="modal-backdrop" style="display:none">
   <div class="modal">
     <div class="modal-title">Edit employee</div>
@@ -533,10 +512,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="toast" id="toast"></div>
 
 <script>
-var DEFAULT_PIN = '8021';
-var ADMIN_PIN = '7817';
-
-var SHIFT_ROLES = [
+var DEFAULT_PIN='8021';
+var ADMIN_PIN='7817';
+var SHIFT_ROLES=[
   {key:'lunch_server',label:'Lunch server',pts:0.5},
   {key:'lunch_bartender',label:'Lunch bartender',pts:0.5},
   {key:'lunch_lead_server',label:'Lunch lead server',pts:0.75},
@@ -548,7 +526,7 @@ var SHIFT_ROLES = [
   {key:'host',label:'Host',pts:0.3},
   {key:'busser',label:'Busser / food runner',pts:0.2}
 ];
-var EVT_ROLES = [
+var EVT_ROLES=[
   {key:'foh_onsite',label:'FOH onsite crew',pts:1},
   {key:'evt_sales_dir',label:'Event sales director',pts:0.5},
   {key:'setup_crew',label:'Setup crew',pts:0.2},
@@ -558,22 +536,21 @@ var EVT_ROLES = [
   {key:'bev_director',label:'Beverage director',pts:0.2},
   {key:'dishwasher',label:'Dishwashers',pts:0.3}
 ];
-var ALL_ROLES = SHIFT_ROLES.concat(EVT_ROLES);
-
-var pin = localStorage.getItem('sskPin') || DEFAULT_PIN;
-var roster = JSON.parse(localStorage.getItem('sskRoster') || '[]');
-var savedShifts = JSON.parse(localStorage.getItem('sskShifts') || '[]');
-var sheetsUrl = localStorage.getItem('sskSheetsUrl') || '';
-var rosterCsvUrl = localStorage.getItem('sskRosterCsvUrl') || '';
-var tiplogCsvUrl = localStorage.getItem('sskTiplogCsvUrl') || '';
-var shiftStaff = [];
-var evtStaff = [];
-var pinEntry = '';
-var secEntries = {admin:'',payroll:'',settings:''};
-var secUnlocked = {admin:false,payroll:false,settings:false};
-var adjustTarget = null;
-var rosterEditIdx = null;
-var empReportText = '';
+var ALL_ROLES=SHIFT_ROLES.concat(EVT_ROLES);
+var pin=localStorage.getItem('sskPin')||DEFAULT_PIN;
+var roster=JSON.parse(localStorage.getItem('sskRoster')||'[]');
+var savedShifts=JSON.parse(localStorage.getItem('sskShifts')||'[]');
+var sheetsUrl=localStorage.getItem('sskSheetsUrl')||'';
+var rosterCsvUrl=localStorage.getItem('sskRosterCsvUrl')||'';
+var tiplogCsvUrl=localStorage.getItem('sskTiplogCsvUrl')||'';
+var shiftStaff=[];
+var evtStaff=[];
+var pinEntry='';
+var secEntries={admin:'',payroll:'',settings:''};
+var secUnlocked={admin:false,payroll:false,settings:false};
+var adjustTarget=null;
+var rosterEditIdx=null;
+var empReportText='';
 
 function persist(){localStorage.setItem('sskRoster',JSON.stringify(roster));localStorage.setItem('sskShifts',JSON.stringify(savedShifts));}
 function fmt(n){return '$'+parseFloat(n||0).toFixed(2);}
@@ -581,7 +558,6 @@ function fmtPts(n){return parseFloat(n||0).toFixed(2);}
 function getRoleLabel(k){var r=ALL_ROLES.find(function(r){return r.key===k;});return r?r.label:k;}
 function getRolePts(k){var r=ALL_ROLES.find(function(r){return r.key===k;});return r?r.pts:0;}
 function getEffectivePts(e){return e.isAdjusted&&e.adjustedPts!==undefined?e.adjustedPts:getRolePts(e.role);}
-
 function toast(msg,dur){
   dur=dur||2400;
   var t=document.getElementById('toast');
@@ -589,7 +565,6 @@ function toast(msg,dur){
   setTimeout(function(){t.classList.remove('show');},dur);
 }
 
-// MAIN PIN
 function pinPress(d){
   if(pinEntry.length>=6)return;
   pinEntry+=d;
@@ -631,7 +606,6 @@ function changePin(){
   toast('PIN updated!');
 }
 
-// SECTION PINs
 function sectionPin(sec,d){
   if(secEntries[sec].length>=6)return;
   secEntries[sec]+=d;
@@ -672,7 +646,6 @@ function lockSection(sec){
   document.getElementById(sec+'-content').style.display='none';
 }
 
-// TABS
 function showTab(t,el){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -691,9 +664,14 @@ function updateSyncStatus(){
   if(sheetsUrl){el.textContent='Sheets connected';el.className='sync-pill ok';}
   else{el.textContent='No Sheets URL';el.className='sync-pill';}
 }
-
-function showRosterBanner(){document.getElementById('roster-banner').classList.add('show');}
-function dismissRosterBanner(){document.getElementById('roster-banner').classList.remove('show');}
+function showBanner(){document.getElementById('roster-banner').classList.add('show');}
+function dismissBanner(){document.getElementById('roster-banner').classList.remove('show');}
+function refreshAll(){
+  dismissBanner();
+  if(rosterCsvUrl)loadRosterFromCSV();
+  if(tiplogCsvUrl)loadHistoryFromCSV();
+  if(!rosterCsvUrl&&!tiplogCsvUrl)toast('No sync URLs set — check Settings');
+}
 
 function populateSelects(){
   var sr=document.getElementById('add-role');
@@ -712,7 +690,6 @@ function populateSelects(){
   });
 }
 
-// ADJUST MODAL
 function openAdjustModal(list,idx){
   adjustTarget={list:list,idx:idx};
   var staff=list==='shift'?shiftStaff:evtStaff;
@@ -751,7 +728,6 @@ function saveAdjustment(){
   toast('Adjustment saved');
 }
 
-// ROSTER EDIT MODAL
 function openRosterEdit(i){
   rosterEditIdx=i;
   var emp=roster[i];
@@ -769,13 +745,9 @@ function saveRosterEdit(){
   var dup=roster.find(function(e,i){return e.name.toLowerCase()===name.toLowerCase()&&i!==rosterEditIdx;});
   if(dup){toast('Name already on roster');return;}
   roster[rosterEditIdx]={name:name,role:role};
-  persist();syncRoster();
-  closeRosterEdit();
-  renderRoster();populateSelects();
-  toast('Updated!');
+  persist();syncRoster();closeRosterEdit();renderRoster();populateSelects();toast('Updated!');
 }
 
-// SHIFT
 function addToShift(){
   var ri=document.getElementById('add-from-roster').value;
   var name,role;
@@ -802,11 +774,9 @@ function renderShiftList(net){
   el.innerHTML=shiftStaff.map(function(e,i){
     var pts=getEffectivePts(e);var adj=e.isAdjusted;var poolPay=dpp*pts;var cc=e.ccTips||0;
     return '<div class="staff-row">'+
-      '<div class="staff-info">'+
-        '<div class="staff-name">'+e.name+'</div>'+
-        '<div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
-        (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
-        (cc>0?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Pool: '+fmt(poolPay)+' + CC: '+fmt(cc)+'</div>':'')+
+      '<div class="staff-info"><div class="staff-name">'+e.name+'</div><div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
+      (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
+      (cc>0?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Pool: '+fmt(poolPay)+' + CC: '+fmt(cc)+'</div>':'')+
       '</div>'+
       '<span class="pts-pill'+(adj?' adjusted':'')+'">'+fmtPts(pts)+'pt</span>'+
       '<span class="tip-amt'+(adj?' adjusted':'')+'" style="min-width:80px">'+fmt(poolPay+cc)+'</span>'+
@@ -857,7 +827,6 @@ function saveShift(){
   if(sheetsUrl)syncEntry(entry);
 }
 
-// EVENTS
 function addToEvt(){
   var ri=document.getElementById('evtadd-from-roster').value;
   var name,role;
@@ -882,10 +851,8 @@ function renderEvtList(net){
   el.innerHTML=evtStaff.map(function(e,i){
     var pts=getEffectivePts(e);var adj=e.isAdjusted;
     return '<div class="staff-row">'+
-      '<div class="staff-info">'+
-        '<div class="staff-name">'+e.name+'</div>'+
-        '<div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
-        (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
+      '<div class="staff-info"><div class="staff-name">'+e.name+'</div><div class="staff-role">'+getRoleLabel(e.role)+'</div>'+
+      (adj?'<div class="flag-note">&#9873; '+e.adjustReason+'</div>':'')+
       '</div>'+
       '<span class="pts-pill'+(adj?' adjusted':'')+'">'+fmtPts(pts)+'pt</span>'+
       '<span class="tip-amt'+(adj?' adjusted':'')+'">'+fmt(dpp*pts)+'</span>'+
@@ -940,7 +907,6 @@ function saveEvt(){
   if(sheetsUrl)syncEntry(entry);
 }
 
-// HISTORY
 function renderHistory(){
   var el=document.getElementById('history-list');
   if(!savedShifts.length){el.innerHTML='<div class="card"><div class="empty">No saved shifts yet.</div></div>';return;}
@@ -949,8 +915,7 @@ function renderHistory(){
     var label=s.type==='event'?'Event: '+s.evtName:'Shift';
     var staffRows=s.staff.map(function(e){
       return '<div class="hist-staff">'+
-        '<div><span>'+e.name+'</span>'+
-        '<span style="color:var(--hint);font-size:11px;margin-left:4px">'+getRoleLabel(e.role)+'</span>'+
+        '<div><span>'+e.name+'</span><span style="color:var(--hint);font-size:11px;margin-left:4px">'+getRoleLabel(e.role)+'</span>'+
         (e.isAdjusted?'<div style="font-size:11px;color:var(--amber);margin-top:2px">&#9873; '+e.adjustReason+'</div>':'')+
         '</div>'+
         '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+
@@ -959,17 +924,11 @@ function renderHistory(){
         '</div></div>';
     }).join('');
     return '<div class="hist-block">'+
-      '<div class="hist-head">'+
-        '<div class="hist-head-left">'+
-          '<div class="hist-title">'+label+'</div>'+
-          '<div class="hist-meta">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+' · Health: -'+fmt(s.healthDeduction||0)+' · Net: '+fmt(s.netPool||s.pool)+'</div>'+
-        '</div>'+
-        '<div style="display:flex;align-items:center;gap:10px">'+
-          '<span class="hist-pool">'+fmt(s.pool)+'</span>'+
-          '<button class="rm-btn" style="font-size:16px" onclick="deleteShift('+s.id+')">×</button>'+
-        '</div>'+
-      '</div>'+staffRows+
-      (s.notes?'<div class="hist-notes">'+s.notes+'</div>':'')+
+      '<div class="hist-head"><div class="hist-head-left"><div class="hist-title">'+label+'</div>'+
+      '<div class="hist-meta">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+' · Health: -'+fmt(s.healthDeduction||0)+' · Net: '+fmt(s.netPool||s.pool)+'</div></div>'+
+      '<div style="display:flex;align-items:center;gap:10px"><span class="hist-pool">'+fmt(s.pool)+'</span>'+
+      '<button class="rm-btn" style="font-size:16px" onclick="deleteShift('+s.id+')">×</button></div></div>'+
+      staffRows+(s.notes?'<div class="hist-notes">'+s.notes+'</div>':'')+
     '</div>';
   }).join('');
 }
@@ -979,7 +938,6 @@ function deleteShift(id){
   persist();renderHistory();
 }
 
-// ROSTER
 function renderRoster(){
   var el=document.getElementById('roster-list');
   if(!roster.length){el.innerHTML='<div class="empty">No employees yet.</div>';return;}
@@ -999,12 +957,10 @@ function addRoster(){
   if(roster.find(function(e){return e.name.toLowerCase()===name.toLowerCase();})){toast('Already on roster');return;}
   roster.push({name:name,role:role});persist();
   document.getElementById('r-name').value='';
-  renderRoster();populateSelects();syncRoster();
-  toast(name+' added');
+  renderRoster();populateSelects();syncRoster();toast(name+' added');
 }
 function removeRoster(i){roster.splice(i,1);persist();renderRoster();populateSelects();syncRoster();}
 
-// ROSTER CSV
 function saveRosterCsvUrl(){
   rosterCsvUrl=document.getElementById('roster-csv-url').value.trim();
   localStorage.setItem('sskRosterCsvUrl',rosterCsvUrl);
@@ -1037,7 +993,6 @@ function loadRosterFromCSV(){
     });
 }
 
-// TIP LOG CSV (history sync)
 function saveTiplogCsvUrl(){
   tiplogCsvUrl=document.getElementById('tiplog-csv-url').value.trim();
   localStorage.setItem('sskTiplogCsvUrl',tiplogCsvUrl);
@@ -1078,20 +1033,15 @@ function loadHistoryFromCSV(){
         var notes=cols[17]||'';
         var key=date+'|'+type+'|'+label+'|'+supervisor;
         if(!shiftMap[key]){
-          shiftMap[key]={
-            id:Date.now()+i,type:type,date:date,
+          shiftMap[key]={id:Date.now()+i,type:type,date:date,
             evtName:type==='event'?label:undefined,
             pool:grossPool,healthDeduction:healthDed,netPool:netPool,
             eventSubtotal:eventSubtotal||undefined,
-            supervisor:supervisor,notes:notes,
-            totalPts:0,dpp:0,staff:[]
-          };
+            supervisor:supervisor,notes:notes,totalPts:0,dpp:0,staff:[]};
         }
-        shiftMap[key].staff.push({
-          name:empName,role:empRole,pts:pts,basePts:basePts,
+        shiftMap[key].staff.push({name:empName,role:empRole,pts:pts,basePts:basePts,
           tipOut:poolPayout,ccTips:ccTips,totalPayout:totalPayout,
-          isAdjusted:isAdj,adjustReason:adjReason,adjustPct:null
-        });
+          isAdjusted:isAdj,adjustReason:adjReason,adjustPct:null});
       }
       var newShifts=Object.keys(shiftMap).map(function(k){return shiftMap[k];});
       var merged=0;
@@ -1114,7 +1064,6 @@ function loadHistoryFromCSV(){
     });
 }
 
-// EMPLOYEE REPORT
 function renderEmployeeNameList(){
   var names={};
   savedShifts.forEach(function(s){s.staff.forEach(function(e){names[e.name]=true;});});
@@ -1150,24 +1099,20 @@ function renderEmployeeReport(){
     textLines.push('  Total: '+fmt(total));
     textLines.push('');
     return '<div class="pay-row">'+
-      '<div>'+
-        '<div class="pay-name" style="font-size:13px">'+s.date+' · '+label+'</div>'+
-        '<div class="pay-detail">Pool payout: '+fmt(poolPay)+(cc>0?' · CC tips: '+fmt(cc):'')+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div>'+
-      '</div>'+
-      '<div class="pay-total">'+fmt(total)+'</div>'+
-    '</div>';
+      '<div><div class="pay-name" style="font-size:13px">'+s.date+' · '+label+'</div>'+
+      '<div class="pay-detail">Pool payout: '+fmt(poolPay)+(cc>0?' · CC tips: '+fmt(cc):'')+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div></div>'+
+      '<div class="pay-total">'+fmt(total)+'</div></div>';
   }).join('');
   textLines.push('─────────────────');
   textLines.push('Pool total: '+fmt(totalPool));
   if(totalCC>0)textLines.push('CC tips total: '+fmt(totalCC));
   textLines.push('Grand total: '+fmt(totalAll));
   empReportText=textLines.join('\n');
-  el.innerHTML=
-    '<div style="font-size:15px;font-weight:500;margin-bottom:12px">'+name+'</div>'+rows+
+  el.innerHTML='<div style="font-size:15px;font-weight:500;margin-bottom:12px">'+name+'</div>'+rows+
     '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px">'+
-      '<div class="pay-row" style="padding:4px 0"><div>Pool payout total</div><div style="font-weight:500">'+fmt(totalPool)+'</div></div>'+
-      (totalCC>0?'<div class="pay-row" style="padding:4px 0"><div>CC tips total</div><div style="font-weight:500">'+fmt(totalCC)+'</div></div>':'')+
-      '<div class="pay-row" style="padding:6px 0"><div style="font-weight:500;font-size:15px">Grand total</div><div class="pay-total" style="font-size:18px">'+fmt(totalAll)+'</div></div>'+
+    '<div class="pay-row" style="padding:4px 0"><div>Pool payout total</div><div style="font-weight:500">'+fmt(totalPool)+'</div></div>'+
+    (totalCC>0?'<div class="pay-row" style="padding:4px 0"><div>CC tips total</div><div style="font-weight:500">'+fmt(totalCC)+'</div></div>':'')+
+    '<div class="pay-row" style="padding:6px 0"><div style="font-weight:500;font-size:15px">Grand total</div><div class="pay-total" style="font-size:18px">'+fmt(totalAll)+'</div></div>'+
     '</div>';
   actions.style.display='block';
 }
@@ -1175,18 +1120,14 @@ function copyEmployeeReport(){
   if(!empReportText)return;
   try{
     var ta=document.createElement('textarea');
-    ta.value=empReportText;
-    ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    ta.value=empReportText;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+    document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);
     var el=document.getElementById('emp-copy-confirm');
     el.textContent='Copied! Paste into a text or email to share.';
     setTimeout(function(){el.textContent='';},3000);
   }catch(e){toast('Copy failed');}
 }
 
-// PAYROLL
 function renderPayroll(){
   var from=document.getElementById('pay-from').value;
   var to=document.getElementById('pay-to').value;
@@ -1206,22 +1147,18 @@ function renderPayroll(){
   var hasAdj=filtered.some(function(s){return s.staff.some(function(e){return e.isAdjusted;});});
   var rows=Object.keys(empMap).sort(function(a,b){return empMap[b].total-empMap[a].total;}).map(function(name){
     var data=empMap[name];
-    return '<div class="pay-row">'+
-      '<div><div class="pay-name">'+name+(data.shifts.some(function(s){return s.isAdjusted;})?'  <span style="font-size:11px;color:var(--amber)">&#9873;</span>':'')+'</div>'+
-      '<div class="pay-detail">'+data.shifts.map(function(s){
+    return '<div class="pay-row"><div><div class="pay-name">'+name+
+      (data.shifts.some(function(s){return s.isAdjusted;})?'  <span style="font-size:11px;color:var(--amber)">&#9873;</span>':'')+
+      '</div><div class="pay-detail">'+data.shifts.map(function(s){
         var d=s.date+' · '+s.label+' · Pool: '+fmt(s.tipOut);
         if(s.ccTips)d+=' + CC: '+fmt(s.ccTips)+' = '+fmt(s.totalPayout);
-        if(s.isAdjusted)d+=' &#9873;';
-        return d;
-      }).join('<br>')+'</div></div>'+
-      '<div class="pay-total">'+fmt(data.total)+'</div>'+
-    '</div>';
+        if(s.isAdjusted)d+=' &#9873;';return d;
+      }).join('<br>')+'</div></div><div class="pay-total">'+fmt(data.total)+'</div></div>';
   }).join('');
-  el.innerHTML=
-    '<div class="stats" style="margin-bottom:14px">'+
-      '<div class="stat"><div class="slabel">Shifts</div><div class="sval">'+filtered.length+'</div></div>'+
-      '<div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">'+fmt(totalPool)+'</div></div>'+
-      '<div class="stat"><div class="slabel">Employees</div><div class="sval">'+Object.keys(empMap).length+'</div></div>'+
+  el.innerHTML='<div class="stats" style="margin-bottom:14px">'+
+    '<div class="stat"><div class="slabel">Shifts</div><div class="sval">'+filtered.length+'</div></div>'+
+    '<div class="stat"><div class="slabel">Pool total</div><div class="sval" style="font-size:14px">'+fmt(totalPool)+'</div></div>'+
+    '<div class="stat"><div class="slabel">Employees</div><div class="sval">'+Object.keys(empMap).length+'</div></div>'+
     '</div>'+
     (hasAdj?'<div style="font-size:12px;color:var(--amber);background:var(--amber-bg);border-radius:8px;padding:8px 12px;margin-bottom:12px">&#9873; Period includes adjustments. See CSV for details.</div>':'')+
     rows;
@@ -1245,12 +1182,10 @@ function exportCSV(){
   var blob=new Blob([csv],{type:'text/csv'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;
-  var range=from&&to?from+'_to_'+to:from||to||'all';
-  a.download='SSK_tipout_'+range+'.csv';a.click();URL.revokeObjectURL(url);
-  toast('CSV exported!');
+  a.download='SSK_tipout_'+(from&&to?from+'_to_'+to:from||to||'all')+'.csv';
+  a.click();URL.revokeObjectURL(url);toast('CSV exported!');
 }
 
-// ADMIN REPORT
 function renderAdminReport(){
   var from=document.getElementById('admin-pay-from').value;
   var to=document.getElementById('admin-pay-to').value;
@@ -1260,21 +1195,17 @@ function renderAdminReport(){
   var totalSub=filtered.reduce(function(s,e){return s+e.eventSubtotal;},0);
   var totalComm=totalSub*0.04;
   var rows=filtered.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).map(function(s){
-    return '<div class="pay-row">'+
-      '<div><div class="pay-name">'+s.evtName+'</div><div class="pay-detail">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div></div>'+
-      '<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted)">'+fmt(s.eventSubtotal)+' subtotal</div><div class="pay-total">'+fmt(s.eventSubtotal*0.04)+' comm.</div></div>'+
-    '</div>';
+    return '<div class="pay-row"><div><div class="pay-name">'+s.evtName+'</div><div class="pay-detail">'+s.date+(s.supervisor?' · Sup: '+s.supervisor:'')+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0"><div style="font-size:12px;color:var(--muted)">'+fmt(s.eventSubtotal)+' subtotal</div><div class="pay-total">'+fmt(s.eventSubtotal*0.04)+' comm.</div></div></div>';
   }).join('');
-  el.innerHTML=
-    '<div class="stats" style="margin-bottom:14px">'+
-      '<div class="stat"><div class="slabel">Events</div><div class="sval">'+filtered.length+'</div></div>'+
-      '<div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">'+fmt(totalSub)+'</div></div>'+
-      '<div class="stat"><div class="slabel">Commission</div><div class="sval" style="font-size:14px;color:var(--green)">'+fmt(totalComm)+'</div></div>'+
+  el.innerHTML='<div class="stats" style="margin-bottom:14px">'+
+    '<div class="stat"><div class="slabel">Events</div><div class="sval">'+filtered.length+'</div></div>'+
+    '<div class="stat"><div class="slabel">Total subtotal</div><div class="sval" style="font-size:14px">'+fmt(totalSub)+'</div></div>'+
+    '<div class="stat"><div class="slabel">Commission</div><div class="sval" style="font-size:14px;color:var(--green)">'+fmt(totalComm)+'</div></div>'+
     '</div>'+rows+
     '<div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center">'+
-      '<div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>'+
-      '<div style="font-size:18px;font-weight:500;color:var(--green)">'+fmt(totalComm)+'</div>'+
-    '</div>';
+    '<div style="font-size:14px;font-weight:500">Alexx Hamilton — total owed</div>'+
+    '<div style="font-size:18px;font-weight:500;color:var(--green)">'+fmt(totalComm)+'</div></div>';
 }
 function exportAdminCSV(){
   var from=document.getElementById('admin-pay-from').value;
@@ -1290,16 +1221,13 @@ function exportAdminCSV(){
   var blob=new Blob([csv],{type:'text/csv'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;
-  var range=from&&to?from+'_to_'+to:from||to||'all';
-  a.download='SSK_Alexx_commission_'+range+'.csv';a.click();URL.revokeObjectURL(url);
-  toast('CSV exported!');
+  a.download='SSK_Alexx_commission_'+(from&&to?from+'_to_'+to:from||to||'all')+'.csv';
+  a.click();URL.revokeObjectURL(url);toast('CSV exported!');
 }
 
-// SHEETS
 function saveSheetUrl(){
   sheetsUrl=document.getElementById('sheets-url').value.trim();
-  localStorage.setItem('sskSheetsUrl',sheetsUrl);
-  updateSyncStatus();
+  localStorage.setItem('sskSheetsUrl',sheetsUrl);updateSyncStatus();
   toast(sheetsUrl?'URL saved!':'URL cleared');
 }
 function syncEntry(entry){
@@ -1335,20 +1263,14 @@ var APPS_SCRIPT='function doGet(e){\n  var action=e.parameter.action;\n  if(acti
 
 function copyAppsScript(){
   try{
-    var ta=document.createElement('textarea');
-    ta.value=APPS_SCRIPT;
+    var ta=document.createElement('textarea');ta.value=APPS_SCRIPT;
     ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
-    document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);
     var el=document.getElementById('copy-confirm');
-    el.textContent='Copied to clipboard!';
-    setTimeout(function(){el.textContent='';},2200);
+    el.textContent='Copied to clipboard!';setTimeout(function(){el.textContent='';},2200);
   }catch(e){
-    var el=document.getElementById('copy-confirm');
-    el.textContent='Select text below and copy manually.';
-    var fb=document.getElementById('script-fallback');
-    fb.value=APPS_SCRIPT;fb.style.display='block';fb.select();
+    var el=document.getElementById('copy-confirm');el.textContent='Select text below and copy manually.';
+    var fb=document.getElementById('script-fallback');fb.value=APPS_SCRIPT;fb.style.display='block';fb.select();
   }
 }
 function clearAllData(){
@@ -1372,7 +1294,7 @@ function initApp(){
   document.getElementById('emp-report-from').value=twaStr;
   document.getElementById('emp-report-to').value=today;
   populateSelects();renderShiftList();renderEvtList();updateSyncStatus();
-  if(rosterCsvUrl)showRosterBanner();
+  if(rosterCsvUrl||tiplogCsvUrl)showBanner();
 }
 </script>
 </body>
